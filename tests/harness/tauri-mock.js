@@ -73,11 +73,21 @@
         if (!listeners.has(args.event)) listeners.set(args.event, []);
         listeners.get(args.event).push(args.handler);
         return args.handler;
-      case "plugin:event|emit":
-        (listeners.get(args.event) || []).forEach(function (h) {
-          runCallback(h, args);
-        });
+      case "plugin:event|emit": {
+        // Delivered after the emitting call returns, as the real IPC does:
+        // a listener never runs inside the code that caused the event. Run
+        // synchronously, a command mock that emits (see
+        // `change_typography_setting`) put the app's listeners inside
+        // whatever effect or mount callback made the call, which the real
+        // app never does — and Solid then reported their store reads there.
+        var targets = (listeners.get(args.event) || []).slice();
+        setTimeout(function () {
+          targets.forEach(function (h) {
+            runCallback(h, args);
+          });
+        }, 0);
         return null;
+      }
       case "plugin:event|unlisten": {
         // `eventId`, not `id`: `@tauri-apps/api`'s `_unlisten` passes the id it
         // was handed back by `plugin:event|listen`, which here is the callback

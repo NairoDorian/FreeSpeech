@@ -81,38 +81,57 @@ test("canvas controls, live text reveal and native window lifecycle", async ({
   );
   // The first paint is a partial hypothesis; the whole sentence follows.
   await expect.poll(() => page.locator("main").innerText()).not.toContain(text);
+  // Every measurement of one flight is taken in the JS turn that finds it.
+  // The flight lasts a few hundred ms, and between two round trips it either
+  // ended or — paused, so no longer "running" — was cancelled by the canvas
+  // taking the next hypothesis. The animations are played again before the
+  // turn ends, so the canvas carries on as if nothing had looked.
+  type Flight = {
+    start: string;
+    end: string;
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+    opacity: number;
+    glyphOpacity: number;
+  };
+  let measured: Flight | null = null;
   await expect
-    .poll(() =>
-      page
-        .locator(".live-canvas-particle")
-        .evaluate((el) => el.getAnimations().length),
-    )
-    .toBe(1);
-  const flight = await page.locator(".live-canvas-particle").evaluate((el) => {
-    const animation = el.getAnimations()[0];
-    animation.pause();
-    animation.currentTime = 40;
-    const glyphAnimation = document
-      .querySelector(".live-canvas-arriving-letter")!
-      .getAnimations()[0];
-    glyphAnimation.pause();
-    glyphAnimation.currentTime = 40;
-    const frames = (animation.effect as KeyframeEffect).getKeyframes();
-    const source = document
-      .querySelector(".live-canvas-analyzer")!
-      .getBoundingClientRect();
-    const glyph = document
-      .querySelector(".live-canvas-arriving-letter")!
-      .getBoundingClientRect();
-    return {
-      start: frames[0].transform,
-      end: frames.at(-1)!.transform,
-      x0: source.x + source.width / 2 - 2,
-      y0: source.y + source.height / 2 - 2,
-      x1: glyph.x + glyph.width / 2 - 2,
-      y1: glyph.y + glyph.height / 2 - 2,
-    };
-  });
+    .poll(async () => {
+      measured = await page.locator(".live-canvas-particle").evaluate((el) => {
+        const animations = el.getAnimations();
+        const letter = document.querySelector(".live-canvas-arriving-letter");
+        const fade = letter?.getAnimations()[0];
+        if (animations.length !== 1 || !letter || !fade) return null;
+        const animation = animations[0]!;
+        const frames = (animation.effect as KeyframeEffect).getKeyframes();
+        const source = document
+          .querySelector(".live-canvas-analyzer")!
+          .getBoundingClientRect();
+        animation.pause();
+        fade.pause();
+        animation.currentTime = 40;
+        fade.currentTime = 40;
+        const glyph = letter.getBoundingClientRect();
+        const result = {
+          start: String(frames[0]!.transform),
+          end: String(frames.at(-1)!.transform),
+          x0: source.x + source.width / 2 - 2,
+          y0: source.y + source.height / 2 - 2,
+          x1: glyph.x + glyph.width / 2 - 2,
+          y1: glyph.y + glyph.height / 2 - 2,
+          opacity: Number(getComputedStyle(el).opacity),
+          glyphOpacity: Number(getComputedStyle(letter).opacity),
+        };
+        animation.play();
+        fade.play();
+        return result;
+      });
+      return measured !== null;
+    })
+    .toBe(true);
+  const flight = measured as unknown as Flight;
   const start = String(flight.start).match(
     /translate\(([-\d.]+)px, ([-\d.]+)px\)/,
   )!;
@@ -124,24 +143,9 @@ test("canvas controls, live text reveal and native window lifecycle", async ({
   expect(Number(end[1])).toBeCloseTo(flight.x1, 2);
   expect(Number(end[2])).toBeCloseTo(flight.y1, 2);
   expect(flight.end).toContain("scale(2.4)");
-  const visibleFlight = await page
-    .locator(".live-canvas-particle")
-    .evaluate((el) => {
-      const animation = el.getAnimations()[0];
-      animation.pause();
-      animation.currentTime = 40;
-      const opacity = Number(getComputedStyle(el).opacity);
-      const glyph = document.querySelector(".live-canvas-arriving-letter")!;
-      const fade = glyph.getAnimations()[0];
-      fade.pause();
-      fade.currentTime = 40;
-      const glyphOpacity = Number(getComputedStyle(glyph).opacity);
-      animation.play();
-      fade.play();
-      return { opacity, glyphOpacity };
-    });
-  expect(visibleFlight.opacity).toBe(1);
-  expect(visibleFlight.glyphOpacity).toBe(0);
+  // 40 ms into the flight the particle is visible and its glyph not yet.
+  expect(flight.opacity).toBe(1);
+  expect(flight.glyphOpacity).toBe(0);
   await expect(page.locator("main")).toContainText(text);
   await page.evaluate(() =>
     (window as any).__TAURI_INTERNALS__.invoke("plugin:event|emit", {
