@@ -112,13 +112,16 @@ asset-protocol.md, capabilities.md; plugin/store.md):
     the actions out of the store. Effects that seed drafts read the fields
     in their compute half, not the merged object.
 20. **tauri-specta: generate the hand-typed events** (README: event type
-    generation). Three payloads (`ModelStateEvent`, `BenchmarkProgressEvent`,
-    `RecordingErrorEvent`) are hand-maintained twice; derive
-    `specta::Type` + `tauri_specta::Event`, register, rename structs so the
-    generated kebab-case matches the current wire names, delete the
-    events.ts copies. Phase 2: the wider ~15-event raw `listen` surface.
-    Then introduce `thiserror` + `specta::Type` error enums for the
-    models/llama/audio command groups (92 `Result<_, String>` signatures).
+    generation). **Partly landed 2026-11-27**: `model-state-changed` and
+    `benchmark-progress` are typed events with an enum `event_type`
+    (`#[tauri_specta(event_name = …)]` keeps the wire names), and
+    `src/lib/types/events.ts` is gone. `RecordingErrorEvent` no longer
+    exists in the tree. **Still open**: 26 raw `listen` calls, mostly
+    string or empty payloads (the `model-download-*` family in
+    `modelStore.ts`, the theme / typography / accent broadcasts, the
+    overlay's show / hide / ready), then `thiserror` + `specta::Type` error
+    enums for the models/llama/audio command groups (92 `Result<_, String>`
+    signatures).
 
 ## Phase 2 — modernization sweeps (mechanical, low risk)
 
@@ -160,8 +163,8 @@ update-deps.ts queries; replace the batch deadline race. 31. CI: cache `~/.bun/i
 advertises the isolated-linker win; nothing warms it). 32. Standardize the node:child_process scripts on `Bun.spawnSync` / `$`;
 drop the win32 `shell:` toggles. Adopt `Bun.file().json()`, `Bun.write`,
 `Bun.Glob` opportunistically. Route update-deps' stable-mode NPM path
-through `bun outdated`. 35. Single-instance plugin first in the builder chain (plugin docs: "must be
-the first one to be registered"). 36. Tooling: `fetch-stack-docs.ts` INDEX titles — extract each page's first
+through `bun outdated`. 35. ~~Single-instance plugin first in the builder chain (plugin docs: "must be
+the first one to be registered").~~ **Landed 2026-11-27.** 36. Tooling: `fetch-stack-docs.ts` INDEX titles — extract each page's first
 heading instead of falling back to the repo name.
 
 **transcribe.cpp integration**: 37. Latency presets for Voxtral Realtime (`num_delay_tokens`) and Moonshine
