@@ -1,5 +1,4 @@
 import { createSolidStore } from "@/lib/solidStore";
-import { listen } from "@tauri-apps/api/event";
 import { commands, events, type ModelInfo } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
 
@@ -276,8 +275,16 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
     await Promise.all([loadModels(), loadCurrentModel()]);
 
     // Set up event listeners
-    listen<DownloadProgress>("model-download-progress", (event) => {
-      const progress = event.payload;
+    events.modelDownloadProgress.listen((event) => {
+      // The generated type says `number | null` for every f64 (serde writes a
+      // non-finite float as null); the backend sends byte counts and a
+      // percentage, and the store keeps plain numbers.
+      const progress: DownloadProgress = {
+        model_id: event.payload.model_id,
+        downloaded: event.payload.downloaded ?? 0,
+        total: event.payload.total ?? 0,
+        percentage: event.payload.percentage ?? 0,
+      };
       set((state) => {
         state.downloadProgress[progress.model_id] = progress;
       });
