@@ -119,9 +119,6 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 
 - Build essentials
 - ALSA development libraries
-- OpenBLAS development libraries (`libopenblas-dev` / `openblas-devel` /
-  `openblas`) — the deb and rpm bundles declare `libopenblas` as a runtime
-  dependency
 - X11 development libraries (`libx11-dev`, `libxtst-dev`, `libxrandr-dev` and
   `libxkbcommon-dev`) for enigo's keyboard-simulation backend
 - The Vulkan toolchain (`vulkan-sdk` / `vulkan-headers` + `shaderc`, which
@@ -135,7 +132,7 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
   ```bash
   # Ubuntu/Debian
   sudo apt update
-  sudo apt install build-essential clang libclang-dev libevdev-dev libasound2-dev pkg-config libssl-dev libopenblas-dev \
+  sudo apt install build-essential clang libclang-dev libevdev-dev libasound2-dev pkg-config libssl-dev \
     libx11-dev libxtst-dev libxrandr-dev libxkbcommon-dev \
     libvulkan-dev vulkan-tools glslc spirv-headers glslang-tools \
     libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
@@ -143,7 +140,7 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 
   # Fedora/RHEL
   sudo dnf groupinstall "Development Tools"
-  sudo dnf install alsa-lib-devel openblas-devel pkgconf openssl-devel \
+  sudo dnf install alsa-lib-devel pkgconf openssl-devel \
     libX11-devel libXtst-devel libXrandr-devel libxkbcommon-devel \
     vulkan-devel glslc spirv-headers-devel spirv-tools-devel glslang \
     clang clang-devel libevdev-devel \
@@ -153,7 +150,7 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 
   # Arch Linux
   sudo pacman -S base-devel clang libevdev shaderc spirv-headers glslang \
-    alsa-lib openblas pkgconf openssl vulkan-devel \
+    alsa-lib pkgconf openssl vulkan-devel \
     libx11 libxtst libxrandr xkbcommon \
     gtk3 webkit2gtk-4.1 libappindicator-gtk3 librsvg gtk-layer-shell \
     cmake

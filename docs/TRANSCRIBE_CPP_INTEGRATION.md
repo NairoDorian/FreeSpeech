@@ -299,12 +299,11 @@ out` folders. Needed by the stable 1.100 / nightly 1.102 toolchains the app
 - **ggml 1.0.0** (`cfa237c2`, then master `d9fe7bff`, examples only).
 - **System BLAS off by default** (`a0729fa5`): libtranscribe no longer links
   OpenBLAS on Linux (Apple keeps Accelerate); the engine measured no
-  significant difference. ZER0's deb / rpm bundles still declare
-  `libopenblas0` / `libopenblas.so.0` (`tauri.conf.json`), BUILD.md asks for
-  `libopenblas-dev` and CI checks it is installed: harmless but no longer
-  needed. Drop all three once a Linux build confirms the binary does not link
-  it (Phase 12, no Linux build here). `-DTRANSCRIBE_USE_SYSTEM_BLAS=ON` in
-  `TRANSCRIBE_CMAKE_ARGS` restores the old link.
+  significant difference. ZER0 dropped the OpenBLAS runtime dependency from
+  its deb / rpm bundles, BUILD.md and CI on 2026-11-27, porting upstream
+  Handy `1f2e9ea9` (#2565), which made the same change after a Linux build.
+  `-DTRANSCRIBE_USE_SYSTEM_BLAS=ON` in `TRANSCRIBE_CMAKE_ARGS` restores the
+  old link (and would need `libopenblas` back in the bundles).
 - The fork's own lint cleanup for clippy 1.100 / nightly and refreshed
   dependencies. No API or ABI change the app calls.
 
