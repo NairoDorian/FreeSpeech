@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role */
 import { createEffect, For, Show, onSettled } from "solid-js";
-import { listen } from "@tauri-apps/api/event";
+import { events } from "@/bindings";
 import type { Notice } from "@/bindings";
 import { TriangleAlert, X } from "@/components/icons/lucide";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -23,7 +23,7 @@ function NoticeChip() {
   onSettled(() => {
     void store.initialize();
     // The tray's notice line opens the window on the panel.
-    const unlisten = listen("open-notices", () => store.setPanelOpen(true));
+    const unlisten = events.openNotices.listen(() => store.setPanelOpen(true));
     return () => {
       void unlisten.then((fn) => fn());
     };

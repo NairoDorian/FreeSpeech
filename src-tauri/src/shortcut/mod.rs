@@ -18,6 +18,7 @@ use serde::Serialize;
 use specta::Type;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{AppHandle, Emitter, Manager};
+use tauri_specta::Event;
 
 use crate::app_identity;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
@@ -522,12 +523,10 @@ pub fn change_keyboard_implementation_setting(
 
     // Emit event to notify frontend of the change
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "keyboard_implementation",
-            "value": implementation,
-            "reset_bindings": reset_bindings
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "keyboard_implementation".into(),
+        },
     );
 
     info!("Keyboard implementation switched to {:?}", new_impl);
@@ -783,7 +782,7 @@ pub fn change_theme_setting(app: AppHandle, theme: String) -> Result<(), String>
     apply_window_theme(&app, parsed);
     // Notify other webviews (the recording overlay) so they re-apply the palette
     // live — they set `data-theme` on their own document and can't see this one.
-    let _ = app.emit("theme-changed", parsed);
+    let _ = app.emit(crate::settings::ThemeChanged::NAME, parsed);
     Ok(())
 }
 
@@ -800,7 +799,7 @@ pub async fn change_typography_setting(
         let mut current = settings::get_settings(&app);
         current.typography = typography.clone();
         settings::write_settings(&app, current);
-        app.emit("typography-changed", &typography)
+        app.emit(crate::settings::TypographyChanged::NAME, &typography)
             .map_err(|e| e.to_string())
     })
     .await
@@ -848,11 +847,10 @@ pub fn change_selected_language_setting(app: AppHandle, language: String) -> Res
     tray::update_tray_menu(&app);
     // The tray can change it too; keep the settings window in sync.
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "selected_language",
-            "value": language
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "selected_language".into(),
+        },
     );
     Ok(())
 }
@@ -1113,11 +1111,10 @@ pub fn change_debug_mode_setting(app: AppHandle, enabled: bool) -> Result<(), St
 
     // Emit event to notify frontend of debug mode change
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "debug_mode",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "debug_mode".into(),
+        },
     );
 
     Ok(())
@@ -1132,11 +1129,10 @@ pub fn change_start_hidden_setting(app: AppHandle, enabled: bool) -> Result<(), 
 
     // Notify frontend
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "start_hidden",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "start_hidden".into(),
+        },
     );
 
     Ok(())
@@ -1154,11 +1150,10 @@ pub fn change_autostart_setting(app: AppHandle, enabled: bool) -> Result<(), Str
 
     // Notify frontend
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "autostart_enabled",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "autostart_enabled".into(),
+        },
     );
 
     Ok(())
@@ -1182,11 +1177,10 @@ pub fn change_update_checks_setting(app: AppHandle, enabled: bool) -> Result<(),
     settings::write_settings(&app, settings);
 
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "update_checks_enabled",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "update_checks_enabled".into(),
+        },
     );
 
     Ok(())
@@ -1203,11 +1197,10 @@ pub fn change_show_whats_new_on_update_setting(
     settings::write_settings(&app, settings);
 
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "show_whats_new_on_update",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "show_whats_new_on_update".into(),
+        },
     );
 
     Ok(())
@@ -1225,11 +1218,10 @@ pub fn change_whats_new_last_seen_version_setting(
     settings::write_settings(&app, settings);
 
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "whats_new_last_seen_version",
-            "value": version
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "whats_new_last_seen_version".into(),
+        },
     );
 
     Ok(())
@@ -1462,11 +1454,10 @@ pub fn change_multi_stt_enabled_setting(app: AppHandle, enabled: bool) -> Result
 
     // Emit event for frontend
     let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "multi_stt_enabled",
-            "value": enabled
-        }),
+        crate::settings::SettingsChanged::NAME,
+        crate::settings::SettingsChanged {
+            setting: "multi_stt_enabled".into(),
+        },
     );
 
     Ok(())

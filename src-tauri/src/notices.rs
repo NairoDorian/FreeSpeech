@@ -109,6 +109,11 @@ impl NoticeCode {
     }
 }
 
+/// Open the footer's notice panel (`open-notices`), from the tray.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "open-notices")]
+pub struct OpenNotices;
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct Notice {
     pub code: NoticeCode,

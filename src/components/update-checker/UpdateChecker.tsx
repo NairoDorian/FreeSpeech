@@ -2,7 +2,7 @@ import { createSignal, createEffect } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { listen } from "@tauri-apps/api/event";
+import { events } from "@/bindings";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { arch, platform } from "@tauri-apps/plugin-os";
 import { ProgressBar } from "../shared";
@@ -60,7 +60,7 @@ const UpdateChecker = (props: UpdateCheckerProps) => {
 
       checkForUpdates();
 
-      const updateUnlisten = listen("check-for-updates", () => {
+      const updateUnlisten = events.checkForUpdates.listen(() => {
         handleManualUpdateCheck();
       });
 

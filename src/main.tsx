@@ -13,9 +13,8 @@ import {
 } from "@/lib/utils/theme";
 import { listen } from "@tauri-apps/api/event";
 import { useModelStore } from "./stores/modelStore";
-import type { Theme } from "@/bindings";
+import { events } from "@/bindings";
 import { applyTypography, getStoredTypography } from "@/lib/typography";
-import type { TypographySettings } from "@/bindings";
 
 // Set the platform before render so CSS can scope per-platform (e.g. the
 // macOS scrollbar rules in App.css key off `:root[data-platform="macos"]`).
@@ -35,10 +34,8 @@ void syncAppearanceFromSettings({ uiScale: true });
 // runs — without it that page waits forever.
 void useModelStore().initialize();
 
-listen<Theme>("theme-changed", (event) => applyTheme(event.payload));
-listen<TypographySettings>("typography-changed", (event) =>
-  applyTypography(event.payload),
-);
+events.themeChanged.listen((event) => applyTheme(event.payload));
+events.typographyChanged.listen((event) => applyTypography(event.payload));
 listen<string>("accent-color-changed", (event) =>
   applyAccentColor(event.payload),
 );

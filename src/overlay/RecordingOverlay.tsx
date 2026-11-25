@@ -454,7 +454,7 @@ const RecordingOverlay = () => {
   // owned-scope write guard the way a write in this setup body would.
   onSettled(() => {
     const setupEventListeners = async () => {
-      const unlistenShow = await listen("show-overlay", async (event) => {
+      const unlistenShow = await events.showOverlay.listen(async (event) => {
         const overlayState = event.payload as OverlayState;
         const generation = ++showGeneration;
         // Any show ends a notice: a new session, or the notice's own show,
@@ -519,18 +519,18 @@ const RecordingOverlay = () => {
         setIsVisible(true);
       });
 
-      const unlistenNotice = await listen<Notice>("overlay-notice", (event) =>
+      const unlistenNotice = await events.overlayNotice.listen((event) =>
         setNotice(event.payload),
       );
 
-      const unlistenHide = await listen("hide-overlay", () => {
+      const unlistenHide = await events.hideOverlay.listen(() => {
         showGeneration++;
         setIsVisible(false);
         setCaptureReady(false);
         stopTypewriter();
       });
 
-      const unlistenReady = await listen("recording-ready", () => {
+      const unlistenReady = await events.recordingReady.listen(() => {
         setElapsed(0);
         setCaptureReady(true);
       });

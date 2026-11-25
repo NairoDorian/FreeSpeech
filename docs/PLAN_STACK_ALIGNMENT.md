@@ -122,12 +122,16 @@ asset-protocol.md, capabilities.md; plugin/store.md):
     `benchmark-progress` are typed events with an enum `event_type`
     (`#[tauri_specta(event_name = …)]` keeps the wire names), and
     `src/lib/types/events.ts` is gone. `RecordingErrorEvent` no longer
-    exists in the tree. **Still open**: 26 raw `listen` calls, mostly
-    string or empty payloads (the `model-download-*` family in
-    `modelStore.ts`, the theme / typography / accent broadcasts, the
-    overlay's show / hide / ready), then `thiserror` + `specta::Type` error
-    enums for the models/llama/audio command groups (92 `Result<_, String>`
-    signatures).
+    exists in the tree. **Events done 2026-11-27**: every event Rust emits is
+    typed except `secure-input-changed`, whose emitter is macOS-only code
+    that cannot be compiled here; `accent-color-changed` stays a raw event on
+    purpose (the frontend emits it to the overlay). That is the model
+    lifecycle family, `settings-changed` (payload `{ setting }`, the only
+    field anything read), theme / typography, the overlay's show / hide /
+    ready / notice, open-notices, check-for-updates and the native-keys
+    recorder (whose hand-written TypeScript copy is gone). **Still open**:
+    `thiserror` + `specta::Type` error enums for the models/llama/audio
+    command groups (92 `Result<_, String>` signatures).
 
 ## Phase 2 — modernization sweeps (mechanical, low risk)
 

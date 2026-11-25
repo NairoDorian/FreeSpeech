@@ -711,11 +711,10 @@ impl AudioRecordingManager {
         settings.selected_microphone = None;
         write_settings(&self.app_handle, settings);
         let _ = self.app_handle.emit(
-            "settings-changed",
-            serde_json::json!({
-                "setting": "selected_microphone",
-                "value": "Default"
-            }),
+            crate::settings::SettingsChanged::NAME,
+            crate::settings::SettingsChanged {
+                setting: "selected_microphone".into(),
+            },
         );
     }
 

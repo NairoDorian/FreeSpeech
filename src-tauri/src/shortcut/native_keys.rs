@@ -39,6 +39,7 @@ use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use tauri::{AppHandle, Emitter, Manager};
+use tauri_specta::Event;
 
 use crate::settings::{self, ShortcutBinding, get_settings};
 
@@ -74,8 +75,9 @@ pub struct NativeKeysState {
     recording_running: Arc<AtomicBool>,
 }
 
-/// Key event sent to frontend during recording mode
-#[derive(Debug, Clone, Serialize, Type)]
+/// Key event sent to frontend during recording mode (`native-keys-event`).
+#[derive(Debug, Clone, Serialize, serde::Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "native-keys-event")]
 pub struct FrontendKeyEvent {
     /// Currently pressed modifier keys
     pub modifiers: Vec<String>,
@@ -347,7 +349,7 @@ impl NativeKeysState {
                 };
 
                 // Emit to frontend
-                if let Err(e) = app.emit("native-keys-event", &frontend_event) {
+                if let Err(e) = app.emit(FrontendKeyEvent::NAME, &frontend_event) {
                     error!("Failed to emit key event: {}", e);
                 }
             } else {

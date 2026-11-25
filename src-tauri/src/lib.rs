@@ -70,6 +70,12 @@ use crate::settings::get_settings;
 // cargo's `unused_dependencies` lint quiet without switching the lint off.
 use tauri_plugin as _;
 
+/// Ask the settings window to check for an update now (`check-for-updates`),
+/// from the tray or the startup check.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, specta::Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "check-for-updates")]
+pub struct CheckForUpdates;
+
 /// The stream the console target writes to: **stdout** for the interactive app,
 /// **stderr** for the headless one-shots.
 ///
@@ -430,13 +436,13 @@ fn initialize_core_logic(app_handle: &AppHandle) {
             "notice" => {
                 // The footer's notice panel has the details.
                 show_main_window(app);
-                let _ = app.emit("open-notices", ());
+                let _ = app.emit(notices::OpenNotices::NAME, ());
             }
             "check_updates" => {
                 let settings = settings::get_settings(app);
                 if settings::update_checks_effectively_enabled(&settings) {
                     show_main_window(app);
-                    let _ = app.emit("check-for-updates", ());
+                    let _ = app.emit(CheckForUpdates::NAME, ());
                 }
             }
             "copy_last_transcript" => {
@@ -545,7 +551,7 @@ fn trigger_update_check(app: AppHandle) -> Result<(), String> {
     if !settings::update_checks_effectively_enabled(&settings) {
         return Ok(());
     }
-    app.emit("check-for-updates", ())
+    app.emit(CheckForUpdates::NAME, ())
         .map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -1112,6 +1118,16 @@ pub fn run(cli_args: CliArgs) {
             managers::model::ModelVerificationCompleted,
             managers::model::ModelDeleted,
             managers::model::ModelsUpdated,
+            settings::SettingsChanged,
+            settings::ThemeChanged,
+            settings::TypographyChanged,
+            overlay::ShowOverlay,
+            overlay::HideOverlay,
+            overlay::RecordingReady,
+            overlay::OverlayNotice,
+            notices::OpenNotices,
+            CheckForUpdates,
+            shortcut::native_keys::FrontendKeyEvent,
             managers::statistics::StatisticsUpdatedEvent,
             overlay::SpeechActivityEvent,
             managers::audio::VadTestEvent,

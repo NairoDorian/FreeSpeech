@@ -1,4 +1,3 @@
-import { listen } from "@tauri-apps/api/event";
 import { createSolidStore } from "@/lib/solidStore";
 import type {
   AppSettings as Settings,
@@ -1133,7 +1132,7 @@ const settingsState = createSolidStore<SettingsStore>((set, get) => ({
     events.modelStateChanged.listen(() => {
       get().refreshSettings();
     });
-    listen<{ setting?: string }>("settings-changed", (event) => {
+    events.settingsChanged.listen((event) => {
       get().refreshSettings();
       if (event.payload.setting === "selected_microphone") {
         get().refreshAudioDevices();

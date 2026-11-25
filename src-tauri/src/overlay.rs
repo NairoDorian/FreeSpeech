@@ -181,7 +181,7 @@ pub fn show_overlay_notice(app_handle: &AppHandle, notice: &crate::notices::Noti
         );
         let generation = OVERLAY_SHOW_GENERATION.load(Ordering::SeqCst);
         OVERLAY_NOTICE_GENERATION.store(generation, Ordering::SeqCst);
-        let _ = handle.emit_to("recording_overlay", "overlay-notice", &notice);
+        let _ = handle.emit_to("recording_overlay", OverlayNotice::NAME, &notice);
         std::thread::spawn(move || {
             std::thread::sleep(NOTICE_HOLD);
             if OVERLAY_SHOW_GENERATION.load(Ordering::SeqCst) == generation {
@@ -875,6 +875,31 @@ pub fn create_recording_overlay(app_handle: &AppHandle) {
     }
 }
 
+// The overlay window's own events, typed so `bindings.ts` names them for its
+// listeners. Emitted as `emit(Event::NAME, payload)`: a one-field struct and a
+// unit struct serialize to the payload and to null, the wire format the
+// overlay always received.
+
+/// Show the overlay in a state (`show-overlay`); payload: the state's name.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "show-overlay")]
+pub struct ShowOverlay(pub String);
+
+/// Hide the overlay (`hide-overlay`).
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "hide-overlay")]
+pub struct HideOverlay;
+
+/// The microphone delivers real samples (`recording-ready`).
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "recording-ready")]
+pub struct RecordingReady;
+
+/// A dictation notice takes over the card (`overlay-notice`).
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "overlay-notice")]
+pub struct OverlayNotice(pub crate::notices::Notice);
+
 fn show_overlay_state(app_handle: &AppHandle, state: &str) {
     OVERLAY_SHOW_GENERATION.fetch_add(1, Ordering::SeqCst);
 
@@ -1022,7 +1047,7 @@ fn show_overlay_state_on_main(app_handle: &AppHandle, state: &str) {
             );
         }
 
-        let _ = overlay_window.emit("show-overlay", state);
+        let _ = overlay_window.emit(ShowOverlay::NAME, state);
     }
 }
 
@@ -1040,7 +1065,7 @@ pub fn emit_recording_ready(app_handle: &AppHandle) {
     // and then get reset back to the arming state by the frontend.
     let handle = app_handle.clone();
     let _ = app_handle.run_on_main_thread(move || {
-        let _ = handle.emit_to("recording_overlay", "recording-ready", ());
+        let _ = handle.emit_to("recording_overlay", RecordingReady::NAME, ());
     });
 }
 
@@ -1377,7 +1402,7 @@ pub fn hide_recording_overlay(app_handle: &AppHandle) {
         // after this point invalidates the delayed hide below.
         let scheduled_at = OVERLAY_SHOW_GENERATION.load(Ordering::SeqCst);
         // Emit event to trigger fade-out animation
-        let _ = overlay_window.emit("hide-overlay", ());
+        let _ = overlay_window.emit(HideOverlay::NAME, ());
         // Hide the window after a short delay to allow animation to complete,
         // unless a newer session has shown the overlay again by then.
         let window_clone = overlay_window.clone();

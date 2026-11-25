@@ -586,8 +586,10 @@ impl LlamaServerManager {
         settings.post_process_provider_id = "custom".to_string();
         write_settings(&self.app, settings);
         let _ = self.app.emit(
-            "settings-changed",
-            serde_json::json!({ "setting": "post_process_providers" }),
+            crate::settings::SettingsChanged::NAME,
+            crate::settings::SettingsChanged {
+                setting: "post_process_providers".into(),
+            },
         );
         Ok(())
     }
@@ -629,8 +631,10 @@ impl LlamaServerManager {
         }
         write_settings(&self.app, settings);
         let _ = self.app.emit(
-            "settings-changed",
-            serde_json::json!({ "setting": "post_process_providers" }),
+            crate::settings::SettingsChanged::NAME,
+            crate::settings::SettingsChanged {
+                setting: "post_process_providers".into(),
+            },
         );
         true
     }

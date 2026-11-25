@@ -352,6 +352,25 @@ impl SoundTheme {
     }
 }
 
+/// A setting was changed outside the settings window's own `updateSetting`
+/// (`settings-changed`): the window re-reads the store. `setting` names it.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "settings-changed")]
+pub struct SettingsChanged {
+    pub setting: String,
+}
+
+/// The appearance theme changed (`theme-changed`), for the overlay window,
+/// which keeps its own `data-theme`.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "theme-changed")]
+pub struct ThemeChanged(pub Theme);
+
+/// The fonts changed (`typography-changed`), for both webviews.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "typography-changed")]
+pub struct TypographyChanged(pub TypographySettings);
+
 /// UI appearance mode. `System` follows the OS `prefers-color-scheme`; `Light`
 /// and `Dark` force one of the two palettes the app already ships.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]

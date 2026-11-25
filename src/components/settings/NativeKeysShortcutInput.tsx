@@ -1,12 +1,11 @@
 import { createSignal, createEffect, Match, Switch } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
-import { listen } from "@tauri-apps/api/event";
 import { formatKeyCombination } from "../../lib/utils/keyboard";
 import { ResetButton } from "../ui/ResetButton";
 import { SettingContainer } from "../ui/SettingContainer";
 import { useSettings } from "../../hooks/useSettings";
 import { useOsType } from "../../hooks/useOsType";
-import { commands } from "@/bindings";
+import { commands, events } from "@/bindings";
 import { logCommandResult } from "./logCommandResult";
 import { sessionToast as toast } from "@/lib/sessionToast";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -18,13 +17,6 @@ interface NativeKeysShortcutInputProps {
   grouped?: boolean;
   shortcutId: string;
   disabled?: boolean;
-}
-
-interface NativeKeysEvent {
-  modifiers: string[];
-  key: string | null;
-  is_key_down: boolean;
-  hotkey_string: string;
 }
 
 export const NativeKeysShortcutInput = (
@@ -120,34 +112,31 @@ export const NativeKeysShortcutInput = (
           setOriginalBinding("");
         };
 
-        const unlisten = await listen<NativeKeysEvent>(
-          "native-keys-event",
-          async (event) => {
-            if (cleanup) return;
+        const unlisten = await events.nativeKeysEvent.listen(async (event) => {
+          if (cleanup) return;
 
-            const { hotkey_string, is_key_down, key } = event.payload;
+          const { hotkey_string, is_key_down, key } = event.payload;
 
-            if (is_key_down && hotkey_string) {
-              if (key) {
-                keyedShortcutRef = hotkey_string;
-              } else {
-                modifierOnlyShortcutRef = hotkey_string;
-              }
-              setCurrentKeys(hotkey_string);
-            } else if (!is_key_down && key) {
-              const keysToCommit = keyedShortcutRef || hotkey_string;
-              if (keysToCommit) {
-                await commitAndStop(keysToCommit);
-              }
-            } else if (
-              !is_key_down &&
-              keyedShortcutRef &&
-              modifierOnlyShortcutRef
-            ) {
-              await commitAndStop(modifierOnlyShortcutRef);
+          if (is_key_down && hotkey_string) {
+            if (key) {
+              keyedShortcutRef = hotkey_string;
+            } else {
+              modifierOnlyShortcutRef = hotkey_string;
             }
-          },
-        );
+            setCurrentKeys(hotkey_string);
+          } else if (!is_key_down && key) {
+            const keysToCommit = keyedShortcutRef || hotkey_string;
+            if (keysToCommit) {
+              await commitAndStop(keysToCommit);
+            }
+          } else if (
+            !is_key_down &&
+            keyedShortcutRef &&
+            modifierOnlyShortcutRef
+          ) {
+            await commitAndStop(modifierOnlyShortcutRef);
+          }
+        });
 
         // Recording may have ended while `listen` was resolving; the cleanup
         // below has already run then, so release the listener here.

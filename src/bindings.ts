@@ -628,7 +628,9 @@ export const commands = {
 /** Events */
 export const events = {
 	benchmarkProgress: makeEvent<BenchmarkProgressEvent_Serialize, BenchmarkProgressEvent_Deserialize>("benchmark-progress"),
+	checkForUpdates: makeEvent<CheckForUpdates, CheckForUpdates>("check-for-updates"),
 	fileTranscriptionEvent: makeEvent<FileTranscriptionEvent_Serialize, FileTranscriptionEvent_Deserialize>("file-transcription-event"),
+	hideOverlay: makeEvent<HideOverlay, HideOverlay>("hide-overlay"),
 	historyUpdatePayload: makeEvent<HistoryUpdatePayload_Serialize, HistoryUpdatePayload_Deserialize>("history-update-payload"),
 	liveFftStateEvent: makeEvent<LiveFftStateEvent_Serialize, LiveFftStateEvent_Deserialize>("live-fft-state-event"),
 	liveModeStateEvent: makeEvent<LiveModeStateEvent_Serialize, LiveModeStateEvent_Deserialize>("live-mode-state-event"),
@@ -645,13 +647,21 @@ export const events = {
 	modelVerificationStarted: makeEvent<ModelVerificationStarted, ModelVerificationStarted>("model-verification-started"),
 	modelsUpdated: makeEvent<ModelsUpdated, ModelsUpdated>("models-updated"),
 	multiSttStreamChunkFailedEvent: makeEvent<MultiSttStreamChunkFailedEvent, MultiSttStreamChunkFailedEvent>("multi-stt-stream-chunk-failed-event"),
+	nativeKeysEvent: makeEvent<FrontendKeyEvent_Serialize, FrontendKeyEvent_Deserialize>("native-keys-event"),
 	noticesChanged: makeEvent<NoticesChanged_Serialize, NoticesChanged_Deserialize>("notices-changed"),
+	openNotices: makeEvent<OpenNotices, OpenNotices>("open-notices"),
+	overlayNotice: makeEvent<OverlayNotice_Serialize, OverlayNotice_Deserialize>("overlay-notice"),
 	recallInsertTextEvent: makeEvent<RecallInsertTextEvent, RecallInsertTextEvent>("recall-insert-text-event"),
+	recordingReady: makeEvent<RecordingReady, RecordingReady>("recording-ready"),
+	settingsChanged: makeEvent<SettingsChanged, SettingsChanged>("settings-changed"),
+	showOverlay: makeEvent<ShowOverlay, ShowOverlay>("show-overlay"),
 	speechActivityEvent: makeEvent<SpeechActivityEvent, SpeechActivityEvent>("speech-activity-event"),
 	statisticsUpdatedEvent: makeEvent<StatisticsUpdatedEvent, StatisticsUpdatedEvent>("statistics-updated-event"),
 	streamPhaseEvent: makeEvent<StreamPhaseEvent_Serialize, StreamPhaseEvent_Deserialize>("stream-phase-event"),
 	streamTextEvent: makeEvent<StreamTextEvent_Serialize, StreamTextEvent_Deserialize>("stream-text-event"),
 	systemStatsEvent: makeEvent<SystemStatsEvent_Serialize, SystemStatsEvent_Deserialize>("system-stats-event"),
+	themeChanged: makeEvent<ThemeChanged, ThemeChanged>("theme-changed"),
+	typographyChanged: makeEvent<TypographyChanged_Serialize, TypographyChanged_Deserialize>("typography-changed"),
 	vadTestEvent: makeEvent<VadTestEvent_Serialize, VadTestEvent_Deserialize>("vad-test-event"),
 };
 
@@ -1598,6 +1608,12 @@ export type BindingResponse_Serialize = {
 };
 
 /**
+ *  Ask the settings window to check for an update now (`check-for-updates`),
+ *  from the tray or the startup check.
+ */
+export type CheckForUpdates = null;
+
+/**
  *  Script applied to Mandarin and Cantonese output. Traditional carries its
  *  region (Taiwan vs Hong Kong forms, e.g. 裡/裏) rather than guessing it. The
  *  upstream project's setting and values (decision D6).
@@ -1975,6 +1991,33 @@ export type FileTranscriptionStatus_Serialize = {
 	current_path: string | null,
 };
 
+/**  Key event sent to frontend during recording mode (`native-keys-event`). */
+export type FrontendKeyEvent = FrontendKeyEvent_Serialize | FrontendKeyEvent_Deserialize;
+
+/**  Key event sent to frontend during recording mode (`native-keys-event`). */
+export type FrontendKeyEvent_Deserialize = {
+	/**  Currently pressed modifier keys */
+	modifiers: string[],
+	/**  The key that was pressed (if any) */
+	key?: string | null,
+	/**  Whether this is a key down event */
+	is_key_down: boolean,
+	/**  The full hotkey string (e.g., "option+space") */
+	hotkey_string: string,
+};
+
+/**  Key event sent to frontend during recording mode (`native-keys-event`). */
+export type FrontendKeyEvent_Serialize = {
+	/**  Currently pressed modifier keys */
+	modifiers: string[],
+	/**  The key that was pressed (if any) */
+	key: string | null,
+	/**  Whether this is a key down event */
+	is_key_down: boolean,
+	/**  The full hotkey string (e.g., "option+space") */
+	hotkey_string: string,
+};
+
 /**  A GGUF file found in a folder, for the model / draft / mmproj pickers. */
 export type GgufFile = {
 	path: string,
@@ -1989,6 +2032,9 @@ export type GpuDeviceOption = {
 	name: string,
 	total_vram_mb: number,
 };
+
+/**  Hide the overlay (`hide-overlay`). */
+export type HideOverlay = null;
 
 export type HistoryEntry = HistoryEntry_Serialize | HistoryEntry_Deserialize;
 
@@ -3402,6 +3448,18 @@ export type NoticesChanged_Serialize = {
 	raised: Notice_Serialize | null,
 };
 
+/**  Open the footer's notice panel (`open-notices`), from the tray. */
+export type OpenNotices = null;
+
+/**  A dictation notice takes over the card (`overlay-notice`). */
+export type OverlayNotice = OverlayNotice_Serialize | OverlayNotice_Deserialize;
+
+/**  A dictation notice takes over the card (`overlay-notice`). */
+export type OverlayNotice_Deserialize = Notice_Deserialize;
+
+/**  A dictation notice takes over the card (`overlay-notice`). */
+export type OverlayNotice_Serialize = Notice_Serialize;
+
 export type OverlayPosition = OverlayPosition_Serialize | OverlayPosition_Deserialize;
 
 export type OverlayPosition_Deserialize = "top" | "bottom" | "none";
@@ -3840,6 +3898,9 @@ export type RecallVaultInfo = {
 	audio_count: number,
 };
 
+/**  The microphone delivers real samples (`recording-ready`). */
+export type RecordingReady = null;
+
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days3" | "weeks2" | "months3";
 
 export type SecretMap = { [key in string]: string };
@@ -3898,6 +3959,14 @@ export type SecureInputStatus_Serialize = {
 	recorder_blocked: boolean,
 };
 
+/**
+ *  A setting was changed outside the settings window's own `updateSetting`
+ *  (`settings-changed`): the window re-reads the store. `setting` names it.
+ */
+export type SettingsChanged = {
+	setting: string,
+};
+
 /**  How the transcribe shortcut's key events drive a recording. */
 export type ShortcutActivation = 
 /**  Press to start, press again to stop. */
@@ -3918,6 +3987,9 @@ export type ShortcutBinding = {
 	default_binding: string,
 	current_binding: string,
 };
+
+/**  Show the overlay in a state (`show-overlay`); payload: the state's name. */
+export type ShowOverlay = string;
 
 export type SoundTheme = "marimba" | "pop" | "custom";
 
@@ -4252,12 +4324,27 @@ export type SystemStatsEvent_Serialize = {
  */
 export type Theme = "system" | "light" | "dark";
 
+/**
+ *  The appearance theme changed (`theme-changed`), for the overlay window,
+ *  which keeps its own `data-theme`.
+ */
+export type ThemeChanged = Theme;
+
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu";
 
 /**  Text file flavour written by the file-transcription and Live Mode pages. */
 export type TranscriptOutputFormat = "txt" | "md";
 
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool";
+
+/**  The fonts changed (`typography-changed`), for both webviews. */
+export type TypographyChanged = TypographyChanged_Serialize | TypographyChanged_Deserialize;
+
+/**  The fonts changed (`typography-changed`), for both webviews. */
+export type TypographyChanged_Deserialize = TypographySettings_Deserialize;
+
+/**  The fonts changed (`typography-changed`), for both webviews. */
+export type TypographyChanged_Serialize = TypographySettings_Serialize;
 
 /**
  *  Font families used only by the webviews. `inherit` follows the UI family.
