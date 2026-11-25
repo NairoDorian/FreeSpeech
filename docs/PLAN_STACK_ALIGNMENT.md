@@ -175,9 +175,10 @@ shadowed Tailwind's own `container` utility). Still open: keyframes →
 
 **Bun / tooling**: 29. Run Vite under Bun: `"dev": "bunx --bun vite"`, `"vite:build": "bunx --bun
     vite build"` (guides/ecosystem/vite.md) — removes the Node-version
-variable; gate verifies. 30. `AbortSignal.timeout` in `fetch-stack-docs.ts` `fetchText` (a hung
-connection currently stalls the mirror run forever) and in
-update-deps.ts queries; replace the batch deadline race. 31. CI: cache `~/.bun/install/cache` in the three JS workflows (bunfig
+variable; gate verifies. 30. ~~`AbortSignal.timeout` in `fetch-stack-docs.ts` `fetchText` (a hung
+connection currently stalls the mirror run forever)~~ **Landed 2026-11-27**
+(30 s per request, retried). Not done: per-query timeouts in update-deps.ts,
+whose batch deadline already bounds the run. 31. CI: cache `~/.bun/install/cache` in the three JS workflows (bunfig
 advertises the isolated-linker win; nothing warms it). 32. Standardize the node:child_process scripts on `Bun.spawnSync` / `$`;
 drop the win32 `shell:` toggles. Adopt `Bun.file().json()`, `Bun.write`,
 `Bun.Glob` opportunistically. Route update-deps' stable-mode NPM path
