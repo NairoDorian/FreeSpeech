@@ -25,7 +25,6 @@
 
   /* Tokens that do not change between light and dark */
   --color-background-ui: #0e94a8;
-  --color-text-stroke: #f6f6f6;
   --color-mid-gray: #7c8a90;
 
   /* Active palette — defaults to light, follows the OS via the media query

@@ -254,7 +254,7 @@ export const LiveLogViewer = (props: LiveLogViewerProps) => {
           scrollEl = el;
         }}
         onScroll={handleScroll}
-        class="h-80 overflow-y-auto rounded-lg border border-mid-gray/30 bg-[var(--color-log-surface)] p-3 font-mono text-xs leading-relaxed select-text"
+        class="h-80 overflow-y-auto rounded-lg border border-mid-gray/30 bg-log-surface p-3 font-mono text-xs leading-relaxed select-text"
       >
         <Show
           when={logs().some((l) => visible(l.tag))}

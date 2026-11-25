@@ -163,12 +163,15 @@ wholesale store rewrite).
 
 **Tailwind 4 / Oxlint**: 25. Migrate semantic status colors to the registered `--color-warning` /
 `--color-error` tokens (+ add `--color-success`); ~60 occurrences, per
-theme.css's own TODO. 26. Register `--color-log-surface` (and `--color-hairline`) in `@theme
-    inline`; drop the one arbitrary-value utility. 27. Container queries (`@container` + `@sm:`) for the settings panes — every
+theme.css's own TODO. 26. ~~Register `--color-log-surface` (and `--color-hairline`) in `@theme
+    inline`; drop the one arbitrary-value utility.~~ **Landed 2026-11-27**:
+`bg-log-surface` (the hairline is only used by the shadow tokens, so it needs
+no utility). 27. Container queries (`@container` + `@sm:`) for the settings panes — every
 `sm:` variant in them is permanently active (window min-width 1060 px),
-so the responsiveness they express is fiction. 28. Delete dead CSS (`.container`, `.text-stroke`, `--color-text-stroke`);
-keyframes → `--animate-*` token; define the stroke via `@utility` if
-ever needed again.
+so the responsiveness they express is fiction. 28. ~~Delete dead CSS (`.container`, `.text-stroke`, `--color-text-stroke`);~~
+**Landed 2026-11-27** (nothing used them; the custom `.container` also
+shadowed Tailwind's own `container` utility). Still open: keyframes →
+`--animate-*` token; define the stroke via `@utility` if ever needed again.
 
 **Bun / tooling**: 29. Run Vite under Bun: `"dev": "bunx --bun vite"`, `"vite:build": "bunx --bun
     vite build"` (guides/ecosystem/vite.md) — removes the Node-version
