@@ -126,6 +126,13 @@ const STEPS: Step[] = [
   { label: "identity mirrors", argv: ["run", "meta:sync"], writes: true },
   { label: "identity in sync", argv: ["run", "meta:check"] },
   { label: "no stale product name", argv: ["run", "check:identity"] },
+  // package.json and bun.lock agree. CI installs with --frozen-lockfile, so a
+  // drift used to surface only there, on every platform of the matrix; this
+  // is the same check locally (~0.3 s, writes nothing).
+  {
+    label: "lockfile in sync",
+    argv: ["install", "--frozen-lockfile", "--dry-run"],
+  },
   { label: "translations complete", argv: ["run", "check:translations"] },
   { label: "lint", argv: ["run", "lint"] },
   { label: "typecheck", argv: ["run", "typecheck"] },

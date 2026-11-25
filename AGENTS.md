@@ -87,14 +87,16 @@ command:
 
 ```bash
 bun run hooks:install      # once per clone: points git at .githooks/
-bun run precommit          # identity → translations → lint → typecheck → unit checks → format → repomix
+bun run precommit          # identity → lockfile → translations → lint → typecheck → unit checks → format → repomix
 bun run precommit:full     # the same, plus clippy and the Rust test suite
 bun run precommit:routine  # dependencies to newest, then precommit:full — run by hand
 ```
 
 `bun run precommit` runs, in order: `meta:sync` (regenerate the identity
 mirrors), `meta:check` (they are in sync), `check:identity` (no stale product
-name anywhere), `check:translations`, `lint`, `typecheck`, `test:unit`
+name anywhere), `bun install --frozen-lockfile --dry-run` (package.json and
+`bun.lock` agree, as CI's frozen install requires; writes nothing),
+`check:translations`, `lint`, `typecheck`, `test:unit`
 (`bun test --parallel` over `*.test.ts` under `src/`, rooted by `bunfig.toml`'s
 `[test] root`), `format:check`, and the repomix pack. `precommit:full` adds
 `lint:backend` (clippy) and `test:backend` (cargo test). The checks read the

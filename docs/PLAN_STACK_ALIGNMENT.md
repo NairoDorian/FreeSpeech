@@ -53,10 +53,10 @@ asset-protocol.md, capabilities.md; plugin/store.md):
    `prefers-color-scheme`, not the app's `data-theme` — forced themes break
    them. Fix: `@custom-variant dark (&:where([data-theme="dark"], …))` +
    three-way system resolution in `applyTheme`.
-   **Still open** — no `@custom-variant dark` exists, and the mechanism the app
-   actually uses for its own tokens is explicit `:root[data-theme="…"]`
-   overrides in `styles/theme.css`, which is a different answer than the one
-   proposed here.
+   **Landed** (found done 2026-11-27): `App.css` declares
+   `@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *))`
+   and `theme.ts` resolves `system` to an explicit `data-theme`, so a forced
+   theme and the OS scheme both reach the `dark:` variants.
 10. ~~`flex-grow` / `flex-shrink-0`~~ **Landed.** `Slider.tsx` uses `grow`,
     `VadMeter.tsx` uses `grow` / `shrink-0` throughout. (`TextDisplay.tsx`,
     the third site, was deleted as dead code.)
@@ -78,9 +78,9 @@ asset-protocol.md, capabilities.md; plugin/store.md):
 
 13. Add `bun install --frozen-lockfile --dry-run` as a gate step ("lockfile in
     sync") so package.json↔bun.lock drift fails locally instead of on the
-    7-platform CI matrix. **Still open as a gate** — the three JS workflows do
-    install with `--frozen-lockfile`, so drift fails on CI, but nothing runs it
-    locally before a commit.
+    7-platform CI matrix. **Landed 2026-11-27**: the gate's "lockfile in sync"
+    step (after the identity checks, ~0.3 s, writes nothing); a changed version
+    in package.json fails it and names the package.
 
 ## Phase 1 — architecture and the native pipeline (high value, medium effort)
 
