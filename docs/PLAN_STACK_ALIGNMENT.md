@@ -68,11 +68,11 @@ asset-protocol.md, capabilities.md; plugin/store.md):
     `perf: warn`) + `options.maxWarnings: 0`, then clear the three existing
     unused-import warnings. Add the native `jsx-a11y` plugin (re-listing the
     default set; no `react` plugin — this is Solid).
-    **Partly landed**: `.oxlintrc.json` carries those three `categories` and the
-    `jsx-a11y` plugin. `options.maxWarnings: 0` is still absent, and
-    `oxlint`'s own `maxWarnings` is not a config key the way the ESLint
-    equivalent was — the gate is `bun run lint` in `precommit`, which treats a
-    non-zero exit as failure.
+    **Landed 2026-11-27**: `.oxlintrc.json` carries the three `categories` and
+    `jsx-a11y`, and `bun run lint` passes `--deny-warnings`, so the gate fails
+    on any warning. The tree is at zero: `unicorn/consistent-function-scoping`
+    is off with its reason in the config (handlers live in the effect that
+    adds and removes them), and the two other warnings were fixed.
 
 **Bun** (docs/vendor/bun/test/\*, pm/cli/install.md):
 

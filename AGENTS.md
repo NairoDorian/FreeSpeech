@@ -214,7 +214,7 @@ bun run preview    # Preview built frontend
 ```bash
 bun run typecheck         # tsc -b
 bun run test:unit         # bun test over *.test.ts under src/ (bunfig [test] root)
-bun run lint              # oxlint (loads eslint-plugin-i18next through jsPlugins)
+bun run lint              # oxlint (loads eslint-plugin-i18next through jsPlugins); a warning fails it (--deny-warnings)
 bun run lint:fix          # oxlint with auto-fix
 bun run format            # Prettier + cargo fmt
 bun run format:check      # Check formatting without changes

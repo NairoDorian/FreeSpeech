@@ -17,7 +17,7 @@
     "build:cpu": "bun scripts/tauri-runner.ts build --cpu",
     "build:fast": "bun scripts/tauri-runner.ts build --fast",
     "build:full": "bun scripts/tauri-runner.ts build --full",
-    "lint": "oxlint src",
+    "lint": "oxlint src --deny-warnings",
     "lint:fix": "oxlint src --fix",
     "format": "prettier --write . && cd src-tauri && cargo fmt",
     "format:check": "prettier --check . && cd src-tauri && cargo fmt -- --check",

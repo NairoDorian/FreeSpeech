@@ -260,7 +260,7 @@ export function OverlayScope(props: OverlayScopeProps) {
   // reported once per field when the parent's config is a store getter (the
   // Live Canvas reads its motion store there). `inputs` is the tracked
   // snapshot, `latest` the copy an effect keeps current for the loop to read,
-  // and the key memo hands the loop the snapshot it was started with.
+  // and the key memo hands the loop the snapshot it was started with (`initial`).
   const inputs = createMemo<ScopeInputs>(() => ({
     config: { ...props.config },
     ready: props.ready,
@@ -275,22 +275,22 @@ export function OverlayScope(props: OverlayScopeProps) {
 
   const pollKey = createMemo(
     () => {
-      const first = inputs();
-      const c = first.config;
+      const initial = inputs();
+      const c = initial.config;
       const circBlock = c.show_circular && !c.circular_background;
-      const key = `${first.background ? "bg" : "block"}:${first.rateHz}:${
+      const key = `${initial.background ? "bg" : "block"}:${initial.rateHz}:${
         c.show_spectrum
       }:${c.show_wave}:${circBlock}:${c.wave_inside_circular}`;
-      return { key, first };
+      return { key, initial };
     },
     { equals: (a, b) => a.key === b.key },
   );
 
-  createEffect(pollKey, ({ first }) => {
-    latest ??= first;
-    const current = () => latest ?? first;
-    const bg = first.background;
-    const cfg0 = first.config;
+  createEffect(pollKey, ({ initial }) => {
+    latest ??= initial;
+    const current = () => latest ?? initial;
+    const bg = initial.background;
+    const cfg0 = initial.config;
     // Gated on the config like the circular one: a view switched off leaves
     // its handle on a detached canvas, and painting it would be wasted work.
     // The standalone waveform is also absent while the wave is traced inside
@@ -334,7 +334,7 @@ export function OverlayScope(props: OverlayScopeProps) {
     let scaledValues = new Float32Array(0);
     let scaledHeld = new Float32Array(0);
     let circPooled = new Float32Array(0);
-    const period = Math.max(16, Math.round(1000 / Math.max(1, first.rateHz)));
+    const period = Math.max(16, Math.round(1000 / Math.max(1, initial.rateHz)));
 
     // The 0…1 units every view draws from, computed once per frame. The
     // circular view shares this — it must move exactly like the linear

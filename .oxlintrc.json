@@ -15,6 +15,11 @@
     "jsx-a11y/no-noninteractive-element-interactions": "warn",
     "jsx-a11y/interactive-supports-focus": "warn",
     "jsx-a11y/control-has-associated-label": "warn",
-    "jsx-a11y/media-has-caption": "off"
+    "jsx-a11y/media-has-caption": "off",
+    // Off: nearly every hit is an event handler defined inside the effect or
+    // onSettled that adds and removes it, which keeps a subscription's setup
+    // and teardown together. The rule's cost argument (a function recreated
+    // per call) does not apply to a callback that runs once per mount.
+    "unicorn/consistent-function-scoping": "off"
   }
 }

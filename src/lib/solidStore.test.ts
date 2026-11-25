@@ -35,7 +35,7 @@ describe("createSolidStore", () => {
   test("actions are not reactive store properties", () => {
     const store = makeCounter();
     // Only the data is in the store, so it alone is enumerable.
-    expect(Object.keys(store).sort()).toEqual(["count", "label"]);
+    expect(Object.keys(store).toSorted()).toEqual(["count", "label"]);
     // The same function on every read, without a store lookup.
     expect(store.bump).toBe(store.bump);
   });
