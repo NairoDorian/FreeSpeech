@@ -94,7 +94,13 @@ asset-protocol.md, capabilities.md; plugin/store.md):
     crate errors and discards `Error::OutputTruncated.partial`; the stream
     path never checks truncation. Recover partials (flagged), fall back to
     windowed chunking on `INPUT_TOO_LONG`, warn on stream truncation. This
-    is the transcribe.cpp audit's top finding.
+    is the transcribe.cpp audit's top finding. **Partials landed
+    2026-11-27**: `transcribe_with_engine` (primary, Multi-STT extras, file
+    jobs) keeps the text of an `OutputTruncated` / `OutputRepetition` run with
+    a warning (`recovered_partial`; an abort and an empty partial are not
+    kept), and a failed stream finalize already falls back to that batch
+    path. **Still open**: windowed chunking on `INPUT_TOO_LONG`, and showing
+    the user that a text was cut (today it is a log warning only).
 17. **Keep one stream alive across Live Mode chunk rotations** (input-limits
     bucket 1: whisper/parakeet/voxtral_realtime are unbounded streaming
     encoders; nemotron carries decoder caches across calls). Today every

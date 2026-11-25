@@ -920,6 +920,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A dictation that runs past the model's limit keeps its text
+  (2026-11-27).** When a model reached its output limit, or the engine cut a
+  loop of repeated words, the whole recording failed and nothing was pasted.
+  The text decoded up to that point is now pasted (and logged as cut), for
+  plain dictation, Multi-STT and Transcribe Files alike.
+
 - **Feedback sounds on Bluetooth headsets (2026-11-25).** The start and stop
   chimes let the output device choose its buffer size; some Bluetooth
   outputs refused the fixed one and every chime failed. Ported from upstream.

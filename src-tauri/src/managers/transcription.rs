@@ -5158,18 +5158,29 @@ fn transcribe_with_engine(
         ..Default::default()
     };
 
-    let mut model_detected_language: Option<String> = None;
     let backend = session.model().backend();
     if let Some(injected) = injected_backend_error(&backend) {
         return Err(injected);
     }
-    let text = session
-        .run(audio, &run_options)
-        .map(|t| {
-            model_detected_language = t.language;
-            drop_vocabulary_echo(t.text, &run_options.vocabulary)
-        })
-        .map_err(|e| engine_run_error(e, &backend))?;
+    let (text, model_detected_language) = match session.run(audio, &run_options) {
+        Ok(t) => (
+            drop_vocabulary_echo(t.text, &run_options.vocabulary),
+            t.language,
+        ),
+        Err(e) => match recovered_partial(&e) {
+            Some(partial) => {
+                warn!(
+                    "{model_id}: {e}; keeping the {} characters decoded before it",
+                    partial.text.chars().count()
+                );
+                (
+                    drop_vocabulary_echo(partial.text.clone(), &run_options.vocabulary),
+                    partial.language.clone(),
+                )
+            }
+            None => return Err(engine_run_error(e, &backend)),
+        },
+    };
 
     let output_language = with_model_detected_language(
         resolve_output_language_evidence(
@@ -5541,6 +5552,21 @@ impl std::fmt::Display for BackendRunError {
 }
 
 impl std::error::Error for BackendRunError {}
+
+/// The text a decode produced before it stopped short, when it is worth
+/// keeping: the model hit its output budget (`OutputTruncated`) or the engine
+/// cut a repetition loop (`OutputRepetition`, the repeats already dropped).
+/// Both are incomplete by contract, but what precedes the cut is the speaker's
+/// words, and failing the run threw away a whole dictation for its tail. An
+/// abort is a cancel and is not kept; an empty partial is no transcript.
+fn recovered_partial(e: &transcribe_cpp::Error) -> Option<&transcribe_cpp::Transcript> {
+    match e.kind() {
+        ErrorKind::OutputTruncated | ErrorKind::OutputRepetition => {
+            e.partial().filter(|t| !t.text.trim().is_empty())
+        }
+        _ => None,
+    }
+}
 
 /// The error a failed `Session::run` becomes: a [`BackendRunError`] for a
 /// backend failure, the plain message otherwise.
@@ -6011,6 +6037,48 @@ mod tests {
                 transcribe_cpp::Error::Other("bad input".into())
             )
         );
+    }
+
+    #[test]
+    fn a_truncated_or_looping_decode_keeps_its_text_and_an_abort_does_not() {
+        let partial = |text: &str| {
+            Some(Box::new(transcribe_cpp::Transcript {
+                text: text.to_string(),
+                language: Some("fr".to_string()),
+                ..Default::default()
+            }))
+        };
+        let truncated = transcribe_cpp::Error::OutputTruncated {
+            message: "budget".into(),
+            partial: partial("Bonjour à tous"),
+        };
+        let kept = recovered_partial(&truncated).expect("truncated text is kept");
+        assert_eq!(kept.text, "Bonjour à tous");
+        assert_eq!(kept.language.as_deref(), Some("fr"));
+
+        let looping = transcribe_cpp::Error::OutputRepetition {
+            message: "loop".into(),
+            partial: partial("merci merci"),
+        };
+        assert!(recovered_partial(&looping).is_some());
+
+        // A cancel is not a transcript, nor is a cut before any word.
+        let aborted = transcribe_cpp::Error::Aborted {
+            message: "cancel".into(),
+            partial: partial("half a sentence"),
+        };
+        assert!(recovered_partial(&aborted).is_none());
+        let empty = transcribe_cpp::Error::OutputTruncated {
+            message: "budget".into(),
+            partial: partial("  "),
+        };
+        assert!(recovered_partial(&empty).is_none());
+        let none = transcribe_cpp::Error::OutputTruncated {
+            message: "budget".into(),
+            partial: None,
+        };
+        assert!(recovered_partial(&none).is_none());
+        assert!(recovered_partial(&transcribe_cpp::Error::Backend("lost".into())).is_none());
     }
 
     #[test]
