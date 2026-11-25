@@ -1,0 +1,2364 @@
+{
+  "tray": {
+    "settings": "การตั้งค่า...",
+    "checkUpdates": "ตรวจสอบการอัปเดต...",
+    "copyLastTranscript": "คัดลอกข้อความที่ถอดได้ล่าสุด",
+    "unloadModel": "เอาโมเดลออกจากหน่วยความจำ",
+    "model": "โมเดล",
+    "quit": "ออก",
+    "cancel": "ยกเลิก",
+    "secureInputWarning": "⚠ ปุ่มลัดถูกบล็อกโดย Secure Input",
+    "language": "ภาษา",
+    "autoLanguage": "อัตโนมัติ",
+    "otherLanguages": "ภาษาอื่น"
+  },
+  "sidebar": {
+    "general": "ทั่วไป",
+    "models": "โมเดล",
+    "advanced": "ขั้นสูง",
+    "postProcessing": "การปรับแต่งข้อความ",
+    "history": "ประวัติ",
+    "recall": "Recall",
+    "statistics": "Statistics",
+    "debug": "ดีบัก",
+    "about": "เกี่ยวกับ",
+    "multiStt": "Multi STT",
+    "fileTranscription": "Transcribe Files",
+    "liveMode": "Live Mode",
+    "liveFft": "Live FFT",
+    "overlay": "แถบแสดงสถานะ",
+    "help": "Help",
+    "llama": "Local LLM",
+    "collapse": "Collapse",
+    "expand": "Expand sidebar",
+    "resize": "Resize sidebar",
+    "liveCanvas": "Live Canvas",
+    "openLiveCanvas": "Open Live Canvas"
+  },
+  "onboarding": {
+    "subtitle": "To get started, choose a transcription model",
+    "existingModelsTitle": "Compatible Models",
+    "downloadModelsTitle": "Available to Download",
+    "showAllModels": "Show all {{total}} models",
+    "showFewerModels": "Show fewer models",
+    "recommended": "แนะนำ",
+    "customModelDescription": "ไม่รองรับอย่างเป็นทางการ",
+    "modelCard": {
+      "accuracy": "accuracy",
+      "speed": "speed"
+    },
+    "models": {
+      "small": {
+        "name": "Whisper Small",
+        "description": "เร็วและแม่นยำพอสมควร"
+      },
+      "medium": {
+        "name": "Whisper Medium",
+        "description": "แม่นยำดี ความเร็วปานกลาง"
+      },
+      "turbo": {
+        "name": "Whisper Turbo",
+        "description": "สมดุลระหว่างความแม่นยำและความเร็ว"
+      },
+      "large": {
+        "name": "Whisper Large",
+        "description": "แม่นยำดี แต่ช้า"
+      },
+      "parakeet-tdt-0.6b-v2": {
+        "name": "Parakeet V2",
+        "description": "English only. The best model for English speakers."
+      },
+      "parakeet-tdt-0.6b-v3": {
+        "name": "Parakeet V3",
+        "description": "Fast and accurate"
+      },
+      "moonshine-base": {
+        "name": "Moonshine Base",
+        "description": "Very fast, English only. Handles accents well."
+      },
+      "moonshine-tiny-streaming-en": {
+        "name": "Moonshine V2 Tiny",
+        "description": "Ultra-fast, English only"
+      },
+      "moonshine-small-streaming-en": {
+        "name": "Moonshine V2 Small",
+        "description": "Fast, English only. Good balance of speed and accuracy."
+      },
+      "moonshine-medium-streaming-en": {
+        "name": "Moonshine V2 Medium",
+        "description": "English only. High quality."
+      },
+      "breeze-asr": {
+        "name": "Breeze ASR",
+        "description": "ปรับแต่งเพื่อภาษาจีนกลางไต้หวัน รองรับการพูดสลับภาษา"
+      },
+      "sense-voice-int8": {
+        "name": "SenseVoice",
+        "description": "Very fast. Chinese, English, Japanese, Korean, Cantonese."
+      },
+      "gigaam-v3-e2e-ctc": {
+        "name": "GigaAM v3",
+        "description": "Russian speech recognition. Fast and accurate."
+      },
+      "canary-180m-flash": {
+        "name": "Canary 180M Flash",
+        "description": "Very fast. English, German, Spanish, French. Supports translation."
+      },
+      "canary-1b-v2": {
+        "name": "Canary 1B v2",
+        "description": "Accurate multilingual. 25 European languages. Supports translation."
+      },
+      "cohere-int8": {
+        "name": "Cohere",
+        "description": "A large, slower, but very accurate multilingual model."
+      }
+    },
+    "errors": {
+      "selectModel": "เลือกโมเดลไม่สำเร็จ"
+    },
+    "permissions": {
+      "title": "Permissions Required",
+      "description": "{{app}} needs a couple of permissions to work properly.",
+      "microphone": {
+        "title": "Microphone Access",
+        "description": "Required to hear your voice for transcription."
+      },
+      "accessibility": {
+        "title": "Accessibility Access",
+        "description": "Required to type transcribed text into your applications."
+      },
+      "grant": "Grant Permission",
+      "granted": "Granted",
+      "waiting": "Waiting...",
+      "allGranted": "All set!",
+      "errors": {
+        "checkFailed": "ตรวจสอบสิทธิ์ไม่สำเร็จ โปรดลองอีกครั้ง",
+        "requestFailed": "ขอสิทธิ์ไม่สำเร็จ โปรดลองอีกครั้ง"
+      }
+    },
+    "languages": {
+      "title": "เลือกภาษาที่คุณจะใช้พิมพ์ด้วยเสียง",
+      "description": "Suggested from your system's languages. While the language is Auto, models that support it only transcribe in these, so the text never comes out in a language you don't speak.",
+      "later": "You can change this anytime under General → Languages I speak.",
+      "continue": "ดำเนินการต่อ",
+      "skip": "ข้าม"
+    }
+  },
+  "modelSelector": {
+    "custom": "กำหนดเอง",
+    "legacy": "Legacy",
+    "streaming": "สตรีมมิง",
+    "active": "ใช้งานอยู่",
+    "switching": "Switching...",
+    "noModelsAvailable": "ไม่มีโมเดลที่พร้อมใช้งาน",
+    "verifying": "กำลังตรวจสอบ {{modelName}}...",
+    "verifyingGeneric": "กำลังตรวจสอบ...",
+    "downloading": "กำลังดาวน์โหลด {{percentage}}%",
+    "downloadingMultiple": "กำลังดาวน์โหลด {{count}} โมเดล...",
+    "modelReady": "โมเดลพร้อมใช้งาน",
+    "loading": "กำลังโหลด {{modelName}}...",
+    "loadingGeneric": "กำลังโหลด...",
+    "modelError": "โมเดลเกิดข้อผิดพลาด",
+    "modelUnloaded": "เอาโมเดลออกจากหน่วยความจำแล้ว",
+    "noModelDownloadRequired": "ไม่มีโมเดล - ต้องดาวน์โหลด",
+    "statusTitle": "Model status: {{status}}",
+    "deleteModel": "Delete {{modelName}}",
+    "cancel": "ยกเลิก",
+    "cancelDownload": "Cancel download",
+    "capabilities": {
+      "languageSelection": "Supports multiple input languages",
+      "singleLanguage": "Supports this language only",
+      "languageCount": "{{total}} languages",
+      "languageOnly": "{{language}} only",
+      "translation": "Can translate to English",
+      "translate": "Translate",
+      "streaming": "Shows live transcription as you speak"
+    },
+    "backend": {
+      "title": "Backend",
+      "auto": "อัตโนมัติ",
+      "cpu": "CPU",
+      "appliesOnNextLoad": "Applies the next time this model is loaded.",
+      "descriptions": {
+        "auto": "Follow the global accelerator setting.",
+        "cpu": "Run this model on the CPU.",
+        "cuda": "Run this model on the NVIDIA GPU through CUDA.",
+        "vulkan": "Run this model on the default GPU through Vulkan.",
+        "vulkan_nvidia": "Run this model on the NVIDIA GPU through Vulkan.",
+        "vulkan_intel": "Run this model on the Intel integrated GPU through Vulkan (saves NVIDIA VRAM).",
+        "metal": "Run this model on the Apple GPU through Metal.",
+        "rocm": "Run this model on the AMD GPU through ROCm."
+      }
+    },
+    "quantPicker": {
+      "title": "Quantization",
+      "pillLabel": "Quantization: {{quant}}",
+      "default": "Default",
+      "download": "Download {{quant}}",
+      "downloadingPercent": "{{percentage}}%",
+      "switchTo": "Switch to {{quant}}",
+      "current": "{{quant}} is active"
+    },
+    "benchmark": {
+      "runAll": "Benchmark",
+      "runOne": "Benchmark {{quant}}",
+      "runStream": "Stream",
+      "runProgress": "{{done}}/{{total}}",
+      "warmup": "warmup",
+      "reference": "Timed against your recording from {{when}}",
+      "noRecording": "Record something first — the benchmark replays your latest recording",
+      "method": "Every benchmark starts with 1 warmup run, which is always discarded and never counted in the average. The {{runs}} timed runs that follow are averaged.",
+      "runsLabel": "Timed runs to average",
+      "fastest": "Fastest",
+      "failed": "Failed",
+      "streamNotSupported": "This model has no native streaming mode",
+      "streamResult": "Streaming: {{factor}}× real-time · feed p95 {{p95}} ms, max {{max}} ms · first text after {{first}} ms of audio",
+      "streamAt": "at {{latency}} latency",
+      "realTime": "{{factor}}× real-time",
+      "milliseconds": "{{value}} ms",
+      "seconds": "{{value}} s"
+    },
+    "latencySelector": {
+      "title": "Streaming latency",
+      "pillLabel": "Streaming latency: {{ms}} ms",
+      "ms": "{{ms}} ms",
+      "unit": "ms",
+      "lookahead": "includes {{ms}} ms lookahead",
+      "defaultMark": "model default",
+      "stepsHint": "This model was trained at these latencies only, so the slider snaps to them. Lower shows text sooner; higher is more accurate. Applies to the next recording.",
+      "chunkSize": {
+        "decrease": "Decrease chunk size by one millisecond",
+        "increase": "Increase chunk size by one millisecond",
+        "hint": "How much audio to accumulate before each decode. Lower is more responsive but costs more compute, because the model re-reads all audio so far on every chunk. Applies to the next recording."
+      }
+    },
+    "errors": {
+      "checkStatusFailed": "Failed to check model status",
+      "loadFailed": "Failed to load model",
+      "switchFailed": "Failed to switch model"
+    }
+  },
+  "settings": {
+    "modelSettings": {
+      "title": "การตั้งค่า {{model}}"
+    },
+    "general": {
+      "title": "ทั่วไป",
+      "shortcut": {
+        "title": "ปุ่มลัด {{app}}",
+        "description": "ตั้งค่าปุ่มลัดบนแป้นพิมพ์เพื่อเริ่มการบันทึกเสียงและแปลงเป็นข้อความ",
+        "loading": "กำลังโหลดปุ่มลัด...",
+        "none": "ยังไม่ได้ตั้งค่าปุ่มลัด",
+        "notFound": "ไม่พบปุ่มลัด",
+        "pressKeys": "กดปุ่ม...",
+        "bindings": {
+          "transcribe": {
+            "name": "ปุ่มลัดถอดเสียง",
+            "description": "ปุ่มลัดสำหรับบันทึกและถอดเสียงพูดของคุณ"
+          },
+          "cancel": {
+            "name": "ปุ่มลัดยกเลิก",
+            "description": "ปุ่มลัดสำหรับยกเลิกการบันทึกเสียงปัจจุบัน"
+          },
+          "transcribe_with_post_process": {
+            "name": "ปุ่มลัดปรับแต่งข้อความ",
+            "description": "ตัวเลือกเสริม: ปุ่มลัดเฉพาะสำหรับใช้ AI ปรับแต่งข้อความที่ถอดได้ทุกครั้ง"
+          },
+          "multi_stt_transcribe": {
+            "name": "Multi STT Shortcut",
+            "description": "Keyboard shortcut to record and transcribe with multiple STT models"
+          }
+        },
+        "errors": {
+          "restore": "Failed to restore original shortcut",
+          "set": "ตั้งค่าปุ่มลัดไม่สำเร็จ: {{error}}",
+          "reset": "Failed to reset shortcut to original value",
+          "unsupportedCombo": "{{combo}} can't be simulated: use at least one non-modifier key from letters, digits, space, enter, tab, esc, arrows or F1–F24"
+        }
+      },
+      "language": {
+        "title": "ภาษา",
+        "description": "เลือกภาษาสำหรับการรู้จำเสียงพูด โหมดอัตโนมัติจะตรวจหาภาษาให้เอง ส่วนการเลือกภาษาเฉพาะจะช่วยเพิ่มความแม่นยำสำหรับภาษานั้น",
+        "searchPlaceholder": "ค้นหาภาษา...",
+        "noResults": "ไม่พบภาษา",
+        "auto": "อัตโนมัติ"
+      },
+      "shortcutActivation": {
+        "title": "การทำงานของปุ่มลัด",
+        "description": "เลือกรูปแบบการใช้ปุ่มลัดถอดเสียงเพื่อเริ่มและหยุดการบันทึกเสียง",
+        "options": {
+          "holdOrToggle": "อัตโนมัติ",
+          "pushToTalk": "กดค้าง",
+          "toggle": "สลับเปิด-ปิด"
+        },
+        "descriptions": {
+          "hold_or_toggle": "กดค้างเพื่อบันทึกเสียง หรือกดครั้งเดียวเพื่อสลับเปิด-ปิด",
+          "push_to_talk": "บันทึกเสียงระหว่างที่กดปุ่มลัดค้างไว้",
+          "toggle": "กดปุ่มลัดครั้งเดียวเพื่อเริ่มบันทึกเสียง และกดอีกครั้งเพื่อหยุด"
+        }
+      },
+      "spokenLanguages": {
+        "groupTitle": "ภาษา",
+        "title": "Languages I speak",
+        "description": "While the language is Auto, models that support it only transcribe in these languages, so a short phrase can no longer come out in one you don't speak. Switching between them mid-sentence still works, and a language you pick explicitly always wins.",
+        "add": "Add a language",
+        "anyLetters": {
+          "label": "Allow foreign words",
+          "description": "Names and words from other languages keep their own spelling. Off, the model only writes the letters of the languages you speak."
+        },
+        "status": {
+          "detectorMissing": "This model can't tell your languages apart on its own. A small language detector (27 MB) picks between them; until it is downloaded, Auto transcribes in {{language}}.",
+          "download": "Download the detector",
+          "downloading": "Downloading…",
+          "oneLanguage": "With this model, Auto transcribes in {{language}}: it is the only one of your languages the model supports.",
+          "undetectable": "The detector can't identify {{languages}}, so with this model Auto transcribes in {{language}}.",
+          "noMatch": "This model supports none of your languages; Auto transcribes in {{language}}."
+        },
+        "suggestion": "From your system: {{languages}}",
+        "addSuggested": "Add them"
+      }
+    },
+    "models": {
+      "title": "Transcription Models",
+      "description": "Select a transcription model or download additional models. Different models offer varying levels of accuracy and speed.",
+      "searchPlaceholder": "Search models by name…",
+      "yourModels": "Downloaded Models",
+      "availableModels": "Available to Download",
+      "deleteConfirm": "Are you sure you want to delete {{modelName}}? You will need to download it again to use it.",
+      "deleteActiveConfirm": "{{modelName}} is your active model. Deleting it will stop transcriptions until you select a new model. Are you sure?",
+      "deleteTitle": "Delete Model",
+      "filters": {
+        "allLanguages": "All Languages",
+        "streaming": "Filter models that support live streaming transcription",
+        "translation": "Filter models that support translation to English"
+      },
+      "rescan": {
+        "tooltip": "สแกนหาโมเดลที่เพิ่มในโฟลเดอร์โมเดลหรือแคชของ Hugging Face นอก {{app}}"
+      },
+      "openFolder": "Open Models Folder",
+      "openPluginsFolder": "Open Architecture Plugins Folder",
+      "openPluginsFolderEmpty": "Open the architecture plugins folder (transcribe-arch-*.dll)",
+      "openPluginsFolderLoaded_one": "Open the architecture plugins folder ({{count}} external plugin loaded)",
+      "openPluginsFolderLoaded_other": "Open the architecture plugins folder ({{count}} external plugins loaded)",
+      "noModelsMatch": "No models match this filter."
+    },
+    "sound": {
+      "title": "เสียง",
+      "microphone": {
+        "title": "ไมโครโฟน",
+        "description": "เลือกอุปกรณ์ไมโครโฟนที่ต้องการ",
+        "placeholder": "เลือกไมโครโฟน...",
+        "loading": "กำลังโหลด..."
+      },
+      "channel": {
+        "title": "ช่องสัญญาณเข้า",
+        "description": "เลือกช่องสัญญาณเข้าสำหรับบันทึกเสียง ใช้ตัวเลือกนี้หากออดิโออินเทอร์เฟซของคุณมีหลายช่องสัญญาณเข้า",
+        "average": "เฉลี่ยทุกช่องสัญญาณ",
+        "channel": "ช่องสัญญาณ {{n}}"
+      },
+      "audioFeedback": {
+        "label": "เสียงตอบรับ",
+        "description": "เล่นเสียงเมื่อเริ่มและหยุดการบันทึกเสียง"
+      },
+      "outputDevice": {
+        "title": "อุปกรณ์เอาต์พุต",
+        "description": "เลือกอุปกรณ์เอาต์พุตที่ต้องการสำหรับเสียงตอบรับ",
+        "placeholder": "เลือกอุปกรณ์เอาต์พุต...",
+        "loading": "กำลังโหลด..."
+      },
+      "volume": {
+        "title": "ระดับเสียง",
+        "description": "ปรับระดับความดังของเสียงตอบรับ"
+      }
+    },
+    "advanced": {
+      "groups": {
+        "app": "แอป",
+        "output": "เอาต์พุต",
+        "transcription": "การถอดเสียง",
+        "history": "ประวัติ",
+        "experimental": "ฟีเจอร์ทดลอง"
+      },
+      "experimentalToggle": {
+        "label": "ฟีเจอร์ทดลอง",
+        "description": "เปิดใช้ฟีเจอร์ทดลองที่ยังอยู่ในระหว่างการพัฒนา"
+      },
+      "saveRawAudio": {
+        "label": "Save Raw Uncompressed Audio",
+        "description": "Saves recordings in their native microphone sample rate and bit depth without downsampling or silence removal."
+      },
+      "lazyStreamClose": {
+        "label": "เปิดไมโครโฟนค้างไว้ระหว่างการถอดเสียง",
+        "description": "เปิดการเชื่อมต่อไมโครโฟนค้างไว้ 30 วินาทีหลังจากหยุดบันทึกเสียง เพื่อลดความหน่วงเมื่อถอดเสียงต่อเนื่องกัน อาจทำให้คุณภาพเสียงผ่าน Bluetooth ลดลงขณะเปิดใช้งาน"
+      },
+      "acceleration": {
+        "transcribe": {
+          "title": "transcribe.cpp Acceleration",
+          "description": "Hardware acceleration for transcribe.cpp (Whisper-family) models. Auto uses GPU if available (Metal on macOS, CUDA on Windows x86_64/Linux)."
+        },
+        "gpuDevice": {
+          "auto": "อัตโนมัติ"
+        }
+      },
+      "startHidden": {
+        "label": "เริ่มแบบซ่อนหน้าต่าง",
+        "description": "เริ่มทำงานในถาดระบบโดยไม่แสดงหน้าต่าง"
+      },
+      "autostart": {
+        "label": "เปิดอัตโนมัติเมื่อเริ่มระบบ",
+        "description": "เปิด {{app}} โดยอัตโนมัติเมื่อคุณลงชื่อเข้าใช้คอมพิวเตอร์"
+      },
+      "showTrayIcon": {
+        "label": "แสดงไอคอนในถาดระบบ",
+        "description": "แสดงไอคอน {{app}} ในถาดระบบ"
+      },
+      "overlay": {
+        "style": {
+          "title": "แถบแสดงสถานะ",
+          "description": "เลือกรูปแบบแถบแสดงสถานะการบันทึกเสียง: “ไม่แสดง” จะซ่อนแถบไว้ “แบบย่อ” จะแสดงแถบขนาดกะทัดรัด ส่วน “ข้อความเรียลไทม์” จะแสดงการถอดเสียงแบบเรียลไทม์ขณะพูด (เฉพาะโมเดลที่รองรับสตรีมมิงเท่านั้น ดูป้าย “สตรีมมิง” ในตัวเลือกโมเดล) สำหรับ Linux แนะนำให้เลือก “ไม่แสดง”",
+          "options": {
+            "none": "ไม่แสดง",
+            "minimal": "แบบย่อ",
+            "live": "แบบเรียลไทม์"
+          }
+        },
+        "position": {
+          "title": "ตำแหน่งแถบแสดงสถานะ",
+          "description": "ตำแหน่งที่แถบแสดงสถานะจะปรากฏบนหน้าจอระหว่างการบันทึกเสียงและการถอดเสียง",
+          "options": {
+            "bottom": "ด้านล่าง",
+            "top": "ด้านบน"
+          }
+        },
+        "directMode": {
+          "label": "Direct Streaming",
+          "description": "Reveal streaming transcription character-by-character as you speak for an instant typing feel."
+        },
+        "directSpeed": {
+          "label": "Direct Streaming Speed",
+          "description": "Speed at which characters appear during direct live streaming (in characters per second)."
+        },
+        "backCorrection": {
+          "label": "Back Correction",
+          "description": "Let the preview rewrite text it has already shown, retyping a correction from the last character that still matches. Off, every update lands as one block and the preview never moves backwards — steadier for a model that revises on every chunk."
+        }
+      },
+      "pasteMethod": {
+        "title": "วิธีการวาง",
+        "description": "เลือกวิธีแทรกข้อความ พิมพ์โดยตรง: จำลองการพิมพ์ผ่านระบบรับข้อมูล ไม่วาง: ข้ามการวาง อัปเดตเฉพาะประวัติและคลิปบอร์ด",
+        "options": {
+          "clipboard": "คลิปบอร์ด ({{modifier}}+V)",
+          "clipboardCtrlShiftV": "คลิปบอร์ด (Ctrl+Shift+V)",
+          "clipboardShiftInsert": "คลิปบอร์ด (Shift+Insert)",
+          "direct": "พิมพ์โดยตรง",
+          "directStreaming": "Direct Streaming",
+          "none": "ไม่วาง",
+          "externalScript": "สคริปต์ภายนอก"
+        },
+        "directStreamingSpeed": {
+          "label": "Direct Streaming Speed",
+          "description": "Speed at which characters are typed directly into the active application (in characters per second)."
+        },
+        "externalScriptPlaceholder": "/path/to/your/script.sh"
+      },
+      "typingTool": {
+        "title": "เครื่องมือช่วยพิมพ์",
+        "description": "เลือกเครื่องมือช่วยพิมพ์บน Linux ที่จะใช้กับวิธีการวางแบบพิมพ์โดยตรง ตัวเลือก “อัตโนมัติ” จะตรวจหาและใช้เครื่องมือที่ดีที่สุดที่มีในระบบของคุณโดยอัตโนมัติ",
+        "options": {
+          "auto": "อัตโนมัติ (แนะนำ)"
+        }
+      },
+      "clipboardHandling": {
+        "title": "การจัดการคลิปบอร์ด",
+        "description": "\"ไม่แก้ไขคลิปบอร์ด\" จะคงข้อมูลเดิมในคลิปบอร์ดไว้หลังการถอดเสียง \"คัดลอกไปยังคลิปบอร์ด\" จะเก็บผลลัพธ์การถอดเสียงไว้ในคลิปบอร์ดหลังวางเสร็จ",
+        "options": {
+          "dontModify": "ไม่แก้ไขคลิปบอร์ด",
+          "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด"
+        }
+      },
+      "autoSubmit": {
+        "title": "ส่งอัตโนมัติ",
+        "description": "กดชุดปุ่มที่เลือกโดยอัตโนมัติหลังจากแทรกข้อความ โดยบน macOS ใช้ Cmd+Enter ส่วน Windows/Linux ใช้ Super+Enter",
+        "options": {
+          "off": "ปิด",
+          "enter": "Enter",
+          "cmdEnter": "Cmd+Enter",
+          "superEnter": "Super+Enter",
+          "ctrlEnter": "Ctrl+Enter"
+        }
+      },
+      "translateToEnglish": {
+        "label": "แปลเป็นภาษาอังกฤษ",
+        "description": "แปลเสียงพูดจากภาษาอื่นเป็นภาษาอังกฤษโดยอัตโนมัติระหว่างการถอดเสียง"
+      },
+      "modelUnload": {
+        "title": "เอาโมเดลออกจากหน่วยความจำ",
+        "description": "คืนหน่วยความจำ GPU/CPU โดยอัตโนมัติเมื่อไม่ได้ใช้งานโมเดลตามเวลาที่กำหนด",
+        "options": {
+          "never": "ไม่เอาออก",
+          "immediately": "ทันที",
+          "min2": "หลังจาก 2 นาที",
+          "min5": "หลังจาก 5 นาที",
+          "min10": "หลังจาก 10 นาที",
+          "min15": "หลังจาก 15 นาที",
+          "hour1": "หลังจาก 1 ชั่วโมง",
+          "sec15": "หลังจาก 15 วินาที (ดีบัก)"
+        }
+      },
+      "customWords": {
+        "title": "คำศัพท์กำหนดเอง",
+        "description": "ช่วยให้โมเดลที่รองรับรู้จำชื่อและคำศัพท์เฉพาะได้ดีขึ้น ปัจจุบันการแก้ไขคำใกล้เคียงยังจำกัดเฉพาะคำที่ใช้ตัวอักษร A–Z และตัวเลขเท่านั้น",
+        "placeholder": "เพิ่มคำ",
+        "add": "เพิ่ม",
+        "remove": "ลบ {{word}}",
+        "duplicate": "มี \"{{word}}\" อยู่แล้ว"
+      },
+      "noiseSuppression": {
+        "title": "Noise suppression (RNNoise)",
+        "description": "Clean the microphone signal with RNNoise before voice detection and transcription. Helps with fans, keyboards and room hum; leave it off if your voice sounds processed or clipped. Applies immediately — use the live VAD test below to compare."
+      },
+      "noiseSuppressionParams": {
+        "strength": {
+          "label": "Suppression strength",
+          "description": "Wet/dry mix of RNNoise's output and the untouched microphone. 100% is the suppressor alone; lower values let some of the original back in when voices start to sound processed."
+        },
+        "vadThreshold": {
+          "label": "Suppression gate",
+          "description": "RNNoise's own speech probability below which a frame is muted entirely. Off passes everything the suppressor leaves; higher values cut more background between words.",
+          "off": "ปิด"
+        },
+        "vadGrace": {
+          "label": "Gate hold",
+          "description": "How long audio keeps passing after the last frame above the gate threshold, so word endings and short pauses are not clipped."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "การตรวจจับเสียงพูด (VAD)",
+        "description": "กรองช่วงเงียบออกจากการบันทึกเสียง โมเดลที่รองรับสตรีมมิงจะคงช่วงท้ายของ VAD นานขึ้น หากปิด VAD จะบันทึกเสียงดิบทั้งหมด"
+      },
+      "speechStats": {
+        "title": "Speech Stats in Overlay",
+        "description": "Show live speech statistics in the recording overlay: whether you are speaking or paused, a timer that counts only while you are actually talking, and your running average words per minute. Words per minute needs a streaming-capable model, since it is measured from the live transcription.",
+        "pauseHold": {
+          "label": "Pause Tolerance",
+          "description": "How long silence must last before the speech timer stops counting. Shorter gaps are treated as part of the same sentence, so the timer does not stall between words."
+        }
+      },
+      "fillerWordRemoval": {
+        "title": "ลบคำติดปาก",
+        "description": "ลบคำติดปากทั่วไปออกจากข้อความที่ถอดได้ ปิดใช้งานเพื่อเก็บคำเหล่านั้นไว้"
+      },
+      "micIdleTimeout": {
+        "title": "Mic Idle Timeout",
+        "infiniteLabel": "Keep Mic Open Indefinitely",
+        "infiniteDescription": "When enabled, the microphone stream stays open forever until manually closed. Disable to set a custom timeout duration.",
+        "timeoutLabel": "Timeout Value",
+        "timeoutDescription": "How long to keep the mic open after a recording stops before closing it.",
+        "unitLabel": "Unit",
+        "unitDescription": "Seconds or minutes for the timeout value.",
+        "seconds": "Seconds",
+        "minutes": "Minutes"
+      },
+      "vadSensitivity": {
+        "label": "VAD Threshold",
+        "description": "Speech probability a frame needs to count as speech. Lower values are more sensitive and keep quiet or distant speech (and more noise); higher values cut more background noise but may clip soft words. Default 0.50."
+      },
+      "vadLiveTest": {
+        "title": "Live VAD test",
+        "description": "Open the microphone and watch the detector decide frame by frame, without loading any model. Nothing is transcribed or saved. Move the VAD Threshold slider above while you talk until normal speech reads as Speech and background noise stays Silence.",
+        "start": "Test with microphone",
+        "stop": "Stop test",
+        "speech": "Speech",
+        "silence": "Silence",
+        "kept": "Audio kept",
+        "dropped": "Dropped",
+        "score": "Speech score {{score}}",
+        "threshold": "Threshold {{threshold}}",
+        "level": "Input level",
+        "noSignal": "No signal",
+        "hint": "Talk normally, then pause. The bar should cross the marker while you talk and stay below it when you stop; the grey tick is the recent peak. Audio kept shows what a model would actually hear after smoothing.",
+        "errorStart": "Could not start the VAD test: {{error}}",
+        "noiseSuppression": "Noise suppression",
+        "noiseSuppressionOn": "On",
+        "noiseSuppressionOff": "ปิด",
+        "denoiseProb": "Suppressor"
+      },
+      "chineseScript": {
+        "title": "รูปแบบอักษรจีน",
+        "description": "เขียนข้อความที่ถอดได้ของภาษาจีนกลางและจีนกวางตุ้งเป็นอักษรจีนตัวย่อ หรืออักษรจีนตัวเต็มแบบที่ใช้ในไต้หวันหรือฮ่องกง ภาษาอื่นจะไม่มีการเปลี่ยนแปลง",
+        "options": {
+          "asTranscribed": "ตามที่ถอดเสียงได้",
+          "simplified": "จีนตัวย่อ",
+          "traditionalTw": "จีนตัวเต็ม (ไต้หวัน)",
+          "traditionalHk": "จีนตัวเต็ม (ฮ่องกง)"
+        }
+      }
+    },
+    "postProcessing": {
+      "hotkey": {
+        "title": "ปุ่มลัด"
+      },
+      "api": {
+        "title": "API",
+        "provider": {
+          "title": "ผู้ให้บริการ",
+          "description": "เลือกผู้ให้บริการที่รองรับรูปแบบของ OpenAI หรือ Anthropic"
+        },
+        "appleIntelligence": {
+          "unavailable": "Apple Intelligence ไม่พร้อมใช้งานบนอุปกรณ์นี้ ต้องใช้ Mac ชิป Apple Silicon ที่ติดตั้ง macOS Tahoe (26.0) ขึ้นไป และเปิดใช้งาน Apple Intelligence ในการตั้งค่าระบบ"
+        },
+        "baseUrl": {
+          "title": "URL พื้นฐาน",
+          "description": "URL พื้นฐานของ API สำหรับผู้ให้บริการที่เลือก แก้ไขได้เฉพาะผู้ให้บริการแบบกำหนดเองเท่านั้น",
+          "managedByProvider": "Base URL is managed by the selected provider.",
+          "placeholder": "https://api.openai.com/v1",
+          "placeholderAnthropic": "https://api.anthropic.com/v1"
+        },
+        "apiKey": {
+          "title": "คีย์ API",
+          "description": "คีย์ API สำหรับผู้ให้บริการที่เลือก",
+          "placeholder": "sk-..."
+        },
+        "model": {
+          "title": "โมเดล",
+          "descriptionCustom": "ระบุรหัสโมเดลที่ปลายทางแบบกำหนดเองของคุณต้องการ",
+          "descriptionDefault": "เลือกโมเดลที่มีให้ใช้งานจากผู้ให้บริการที่เลือก",
+          "placeholderWithOptions": "ค้นหาหรือเลือกโมเดล",
+          "placeholderNoOptions": "พิมพ์ชื่อโมเดล",
+          "useCustom": "Use \"{{value}}\"",
+          "refreshModels": "รีเฟรชรายการโมเดล"
+        },
+        "apiFormat": {
+          "title": "รูปแบบ API",
+          "description": "รูปแบบคำขอที่ปลายทางแบบกำหนดเองของคุณต้องการ",
+          "options": {
+            "openai": "รองรับรูปแบบ OpenAI (Chat Completions)",
+            "anthropic": "Anthropic Messages"
+          }
+        }
+      },
+      "prompts": {
+        "title": "พรอมต์",
+        "selectedPrompt": {
+          "title": "พรอมต์ที่เลือก",
+          "description": "เลือกเทมเพลตสำหรับปรับแต่งข้อความที่ถอดได้หรือสร้างใหม่ ใช้ ${output} ในข้อความพรอมต์เพื่ออ้างอิงข้อความที่ถอดได้"
+        },
+        "noPrompts": "ไม่มีพรอมต์",
+        "selectPrompt": "เลือกพรอมต์",
+        "createNew": "สร้างพรอมต์ใหม่",
+        "promptLabel": "ชื่อพรอมต์",
+        "promptLabelPlaceholder": "ป้อนชื่อพรอมต์",
+        "promptInstructions": "คำสั่งพรอมต์",
+        "promptInstructionsPlaceholder": "เขียนคำสั่งที่จะใช้หลังจากการถอดเสียง ตัวอย่าง: ปรับปรุงไวยากรณ์และความชัดเจนของข้อความต่อไปนี้: ${output}",
+        "promptTip": "เคล็ดลับ: ใช้ <code>${output}</code> เพื่อแทรกข้อความที่ถอดได้ลงในพรอมต์",
+        "updatePrompt": "อัปเดตพรอมต์",
+        "deletePrompt": "ลบพรอมต์",
+        "createPrompt": "สร้างพรอมต์",
+        "cancel": "ยกเลิก",
+        "selectToEdit": "เลือกพรอมต์ด้านบนเพื่อดูและแก้ไขรายละเอียด",
+        "createFirst": "คลิก “สร้างพรอมต์ใหม่” ด้านบนเพื่อสร้างพรอมต์แรกของคุณสำหรับการปรับแต่งข้อความ"
+      }
+    },
+    "history": {
+      "title": "ประวัติ",
+      "openFolder": "เปิดโฟลเดอร์ไฟล์เสียงที่บันทึก",
+      "deleteRecordings": "Delete Recordings",
+      "deleteRecordingsConfirmTitle": "Delete All Recordings",
+      "deleteRecordingsConfirmMessage": "Are you sure you want to delete all audio recordings and clear your transcription history? This action cannot be undone.",
+      "deleteRecordingsConfirmButton": "Delete Everything",
+      "deleteRecordingsSuccess": "All recordings and history have been deleted.",
+      "deleteRecordingsError": "Failed to delete recordings. Please try again.",
+      "deleting": "Deleting...",
+      "loading": "กำลังโหลดประวัติ...",
+      "empty": "ยังไม่มีการถอดเสียง เริ่มบันทึกเสียงเพื่อสร้างประวัติของคุณ!",
+      "copyToClipboard": "คัดลอกข้อความที่ถอดได้ไปยังคลิปบอร์ด",
+      "copied": "Copied to clipboard",
+      "save": "ติดดาวเก็บไว้",
+      "saveToRecall": "File as Recall note",
+      "savedToRecall": "Saved to Recall",
+      "unsave": "นำออกจากรายการที่ติดดาว",
+      "delete": "ลบรายการ",
+      "deleteError": "ลบรายการไม่สำเร็จ โปรดลองอีกครั้ง",
+      "retranscribe": "ถอดเสียงใหม่",
+      "retranscribeError": "Failed to re-transcribe. Please try again.",
+      "retranscribeSuccess": "Transcription updated",
+      "transcribing": "กำลังถอดเสียง...",
+      "transcriptionFailed": "ถอดเสียงไม่สำเร็จ สามารถกดไอคอนลองใหม่เพื่อถอดเสียงอีกครั้ง",
+      "searchPlaceholder": "Search history...",
+      "filterAll": "ทั้งหมด",
+      "filterSaved": "Saved",
+      "filterMultiStt": "Multi-STT",
+      "filterPolished": "Polished",
+      "postProcess": "Post-process (LLM Polish)",
+      "postProcessing": "Polishing...",
+      "postProcessError": "Failed to post-process transcript.",
+      "postProcessSuccess": "Transcript polished with LLM",
+      "multiSttRetranscribe": "Multi-STT Re-transcribe",
+      "multiSttTranscribing": "Multi-STT Transcribing...",
+      "multiSttError": "Failed to Multi-STT re-transcribe.",
+      "multiSttSuccess": "Multi-STT transcription complete",
+      "rawTranscriptTab": "Raw Transcript",
+      "polishedTextTab": "Polished (LLM)",
+      "speedSlow": "ช้า",
+      "speedConversational": "Conversational",
+      "speedFast": "เร็ว",
+      "speedVeryFast": "Very Fast",
+      "wpmRating": "{{wpm}} WPM",
+      "wordCount": "{{count}} words",
+      "audioDetails": "{{total}} total : {{speech}} speech ({{silence}} cut)",
+      "latencyStt": "{{duration}} STT",
+      "latencyLlm": "{{duration}} LLM",
+      "multiSttModelsBadge": "Multi-STT ({{count}} models)",
+      "noMatch": "No transcriptions match your filter criteria.",
+      "promptUsed": "LLM Prompt Used",
+      "audioDetailsNoCut": "{{total}} total : {{speech}} speech",
+      "audioTotalOnly": "{{total}} total",
+      "multiSttDetailsTab": "Multi-STT Details",
+      "multiSttCleanedOutputTab": "Cleaned Output",
+      "multiSttRawLogTab": "Raw Log",
+      "multiSttModelSlot": "Model {{slot}}",
+      "multiSttBrainLabel": "🧠 Brain LLM",
+      "multiSttBrainCleanedOutput": "Cleaned Output",
+      "multiSttBrainPromptLabel": "Prompt: {{name}}",
+      "multiSttBrainRawToggle": "Raw Output (incl. reasoning)",
+      "multiSttNoOutput": "— no output —",
+      "multiSttCopyModelOutput": "Copy this model's output",
+      "multiSttCopyBrainOutput": "Copy cleaned Brain output",
+      "copyError": "คัดลอกข้อความที่ถอดได้ไปยังคลิปบอร์ดไม่สำเร็จ",
+      "languageSource": {
+        "selected": "Transcribed in {{language}}, the language you chose",
+        "model": "Transcribed in {{language}}, as the model detected it",
+        "detected": "Transcribed in {{language}}, picked by the language detector from the languages you speak",
+        "fallback": "Transcribed in {{language}} as a fallback: your choice did not fit this model, or the language could not be detected"
+      }
+    },
+    "statistics": {
+      "title": "Transcription Statistics",
+      "description": "Review transcription volume, aggregate audio duration, and end-to-end latency.",
+      "controls": {
+        "title": "Filters"
+      },
+      "range": {
+        "label": "Date range",
+        "options": {
+          "today": "Today",
+          "sevenDays": "Last 7 days",
+          "thirtyDays": "Last 30 days",
+          "allTime": "All time"
+        },
+        "selected": "{{range}}"
+      },
+      "summary": {
+        "title": "Summary"
+      },
+      "units": {
+        "milliseconds": "{{value}} ms",
+        "seconds": "{{value}} s",
+        "hoursMinutes": "{{hours}}h {{minutes}}m",
+        "minutesSeconds": "{{minutes}}m {{seconds}}s",
+        "secondsLong": "{{seconds}} s",
+        "words": "words",
+        "wpm": "WPM",
+        "days": "days"
+      },
+      "metrics": {
+        "transcriptions": {
+          "title": "Total Transcriptions",
+          "description": "Total number of successful transcriptions."
+        },
+        "words": {
+          "title": "Total Words",
+          "average": "~{{value}} words / transcription"
+        },
+        "audio": {
+          "title": "Total Audio Recorded",
+          "average": "~{{value}} / transcription"
+        },
+        "wpm": {
+          "title": "Speech Rate",
+          "description": "Calculated from total words divided by silence-filtered speech duration."
+        },
+        "streak": {
+          "title": "Active Streak",
+          "description": "Consecutive active dictation days."
+        },
+        "transcription": {
+          "title": "Transcription Latency",
+          "description": "Time elapsed from stopping input until raw transcription text is produced."
+        },
+        "postProcessing": {
+          "title": "Post-Processing Latency",
+          "description": "Time elapsed while LLM polishing is executed.",
+          "unavailable": "No post-processed transcriptions in this range."
+        }
+      },
+      "latency": {
+        "minimum": "Min",
+        "average": "Avg",
+        "maximum": "Max",
+        "samples": "{{formattedCount}} samples",
+        "unavailable": "Unavailable"
+      },
+      "reset": {
+        "title": "Reset Statistics",
+        "description": "Clear all accumulated transcription metrics and latency records.",
+        "historyUnaffected": "Transcription history and audio files will remain intact.",
+        "action": "Reset Statistics",
+        "accessibleAction": "Reset all transcription statistics",
+        "dialog": {
+          "title": "Reset Transcription Statistics",
+          "description": "Are you sure you want to reset all transcription statistics? This action cannot be undone.",
+          "warning": "This will permanently delete all metric records. Your history log is unaffected.",
+          "cancel": "ยกเลิก",
+          "confirm": "Reset Statistics"
+        }
+      },
+      "states": {
+        "loading": {
+          "title": "Loading statistics...",
+          "description": "Aggregating metrics for the selected range."
+        },
+        "empty": {
+          "title": "No transcription statistics yet",
+          "description": "Record audio using the transcription hotkey to start tracking metrics."
+        },
+        "error": {
+          "description": "Failed to load statistics summary.",
+          "retry": "Retry"
+        }
+      }
+    },
+    "debug": {
+      "title": "ดีบัก",
+      "logDirectory": {
+        "title": "โฟลเดอร์เก็บล็อก",
+        "description": "ตำแหน่งที่เก็บไฟล์ล็อก"
+      },
+      "liveLogs": {
+        "title": "ล็อกแบบเรียลไทม์",
+        "description": "The app's log console: reads the current session's on-disk log file live, so history survives reopening this page. Multi-line records are folded into one row; the tag row is the only filter.",
+        "live": "เรียลไทม์",
+        "paused": "หยุดชั่วคราว",
+        "pause": "หยุดชั่วคราว",
+        "resume": "แสดงต่อ",
+        "copied": "คัดลอกแล้ว",
+        "lineCount": "{{count}} บรรทัด",
+        "empty": "กำลังรอล็อก… รายการจะปรากฏที่นี่เมื่อแอปสร้างขึ้น",
+        "noFilterMatch": "No lines match this tag.",
+        "allTags": "ALL"
+      },
+      "updateChecks": {
+        "label": "ตรวจสอบการอัปเดต",
+        "description": "ตรวจสอบเวอร์ชันใหม่ของ {{app}} โดยอัตโนมัติ",
+        "lockedDescription": "Disabled by system configuration ({{envVar}})"
+      },
+      "whatsNewPreview": {
+        "title": "ดูตัวอย่างหน้า “มีอะไรใหม่”",
+        "description": "เปิดดูบันทึกประจำรุ่นล่าสุดที่มากับแอปโดยไม่ทำเครื่องหมายว่าดูแล้ว",
+        "button": "ดูตัวอย่าง",
+        "noNotes": "No bundled release notes found",
+        "error": "Failed to preview release notes"
+      },
+      "onboardingPreview": {
+        "title": "ดูตัวอย่างการเริ่มต้นใช้งาน",
+        "description": "ดูตัวอย่างหน้าจอเริ่มต้นใช้งานโดยไม่เปลี่ยนสิทธิ์ โมเดล หรือสถานะการตั้งค่าเสร็จสิ้น",
+        "permissionsButton": "สิทธิ์การใช้งาน",
+        "modelsButton": "Model Selection",
+        "exitButton": "ออกจากการดูตัวอย่าง",
+        "languagesButton": "ภาษา"
+      },
+      "soundTheme": {
+        "label": "ธีมเสียง",
+        "description": "เลือกธีมเสียงแจ้งเตือนเมื่อเริ่มและหยุดการบันทึกเสียง",
+        "options": {
+          "marimba": "Marimba",
+          "pop": "Pop",
+          "custom": "กำหนดเอง"
+        },
+        "preview": "Preview sound theme (plays start then stop)"
+      },
+      "wordCorrectionThreshold": {
+        "title": "เกณฑ์การแก้คำ",
+        "description": "ระดับความไวสำหรับการแก้คำที่กำหนดเอง"
+      },
+      "historyLimit": {
+        "title": "ขีดจำกัดประวัติ",
+        "description": "จำนวนรายการประวัติสูงสุดที่จะเก็บไว้",
+        "entries": "รายการ"
+      },
+      "recordingRetention": {
+        "title": "ลบไฟล์เสียงที่บันทึกไว้โดยอัตโนมัติ",
+        "description": "ลบไฟล์เสียงที่บันทึกเก่าออกอัตโนมัติเพื่อประหยัดพื้นที่",
+        "never": "ไม่ลบ",
+        "preserveLimit": "เก็บ {{count}} รายการล่าสุด",
+        "days3": "หลัง 3 วัน",
+        "weeks2": "หลัง 2 สัปดาห์",
+        "months3": "หลัง 3 เดือน",
+        "placeholder": "เลือกระยะเวลาเก็บรักษา..."
+      },
+      "alwaysOnMicrophone": {
+        "label": "เปิดไมโครโฟนตลอดเวลา",
+        "description": "เปิดใช้งานไมโครโฟนไว้ตลอดเวลาเพื่อการตอบสนองที่เร็วขึ้น"
+      },
+      "clamshellMicrophone": {
+        "title": "ไมโครโฟนเมื่อพับฝาเครื่อง",
+        "description": "ไมโครโฟนที่จะใช้เมื่อพับฝาแล็ปท็อป"
+      },
+      "postProcessingToggle": {
+        "label": "การปรับแต่งข้อความ",
+        "description": "เปิดใช้การปรับแต่งข้อความด้วย AI หลังการถอดเสียง"
+      },
+      "muteWhileRecording": {
+        "label": "ปิดเสียงขณะบันทึกเสียง",
+        "description": "ปิดเสียงของระบบระหว่างการบันทึกเสียง"
+      },
+      "appendTrailingSpace": {
+        "label": "เว้นวรรคต่อท้าย",
+        "description": "เพิ่มช่องว่างต่อท้ายข้อความที่ถอดได้เมื่อวาง"
+      },
+      "appendTrailingNewline": {
+        "label": "Append Trailing New Line",
+        "description": "Add a newline after pasted transcription"
+      },
+      "keyboardImplementation": {
+        "title": "ระบบจัดการคีย์บอร์ด",
+        "description": "เลือกระบบเบื้องหลังสำหรับปุ่มลัด",
+        "bindingsReset": "ปุ่มลัดเข้ากันไม่ได้กับระบบนี้ จึงถูกรีเซ็ตเป็นค่าเริ่มต้นแล้ว"
+      },
+      "pasteDelay": {
+        "title": "หน่วงเวลาก่อนวาง",
+        "description": "ระยะเวลาหน่วง (เป็นมิลลิวินาที) หลังคัดลอกข้อความและก่อนส่งคำสั่งวาง ให้เพิ่มค่านี้หากวางข้อความไม่ติด"
+      },
+      "pasteDelayAfter": {
+        "title": "หน่วงเวลาหลังวาง",
+        "description": "ระยะเวลาหน่วง (เป็นมิลลิวินาที) หลังส่งคำสั่งวางและก่อนคืนค่าคลิปบอร์ดเดิม ให้เพิ่มค่านี้หากข้อความที่วางกลายเป็นข้อมูลเดิมในคลิปบอร์ดแทนข้อความที่ถอดได้"
+      },
+      "holdThreshold": {
+        "title": "เกณฑ์เวลาการกดค้าง",
+        "description": "ใช้ในโหมดอัตโนมัติเท่านั้น: ระยะเวลา (เป็นมิลลิวินาที) ที่ต้องกดปุ่มลัดค้างไว้เพื่อให้นับเป็นการกดค้างแทนการกดครั้งเดียว ลดค่านี้ลงหากกดค้างสั้นๆ แล้วการบันทึกเสียงยังเปิดค้างอยู่ หรือเพิ่มค่านี้หากตั้งใจกดครั้งเดียวแต่ระบบนับเป็นการกดค้าง"
+      },
+      "reliablePaste": {
+        "title": "การวางที่เชื่อถือได้ (Beta)",
+        "description": "จะคืนค่าคลิปบอร์ดก็ต่อเมื่อแอปปลายทางอ่านข้อความที่ถอดได้เรียบร้อยแล้ว แทนการรอตามเวลาที่กำหนด ช่วยแก้ปัญหาข้อมูลเดิมในคลิปบอร์ดถูกวางแทนข้อความที่ถอดได้เมื่อเครื่องทำงานหนัก ต้องใช้วิธีวางผ่านคลิปบอร์ด และรองรับเฉพาะ macOS และ Windows เท่านั้น"
+      },
+      "recordingBuffer": {
+        "title": "บัฟเฟอร์บันทึกเสียงเพิ่มเติม",
+        "description": "เวลาเพิ่มเติม (เป็นมิลลิวินาที) ที่จะบันทึกเสียงต่อหลังปล่อยปุ่ม เพื่อเก็บเสียงช่วงท้าย 0 = ไม่เพิ่มเวลา"
+      },
+      "keyboardDiagnostic": {
+        "title": "ตรวจสอบการทำงานของคีย์บอร์ด",
+        "description": "ตรวจสอบว่าเหตุการณ์จากคีย์บอร์ดส่งมาถึง {{app}} หรือไม่ โดยจะบันทึกเฉพาะจำนวนเหตุการณ์เท่านั้น ไม่มีการบันทึกว่าคุณกดปุ่มใด",
+        "run": "เริ่มตรวจสอบ 10 วินาที",
+        "running": "กำลังรอรับสัญญาณ… ลองกดปุ่มลัดของคุณสักสองสามครั้ง (เช่น Option+Space)",
+        "secureInputLabel": "การป้อนข้อมูลแบบปลอดภัย (Secure Input)",
+        "enabled": "เปิดใช้งาน",
+        "disabled": "ปิดใช้งาน",
+        "holder": "ถูกใช้งานโดย {{name}} (pid {{pid}})",
+        "holderUnknown": "ไม่ทราบแอปที่เปิดใช้อยู่",
+        "keyDown": "กดปุ่ม",
+        "keyUp": "ปล่อยปุ่ม",
+        "flagsChanged": "ปุ่มตัวปรับแต่ง",
+        "mouse": "เมาส์",
+        "verdictBlocked": "Secure Input กำลังบล็อกเหตุการณ์จากคีย์บอร์ด — ปุ่มลัดที่ใช้คีย์บอร์ดจะใช้งานไม่ได้จนกว่าจะแก้ไข",
+        "verdictSuspicious": "ได้รับเหตุการณ์จากปุ่มร่วมแต่ไม่ได้รับเหตุการณ์จากปุ่มอื่น — มีบางอย่างกำลังสกัดกั้นการกดปุ่มแม้ว่า Secure Input จะรายงานว่าปิดอยู่ โปรดรายงานปัญหานี้บน GitHub",
+        "verdictOk": "เหตุการณ์จากคีย์บอร์ดส่งมาถึง {{app}} ตามปกติ",
+        "verdictNoEvents": "ไม่พบเหตุการณ์ใดๆ — คุณได้กดปุ่มระหว่างการทดสอบหรือไม่",
+        "failed": "ตรวจสอบไม่สำเร็จ: {{error}}"
+      },
+      "sessionToasts": {
+        "title": "Recent errors and warnings ({{count}})",
+        "description": "Every error or warning toast shown since the app started, newest first, so one that disappeared can still be read and copied.",
+        "filters": {
+          "errors": "Show errors ({{count}})",
+          "errorsDescription": "Include error toasts in the list.",
+          "warnings": "Show warnings ({{count}})",
+          "warningsDescription": "Include warning toasts in the list."
+        },
+        "levels": {
+          "error": "Error",
+          "warning": "Warning"
+        },
+        "empty": "No errors or warnings this session.",
+        "filteredEmpty": "Hidden by the filters above.",
+        "action": "Action offered: {{label}}"
+      },
+      "interfaceScale": {
+        "label": "Interface scale",
+        "description": "Zoom the whole window (70–160 %). Use it when the OS display scaling makes {{app}} too small or too large; the minimum window size stays the same."
+      }
+    },
+    "about": {
+      "title": "เกี่ยวกับ",
+      "version": {
+        "title": "เวอร์ชัน",
+        "description": "เวอร์ชันปัจจุบันของ {{app}}"
+      },
+      "whatsNewUpdates": {
+        "label": "แสดงหน้า “มีอะไรใหม่”",
+        "description": "แสดงบันทึกประจำรุ่นหลังอัปเดต {{app}}"
+      },
+      "appDataDirectory": {
+        "title": "โฟลเดอร์ข้อมูลแอป",
+        "description": "ตำแหน่งที่ {{app}} จัดเก็บข้อมูล"
+      },
+      "sourceCode": {
+        "title": "ซอร์สโค้ด",
+        "description": "ดูซอร์สโค้ดและร่วมพัฒนา",
+        "button": "ดูบน GitHub"
+      },
+      "acknowledgments": {
+        "title": "กิตติกรรมประกาศ",
+        "ggml": {
+          "title": "ggml",
+          "description": "ไลบรารีเทนเซอร์ประสิทธิภาพสูงสำหรับการประมวลผลแมชชีนเลิร์นนิงบนอุปกรณ์",
+          "details": "ระบบแปลงเสียงเป็นข้อความบนเครื่องของ {{app}} พัฒนาขึ้นบน transcribe.cpp และ ggml ขอขอบคุณผลงานอันยอดเยี่ยมจาก Georgi Gerganov และผู้ร่วมพัฒนาทุกคน"
+        },
+        "rnnoise": {
+          "title": "RNNoise / nnnoiseless",
+          "description": "Recurrent-network noise suppression, pure Rust",
+          "details": "Optional microphone noise suppression uses nnnoiseless, a Rust port of Xiph's RNNoise (BSD-3-Clause). Thanks to Jean-Marc Valin and Joe Neeman."
+        },
+        "handy": {
+          "title": "Handy",
+          "description": "The project {{app}} is forked from",
+          "details": "{{app}} began as a fork of Handy by CJ Pais and is distributed under the same MIT licence. Thanks to CJ Pais and the Handy contributors."
+        }
+      }
+    },
+    "fileTranscription": {
+      "description": "Turn recordings into text files. Add files or whole folders, pick how they should be transcribed, and {{app}} writes a .txt or .md next to each recording or into a folder of your choice.",
+      "groups": {
+        "files": "1. Audio files",
+        "options": "2. Mode & output",
+        "run": "3. Transcribe"
+      },
+      "dropZone": {
+        "title": "Drop audio files or folders here, or click to browse",
+        "subtitle": "Files are queued in order; long recordings are split at quiet points automatically."
+      },
+      "addFiles": "Add files",
+      "addFolder": "Add folder",
+      "clear": "ล้าง",
+      "clearFinished": "Clear finished",
+      "remove": "Remove from queue",
+      "queued": "{{count}} queued",
+      "segmentProgress": "segment {{current}} / {{total}}",
+      "status": {
+        "queued": "Queued",
+        "decoding": "Decoding",
+        "transcribing": "Transcribing",
+        "merging": "Merging",
+        "post_processing": "Post-processing",
+        "saving": "Saving",
+        "done": "เสร็จสิ้น",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "mode": {
+        "title": "Transcription mode",
+        "description": "Which pipeline each file goes through. Post-processing uses the prompt and provider from the Post Process page; Multi-STT uses the extra models and merge prompt from the Multi STT page.",
+        "options": {
+          "simple": {
+            "label": "Simple STT",
+            "description": "Selected model only, no LLM."
+          },
+          "post_process": {
+            "label": "STT + Post-process",
+            "description": "Selected model, then the post-processing prompt."
+          },
+          "multi_stt": {
+            "label": "Multi-STT",
+            "description": "All Multi-STT models, merged with the merge prompt (concatenated if no prompt is set)."
+          },
+          "multi_stt_post_process": {
+            "label": "Multi-STT + Post-process",
+            "description": "Multi-STT merge, then the post-processing prompt."
+          }
+        }
+      },
+      "warnings": {
+        "postProcessDisabled": "Post-processing is turned off. Enable it on the Advanced page (Experimental) and configure a provider, model and prompt, or the text is saved unprocessed.",
+        "multiSttNoModels": "Multi-STT is off or has no extra models selected. Only the primary model will run; set up extra models on the Multi STT page."
+      },
+      "outputFolder": {
+        "title": "Output folder",
+        "description": "Where transcripts are written. By default each transcript is saved next to its audio file with the same name.",
+        "nextToSource": "Next to each audio file",
+        "choose": "Choose folder…",
+        "useNextToSource": "Save next to source"
+      },
+      "format": {
+        "title": "Output format",
+        "description": "Plain text, or Markdown with a small header (file name, mode, model, date).",
+        "txt": "Plain text (.txt)",
+        "md": "Markdown (.md)"
+      },
+      "overwrite": {
+        "label": "Overwrite existing transcripts",
+        "description": "Replace an existing transcript with the same name. When off, a -2, -3, … suffix is added instead."
+      },
+      "subfolders": {
+        "label": "Include sub-folders",
+        "description": "When a folder is added, also queue the audio files inside its sub-folders."
+      },
+      "segmentMinutes": {
+        "label": "Maximum segment length",
+        "description": "Long recordings are transcribed in segments of at most this length, cut at the quietest point near the boundary, so a single file never holds the model for an hour at a time.",
+        "value": "{{minutes}} min"
+      },
+      "start": "Transcribe {{count}} file(s)",
+      "cancel": "ยกเลิก",
+      "running": "Transcribing… {{done}} / {{total}} finished",
+      "summary": "{{done}} done, {{failed}} failed, {{total}} total",
+      "result": {
+        "show": "Show text",
+        "hide": "Hide text",
+        "copy": "คัดลอก",
+        "copied": "Copied!",
+        "reveal": "Show in folder",
+        "savedTo": "Saved to {{path}}",
+        "took": "{{seconds}} s"
+      },
+      "dialog": {
+        "filterName": "Audio files"
+      },
+      "errors": {
+        "noFiles": "Add audio files or a folder to get started.",
+        "nothingAdded": "Nothing to add: no supported audio files found ({{formats}}).",
+        "emptyFolder": "That folder contains no supported audio files."
+      },
+      "saveToHistory": {
+        "label": "Also save to History",
+        "description": "Add each transcribed file to History too, with its audio and the file name as its title. History cleanup never removes these."
+      }
+    },
+    "recall": {
+      "title": "Recall",
+      "description": "Your local note vault: transcriptions, dictated notes and your own writing, filed as Markdown files you own.",
+      "vaultStats": "{{notes}} notes · {{audio}} audio files",
+      "newNote": "โน้ตใหม่",
+      "openFolder": "Open vault folder",
+      "emptyTitle": "No notes yet",
+      "emptyHint": "Create a note, dictate one with the microphone, or file a transcription from History.",
+      "untitled": "Untitled",
+      "titlePlaceholder": "Title",
+      "tagsPlaceholder": "tags, comma separated",
+      "bodyPlaceholder": "Write, or press Dictate to speak into the note at the cursor.",
+      "edit": "Edit",
+      "preview": "ดูตัวอย่าง",
+      "save": "Save",
+      "delete": "ลบ",
+      "confirmDelete": "Confirm delete?",
+      "dictate": "Dictate",
+      "stopDictation": "Stop",
+      "transcribing": "Transcribing…",
+      "words": "{{count}} words",
+      "enc": {
+        "title": "Encryption",
+        "description": "Encrypt every note with a passphrase (XChaCha20-Poly1305 + Argon2id). The passphrase never leaves this device and is never stored.",
+        "off": "Encryption is off — the vault is plain Markdown files.",
+        "enable": "Enable encryption",
+        "passphrase": "Passphrase",
+        "confirmPassphrase": "Repeat passphrase",
+        "passphraseHint": "At least 8 characters. There is no recovery: losing the passphrase means losing the notes.",
+        "mismatch": "The passphrases do not match.",
+        "tooShort": "Use at least 8 characters.",
+        "encrypting": "Encrypting…",
+        "encrypted": "Vault encrypted — {{count}} notes are now ciphertext. No plaintext copy was kept: only your passphrase opens them.",
+        "on": "Notes are encrypted on disk.",
+        "lock": "Lock",
+        "lockedBadge": "Vault locked",
+        "lockedTitle": "Vault locked",
+        "lockedHint": "Enter the passphrase in the Encryption section below to read and edit the notes.",
+        "unlock": "Unlock",
+        "disable": "Disable encryption",
+        "disableHint": "Every note will be decrypted back to plain Markdown, and the key file removed. The vault is fully decrypted before encryption turns off.",
+        "disableConfirm": "Decrypt all notes",
+        "decrypted": "Vault decrypted — the notes are plain Markdown again.",
+        "location": "Vault folder",
+        "choose": "Choose folder…",
+        "useDefault": "Use default location"
+      }
+    },
+    "liveMode": {
+      "title": "Live Mode",
+      "description": "Keep listening and record everything: the raw microphone signal is saved in chunked WAV files while the live transcription is written into a text file as you speak. Needs a streaming-capable model.",
+      "status": {
+        "idle": "Idle",
+        "starting": "Starting",
+        "listening": "Listening",
+        "rotating": "Saving chunk",
+        "stopping": "Stopping",
+        "error": "Error"
+      },
+      "model": {
+        "label": "Model: {{model}}",
+        "notStreaming": "{{model}} does not support live streaming. Pick a streaming-capable model (for example a Whisper or Parakeet GGUF) in the footer to use Live Mode.",
+        "none": "No model selected. Pick a streaming-capable model in the footer to use Live Mode."
+      },
+      "start": "Start listening",
+      "stop": "Stop",
+      "stats": {
+        "elapsed": "Elapsed",
+        "chunk": "Chunk {{index}}",
+        "speech": "Speech in chunk"
+      },
+      "transcript": {
+        "title": "Transcript",
+        "empty": "The transcript appears here as you speak and is written to the file at the same time.",
+        "noFile": "No session yet",
+        "viewing": "Viewing {{name}}",
+        "closeViewer": "Back to the live transcript",
+        "copy": "คัดลอก",
+        "copied": "Copied!",
+        "reveal": "Show in folder"
+      },
+      "chunks": {
+        "title": "{{count}} audio chunk(s) saved",
+        "item": "{{duration}} · {{size}} · {{chars}} characters"
+      },
+      "settings": {
+        "title": "Live Mode settings"
+      },
+      "outputFolder": {
+        "title": "Output folder",
+        "description": "Each session gets its own sub-folder (live_<date>_<time>) with the transcript and the audio chunks.",
+        "default": "{{app}} data folder / live_mode",
+        "choose": "Choose folder…",
+        "reset": "Use default"
+      },
+      "chunkMinutes": {
+        "label": "Chunk length",
+        "description": "Target length of one audio file and one transcript segment. The next chunk starts immediately, so nothing is lost between chunks.",
+        "value": "{{minutes}} min"
+      },
+      "format": {
+        "title": "Transcript format",
+        "description": "Plain text, or Markdown with a session header and one paragraph per chunk.",
+        "txt": "Plain text (.txt)",
+        "md": "Markdown (.md)"
+      },
+      "granularity": {
+        "title": "Write to file",
+        "description": "How the live text grows in the file. Character by character mirrors the stream exactly, including the model's tentative tail; word by word only writes completed words.",
+        "options": {
+          "character": {
+            "label": "Character by character",
+            "description": "Mirror the live stream, tentative text included."
+          },
+          "word": {
+            "label": "Word by word",
+            "description": "Only write words once they are complete."
+          }
+        }
+      },
+      "saveAudio": {
+        "label": "Save audio chunks",
+        "description": "Write the raw microphone signal (native sample rate and bit depth) to chunk_0001.wav, chunk_0002.wav, … in the session folder."
+      },
+      "silenceBoundary": {
+        "label": "Cut chunks on a pause",
+        "description": "Once a chunk reaches 80 % of its length, end it on the first pause instead of exactly at the limit, so a cut never lands in the middle of a word."
+      },
+      "sessions": {
+        "title": "Previous sessions",
+        "description": "Session folders found in the output folder, newest first.",
+        "empty": "No sessions yet.",
+        "refresh": "Refresh",
+        "item": "{{date}} · {{chunks}} chunk(s) · {{size}}",
+        "view": "View"
+      }
+    },
+    "overlay": {
+      "preview": {
+        "title": "ดูตัวอย่าง",
+        "description": "Runs a real recording of the primary model — streaming live text when it can — whose only output is the overlay itself: nothing is typed or pasted anywhere, and no audio is kept. Watch the card and change its settings while it runs; it stops when you stop it, on the cancel hotkey, and at a 10-minute cap.",
+        "start": "Start overlay preview",
+        "stop": "Stop preview",
+        "runningNote": "Preview running — the transcription hotkeys are busy until you stop it. Changes below apply as the card re-reads its settings."
+      },
+      "groups": {
+        "appearance": "Appearance",
+        "window": "Window",
+        "stats": "Speech stats"
+      },
+      "window": {
+        "fadeMs": {
+          "label": "Fade duration",
+          "description": "How long (ms) the overlay takes to fade out when hidden. Lower = snappier, higher = gentler. Set to 0 for instant hide."
+        },
+        "cornerRadius": {
+          "label": "Corner radius",
+          "description": "Rounds the corners of the overlay window, in CSS pixels. 0 = sharp corners."
+        },
+        "resetPosition": {
+          "label": "Reset position",
+          "description": "Reset the overlay to its default position, clearing any drag-grip repositioning."
+        },
+        "resetPositionButton": "Reset position",
+        "noManualPosition": "The overlay is at its default position"
+      },
+      "hiddenNote": "The overlay is off. Choose Minimal or Live above to configure what it shows.",
+      "scope": {
+        "showCircular": {
+          "label": "Circular spectrum",
+          "description": "A third view beside the spectrum and the waveform: the analyser's bins, with their inversion appended and prepended, are added into one symmetric signal that wraps once around a full circle — two branches at radius 1+s and 1-s, the whole figure rotated 90° so the seam sits at the side of the ring."
+        },
+        "circularBars": {
+          "label": "Radial bars",
+          "description": "Draw radial bars between the inner and outer ring instead of the two loops drawn as joined lines, with the band between them filled."
+        },
+        "circularBins": {
+          "label": "Circular bins",
+          "description": "How many display bins the loop has (12–240). The analyser's bins are peak-pooled down to this many, so fewer means chunkier bars."
+        },
+        "circularGain": {
+          "label": "Circular gain",
+          "description": "Fixed display gain of the loop: the bins are scaled by this and clamped — never normalised dynamically, so the ring breathes with the signal instead of always filling."
+        },
+        "circularSignalScale": {
+          "label": "Circular intensity",
+          "description": "Multiplies the circular spectrum's signal before drawing, so the ring breathes more dramatically without changing its pixel size. 1× is neutral; higher is more pronounced."
+        },
+        "circularFloor": {
+          "label": "Circular floor",
+          "description": "Bars below this fraction of full scale are not drawn. Raise it until the room's ambient tone stops painting the ring — without a floor the loop reads as a filled disc."
+        },
+        "circularSize": {
+          "label": "Circular size",
+          "description": "Side of the square circular-spectrum view, in pixels. Make it much larger than the other views — the window grows to fit."
+        },
+        "circularBackground": {
+          "label": "Full-window background",
+          "description": "Draw the circular spectrum behind the whole overlay window, as a background layer under the card, instead of as its own view."
+        },
+        "spectrumScale": {
+          "label": "Spectrum size",
+          "description": "Scales the linear spectrum view up or down, in percent of its base size. The overlay window grows to fit."
+        },
+        "spectrumSignalScale": {
+          "label": "Spectrum intensity",
+          "description": "Multiplies the spectrum's signal before drawing, so the bars/trace read taller without changing the view's pixel width. 1× is neutral; higher is louder-looking."
+        },
+        "waveScale": {
+          "label": "Waveform size",
+          "description": "Scales the raw-audio waveform view up or down, in percent of its base size. The overlay window grows to fit."
+        },
+        "waveSignalScale": {
+          "label": "Waveform intensity",
+          "description": "Multiplies the raw audio signal before drawing, so the trace swings taller without changing the view's pixel width. 1× is neutral; higher is taller."
+        },
+        "waveInsideCircular": {
+          "label": "Waveform inside ring",
+          "description": "Draw the raw-audio waveform as a horizontal trace inside the circular spectrum's ring, instead of as its own view beside it."
+        },
+        "circularShowInner": {
+          "label": "Show inner loop",
+          "description": "Draw the inner (negative-contracting) loop of the circular spectrum. When off, only the outer (positive-expanding) loop is visible."
+        },
+        "title": "Analyser",
+        "description": "The picture of the microphone the overlay draws while you record: a spectrum and a trace of the raw audio, both computed with the Live FFT page's analysis settings.",
+        "showSpectrum": {
+          "label": "Show spectrum",
+          "description": "Draw the spectrum view in the overlay."
+        },
+        "style": {
+          "label": "Spectrum style",
+          "description": "Filled area, a line, or bars.",
+          "options": {
+            "area": "Area",
+            "line": "Line",
+            "bars": "Bars"
+          }
+        },
+        "mirror": {
+          "label": "Mirror spectrum",
+          "description": "Draw the spectrum rising from the centre line with its negative mirrored below it, so it reads like the centred waveform beside it."
+        },
+        "peakHold": {
+          "label": "Peak hold",
+          "description": "Keep a slowly falling marker at each column's recent peak, as the Live FFT page's peak hold does."
+        },
+        "showWave": {
+          "label": "Show waveform",
+          "description": "Draw the raw audio trace in the overlay."
+        },
+        "waveSamples": {
+          "label": "Waveform length",
+          "description": "How many samples of raw audio the trace covers, at the analysed signal's rate (4096 is 85 ms at 48 kHz). Longer windows show more of the phrase and move slower."
+        },
+        "waveTaper": {
+          "label": "Edge fade",
+          "description": "Samples faded to zero at each end of the window, so the trace never starts or ends mid-swing."
+        },
+        "gainFloor": {
+          "label": "Auto-gain floor",
+          "description": "The trace is scaled to the loudest recent swing, but never below this level, so room tone is not blown up to full height."
+        },
+        "viewWidth": {
+          "label": "View width",
+          "description": "Width of each view; the pill and the overlay window grow with it."
+        },
+        "viewHeight": {
+          "label": "View height",
+          "description": "Height of the views; above 22 px the control row grows to fit."
+        },
+        "analysisNote": "Scale, window, EQ, weighting, dB range, ballistics and update rate are the Live FFT page's settings.",
+        "openLiveFft": "Open Live FFT"
+      }
+    },
+    "liveFft": {
+      "title": "Live FFT",
+      "description": "Real-time spectrum of the microphone with a full analyser parameter set: psychoacoustic frequency scales, shelving EQ, window and equal-loudness weighting, dB references and attack/release ballistics — plus a peak-hold analyser and a waterfall.",
+      "start": "Start analyser",
+      "stop": "Stop",
+      "freeze": "Freeze",
+      "unfreeze": "แสดงต่อ",
+      "resetValue": "Reset to default",
+      "noSignal": "No signal",
+      "hotkeysNote": "While the analyser runs the dictation hotkeys report \"Already recording\" and the cancel hotkey stops it. Nothing is transcribed or saved.",
+      "status": {
+        "idle": "Idle",
+        "starting": "Starting",
+        "running": "Running",
+        "stopping": "Stopping",
+        "error": "Error"
+      },
+      "stopReason": {
+        "cancelled": "The analyser stopped because the recording was ended elsewhere (cancel hotkey or tray).",
+        "window_hidden": "The analyser stopped after two minutes with the window hidden, so the microphone is not held for nothing."
+      },
+      "canvas": {
+        "idle": "Start the analyser to see the spectrum",
+        "silence": "digital silence",
+        "now": "now",
+        "span": "−{{seconds}} s"
+      },
+      "telemetry": {
+        "sampleRate": "Rate (Hz)",
+        "fftSize": "FFT",
+        "window": "Window",
+        "resolution": "Resolution",
+        "dsp": "DSP",
+        "dropped": "Dropped",
+        "threading": "Analysis: {{mode}}",
+        "async": "worker thread",
+        "inline": "inline on the audio thread",
+        "frame": "{{bins}} bins · {{rate}} Hz · last frame {{dsp}}",
+        "hzPerBin": "Hz / bin",
+        "magnitudeBins": "Magnitude bins",
+        "magnitudeBinsValue": "{{used}} of {{total}}",
+        "aggregated": "Aggregated",
+        "kaiserBeta": "Kaiser β",
+        "latency": "Latency"
+      },
+      "view": {
+        "title": "Analyser",
+        "bars": "Bars",
+        "line": "Line",
+        "area": "Area",
+        "peakHold": "Peak hold",
+        "grid": "Grid",
+        "waterfall": "Waterfall",
+        "peak": "Peak:",
+        "cursor": "Cursor:",
+        "colormap": {
+          "inferno": "Inferno",
+          "accent": "Accent colour",
+          "ice": "Ice"
+        }
+      },
+      "presets": {
+        "title": "Presets",
+        "description": "Start from a known configuration; every parameter below stays editable. The source and threading choices are kept.",
+        "analyzer": "Analyser (defaults)",
+        "raw": "Raw (linear, no ballistics)",
+        "voice": "Voice (Mel, A-weighted, 8 kHz)",
+        "music": "Music (Log, cubic, Blackman-Harris)",
+        "meter": "Fast meter (linear, 60 Hz)",
+        "chroma": "Chroma / pitch",
+        "applied": "Preset applied",
+        "quality": {
+          "title": "Quality",
+          "description": "Transform length, warp interpolation, Kaiser beta mode and aggregation tuned for a frame budget. Applied on top of the current settings; the output bins are kept.",
+          "visual60": "Visual 60 fps (8K, cubic, auto β)",
+          "visual120": "Visual 120 fps (4K, cubic, auto β)",
+          "analysis": "Analysis (32K, auto β, RMS)",
+          "active": "Matches: {{preset}}"
+        }
+      },
+      "spectrum": {
+        "title": "Spectrum",
+        "source": {
+          "label": "Source",
+          "description": "Which signal is analysed: the microphone at its native rate (full bandwidth, before noise suppression) or the 16 kHz frames a model hears (after resampling and noise suppression, before the VAD).",
+          "microphone": "Microphone (native rate)",
+          "microphoneHint": "Full bandwidth, before noise suppression",
+          "processed": "Processed (16 kHz)",
+          "processedHint": "What the model hears; 8 kHz bandwidth",
+          "denoised": "After noise suppression (48 kHz)",
+          "denoisedHint": "RNNoise's output at full bandwidth; the untouched microphone while suppression is off"
+        },
+        "scale": {
+          "label": "Scale",
+          "description": "Frequency axis of the spectrum: logarithmic, Mel, ERB, Bark, chroma (pitch classes), linear, or a Mel + Log blend.",
+          "options": {
+            "log": "Logarithmic",
+            "mel": "Mel scale",
+            "erb": "ERB scale",
+            "bark": "Bark scale",
+            "chroma": "Chroma / pitch",
+            "linear": "Linear scale",
+            "melog": "Mel + Log blend"
+          }
+        },
+        "warpInterp": {
+          "label": "Warp interpolation",
+          "description": "How the linear FFT bins are resampled onto the perceptual grid. Cubic (Catmull-Rom, 4 taps) is smoother, so a 16K FFT with cubic looks like 32K with linear at half the cost.",
+          "linear": "Linear (2 taps)",
+          "cubic": "Cubic Catmull-Rom (4 taps)"
+        },
+        "displayMax": {
+          "label": "Display max Hz",
+          "description": "Highest frequency on the axis."
+        },
+        "nyquistNote": "Clamped to the Nyquist frequency of the source ({{hz}}).",
+        "outputBins": {
+          "label": "Output bins",
+          "description": "Size of the spectrum sent to the page per frame in Fixed mode. More bins mean finer detail and a larger frame; 1024 already exceeds the width of the display. A count above the transform's N/2+1 is interpolated."
+        },
+        "warpBlend": {
+          "label": "Warp blend",
+          "description": "0 = linear grid, 1 = fully perceptual."
+        },
+        "logFloor": {
+          "label": "Log floor Hz",
+          "description": "Lowest frequency of the Log and Mel + Log grids."
+        },
+        "windowMode": {
+          "label": "Window length mode",
+          "description": "Set the analysis window in samples or in milliseconds (independent of the sample rate).",
+          "samples": "Samples",
+          "milliseconds": "Milliseconds"
+        },
+        "windowSamples": {
+          "label": "Window samples",
+          "description": "Analysis window in samples (3175 = 72 ms at 44.1 kHz). Longer windows resolve closer frequencies but react more slowly."
+        },
+        "windowMs": {
+          "label": "Window length ms",
+          "description": "Analysis window in milliseconds."
+        },
+        "fftSize": {
+          "label": "Zero-pad length",
+          "description": "Transform length. The window is centred in a zero-padded frame of this size (grown to the next power of two above the window when that is larger); a longer transform interpolates the spectrum more finely. Applies only with zero-padding on."
+        },
+        "rawBins": {
+          "label": "Raw FFT bins",
+          "description": "Output the transform's magnitude untouched: N/2+1 bins from DC to Nyquist on a linear axis, with no warp, interpolation or aggregation. Scale, display max, warp blend, log floor, output bins and aggregation do not apply while it is on."
+        },
+        "outputBinsMode": {
+          "label": "Output bins mode",
+          "description": "Fixed: the output bin count below. Auto: one output bin per FFT bin, N/2+1 of the transform actually run.",
+          "fixed": "Fixed",
+          "auto": "Auto (N/2+1)"
+        },
+        "warpAggregation": {
+          "label": "Warp aggregation",
+          "description": "Where one output bin spans two or more FFT bins (the top of a log axis), combine them instead of interpolating between two: Peak keeps the loudest, so a narrow peak is never skipped; RMS averages their power. Off interpolates everywhere.",
+          "options": {
+            "off": "Off (interpolate, may skip peaks)",
+            "peak": "Peak (never drops a peak)",
+            "rms": "RMS (power mean)"
+          }
+        },
+        "zeroPadding": {
+          "label": "Zero-padding",
+          "description": "On: the window is centred in a zero-padded transform of the zero-pad length. Off: the transform is the window length itself (rounded up to even), the cheapest option, and the zero-pad length does not apply."
+        }
+      },
+      "eq": {
+        "title": "EQ",
+        "description": "RBJ shelving EQ applied to new samples as they arrive, stateful and in time order — before the window and the transform.",
+        "enable": {
+          "label": "EQ enable",
+          "description": "Off skips the EQ code entirely."
+        },
+        "highShelf": {
+          "label": "High shelf",
+          "description": "Bypass for the high shelf."
+        },
+        "lowShelf": {
+          "label": "Low shelf",
+          "description": "Bypass for the low shelf."
+        },
+        "highGain": {
+          "label": "High boost dB",
+          "description": "Gain of the high shelf."
+        },
+        "highCutoff": {
+          "label": "High cutoff Hz",
+          "description": "Corner frequency of the high shelf."
+        },
+        "lowGain": {
+          "label": "Low boost dB",
+          "description": "Gain of the low shelf."
+        },
+        "lowCutoff": {
+          "label": "Low cutoff Hz",
+          "description": "Corner frequency of the low shelf."
+        },
+        "q": {
+          "label": "EQ Q factor",
+          "description": "Slope of both shelves."
+        },
+        "amount": {
+          "label": "EQ blend amount",
+          "description": "Wet/dry blend: 0 = dry, 1 = the filtered signal, above 1 exaggerates the change."
+        }
+      },
+      "window": {
+        "title": "Window & weighting",
+        "type": {
+          "label": "Window type",
+          "description": "Taper applied to the analysis window before the transform.",
+          "options": {
+            "kaiser": "Kaiser (beta control)",
+            "hann": "Hann window",
+            "hamming": "Hamming window",
+            "blackman": "Blackman window",
+            "blackman_harris": "Blackman-Harris (92 dB)",
+            "rectangular": "Rectangular (flat)"
+          }
+        },
+        "kaiserBeta": {
+          "label": "Kaiser beta",
+          "description": "Higher beta lowers the side lobes and widens the main lobe."
+        },
+        "weighting": {
+          "label": "Loudness weighting",
+          "description": "Equal-loudness curve applied per bin.",
+          "options": {
+            "off": "Off (flat)",
+            "a": "A-weighting (IEC 61672)",
+            "c": "C-weighting (high SPL)",
+            "itu468": "ITU-R 468 (noise standard)"
+          }
+        },
+        "magnitudeNorm": {
+          "label": "Magnitude normalization",
+          "description": "Coherent gain keeps the window's mean at 1; full scale makes a sine of amplitude 1 read 1.0.",
+          "options": {
+            "coherent_gain": "Coherent gain (mean(window) = 1)",
+            "full_scale": "Full scale (sine amplitude 1 → 1.0)"
+          }
+        },
+        "kaiserBetaMode": {
+          "label": "Kaiser beta mode",
+          "description": "Manual: the beta below. Auto: derived from the dB range floor, so the window's side lobes sit just under what the display can show.",
+          "manual": "Manual",
+          "auto": "Auto (from dB range)"
+        }
+      },
+      "loudness": {
+        "title": "Loudness & ballistics",
+        "mode": {
+          "label": "Loudness mode",
+          "description": "Linear magnitude, decibels, or decibels mapped onto 0…1 over the dB range.",
+          "options": {
+            "off": "Off (linear magnitude)",
+            "db": "dB (decibels)",
+            "db_normalized": "dB normalized (0.0 to 1.0)"
+          }
+        },
+        "dbReference": {
+          "label": "dB reference",
+          "description": "What 0 dB means: the loudest bin of the frame, digital full scale, or a slow peak follower.",
+          "options": {
+            "frame_peak": "Frame peak (0 dB = loudest bin)",
+            "dbfs": "0 dBFS (absolute)",
+            "agc": "Slow AGC (peak follower)"
+          }
+        },
+        "dbRange": {
+          "label": "dB range floor",
+          "description": "How many dB below the reference the display floor sits."
+        },
+        "ballistics": {
+          "label": "Ballistics enable",
+          "description": "Asymmetric attack / release smoothing of the spectrum over time. Off skips the code entirely."
+        },
+        "ballisticsMode": {
+          "label": "Ballistics mode",
+          "description": "Per-frame coefficients or time constants in milliseconds, independent of the update rate.",
+          "coefficient": "Per-frame coefficient",
+          "milliseconds": "Milliseconds (rate independent)"
+        },
+        "attack": {
+          "label": "Attack speed",
+          "description": "Per-frame attack coefficient, 0 = follow instantly."
+        },
+        "release": {
+          "label": "Release speed",
+          "description": "Per-frame release coefficient, 0 = follow instantly."
+        },
+        "attackMs": {
+          "label": "Attack ms",
+          "description": "Time to reach 63 % of a rise."
+        },
+        "releaseMs": {
+          "label": "Release ms",
+          "description": "Time to fall 63 % of a drop."
+        },
+        "reset": {
+          "label": "Reset",
+          "description": "Clears the ballistics, AGC and EQ state.",
+          "button": "Reset state"
+        }
+      },
+      "performance": {
+        "title": "Performance",
+        "async": {
+          "label": "Async analysis (worker thread)",
+          "description": "On: the transform runs on its own thread and the audio thread only copies samples into a ring. Off: the transform runs inline on the audio consumer thread. Changing this restarts a running analysis."
+        },
+        "updateRate": {
+          "label": "Update rate",
+          "description": "Spectrum frames per second sent to the page."
+        },
+        "note": "{{app}} analyses one channel: the selected input channel or the average of all (see General → Input channel). Settings apply as soon as they change, and FFT plans are cached per size.",
+        "features": {
+          "label": "Spectral features",
+          "description": "Compute the centroid, 85 % rolloff, flatness, flux, RMS level and bass / mid / high band levels from the linear spectrum with every frame, shown under the analyser. A few microseconds per frame."
+        }
+      },
+      "voice": {
+        "title": "Voice detection & noise suppression",
+        "description": "Tune the speech detector and RNNoise while watching the spectrum. With the source set to the 16 kHz frames a model hears, the spectrum shows what noise suppression removes.",
+        "show": {
+          "label": "Show voice detection",
+          "description": "Run the speech detector on the analysed signal and show its verdict frame by frame. Changing this restarts a running analysis."
+        },
+        "idle": "Start the analyser to see the detector.",
+        "sourceHint": "The spectrum shows the untouched microphone. Analyse the signal after noise suppression to see what RNNoise removes.",
+        "sourceSwitch": "Analyse the suppressed signal"
+      },
+      "errors": {
+        "start": "Could not start the analyser: {{error}}"
+      },
+      "features": {
+        "title": "Features",
+        "centroid": "Centroid",
+        "rolloff": "Rolloff",
+        "flatness": "Flatness",
+        "flux": "Flux",
+        "rms": "RMS",
+        "bass": "Bass",
+        "mid": "Mid",
+        "high": "High"
+      }
+    },
+    "llama": {
+      "status": {
+        "stopped": "Stopped",
+        "starting": "Starting…",
+        "ready": "พร้อมใช้งาน",
+        "error": "Error"
+      },
+      "server": {
+        "title": "Server",
+        "description": "The llama.cpp server {{app}} supervises. It runs detached (no console window), is stopped with {{app}}, and its output is kept below.",
+        "start": "เริ่มต้น",
+        "stop": "Stop",
+        "restart": "Restart",
+        "useForPostProcessing": "Use for post-processing & merge",
+        "useForPostProcessingDescription": "Point the Custom LLM provider at http://127.0.0.1:<port>/v1 with the alias as model, and select it. Turn post-processing on in Post Process afterwards if it is off.",
+        "apply": "Use this server",
+        "appliedToast": "Post-processing now targets the local server on port {{port}}.",
+        "startOnDemand": "Start when needed",
+        "startOnDemandDescription": "When a post-processing or merge request targets this server and it is not running, start it and wait for it to be ready (up to three minutes).",
+        "autostart": "Start with {{app}}",
+        "autostartDescription": "Launch the server in the background when {{app}} starts, so the first request never waits for a model load.",
+        "stopOnExit": "Stop when {{app}} quits",
+        "stopOnExitDescription": "Off keeps the server (and the GPU memory it holds) alive after {{app}} exits.",
+        "logs": "Server output",
+        "logsDescription": "The last 400 lines of llama-server's output.",
+        "showLogs": "Show output",
+        "hideLogs": "Hide output",
+        "noLogs": "No output yet."
+      },
+      "backend": {
+        "title": "llama.cpp build",
+        "description": "Which llama-server binary runs. Install a release here (the same GitHub assets the download script fetched) or use a folder you already have.",
+        "serverDir": "Server folder",
+        "serverDirDescription": "Folder containing llama-server.exe.",
+        "serverDirPlaceholder": "…llama or <app data>llama_cppcuda-13.5-b12368",
+        "detect": "Detect existing",
+        "detectNone": "No existing llama.cpp folder found in the usual places.",
+        "detectFound": "Using {{dir}}",
+        "preferred": "Backend and channel",
+        "preferredDescription": "Asset to install: auto takes CUDA when nvidia-smi finds an NVIDIA GPU (detected: {{detected}}), otherwise CPU. CUDA installs the newest CUDA build of the release that the driver supports (driver CUDA: {{driver}}); a numbered build installs exactly that build. Channel: latest build, stable releases only, or nightly builds only.",
+        "channel": {
+          "latest": "Latest build",
+          "stable": "Stable",
+          "nightly": "Nightly"
+        },
+        "releases": "Latest release",
+        "releasesDescription": "The newest llama.cpp build of the selected channel from github.com/ggml-org/llama.cpp (cached for ten minutes). A CUDA build is about 180 MB; the optional cudart package adds about 500 MB.",
+        "loading": "Loading releases…",
+        "downloading": "Downloading",
+        "extracting": "Unpacking…",
+        "install": "Install",
+        "noReleases": "No releases loaded.",
+        "installed": "Installed builds",
+        "installedDescription": "Builds installed by {{app}} under its data folder.",
+        "use": "Use",
+        "active": "ใช้งานอยู่",
+        "missingServer": "llama-server missing",
+        "noneInstalled": "Nothing installed yet.",
+        "includeCudart": "Include CUDA runtime package (cudart)",
+        "includeCudartFound": "Off: CUDA toolkit {{version}} found at {{dir}} — it provides cudart / cuBLAS, so a CUDA build only needs its own ~180 MB.",
+        "includeCudartMissing": "No CUDA toolkit found (checked CUDA_PATH, every CUDA_PATH_V*, PATH and the default install folder). A CUDA build needs the ~500 MB cudart / cuBLAS package to run; turn this on before installing, or install the NVIDIA CUDA toolkit.",
+        "bundledRuntime": "{{mb}} MB of bundled CUDA runtime",
+        "removeRuntime": "Remove runtime",
+        "removeRuntimeTitle": "Delete the bundled cudart / cuBLAS DLLs from this install. Only safe when the CUDA toolkit is installed.",
+        "runtimeFreed": "Freed {{mb}} MB",
+        "includeCudartOnPath": "That folder is on PATH.",
+        "includeCudartOffPath": "That folder is not on PATH; {{app}} adds it for llama-server when it starts it.",
+        "includeCudartNoCublas": "cuBLAS was not found next to it — turn this on, the server needs cublas64 and cublasLt64 too.",
+        "alreadyInstalled": "installed",
+        "cudaNewest": "CUDA (newest the driver supports)",
+        "includeCudartMismatch": "The {{build}} build loads the CUDA {{major}} runtime, which toolkit {{version}} does not provide: turn this on before installing, or choose a build that matches the toolkit."
+      },
+      "model": {
+        "title": "Model files",
+        "description": "GGUF files for the server. Files next to the chosen model are listed for the pickers; any path can be typed or browsed.",
+        "none": "None",
+        "model": "โมเดล",
+        "modelDescription": "The main GGUF (for example gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf).",
+        "draft": "MTP draft model",
+        "draftDescription": "Speculative decoding draft (mtp-*.gguf). Adds --model-draft with --spec-type draft-mtp; the fastest configuration measured for the merge and clean prompts.",
+        "mmproj": "mmproj (vision / audio)",
+        "mmprojDescription": "Multimodal projector. Only loaded when the toggle below is on.",
+        "mmprojEnabled": "Load mmproj",
+        "mmprojEnabledDescription": "Off saves about 1 GB of VRAM and a little speed; text post-processing does not need it.",
+        "pathPlaceholder": "C:\\path\\to\\file.gguf"
+      },
+      "command": {
+        "title": "Command line",
+        "description": "Defaults reproduce the launch script: 8k context, all layers on the GPU, flash attention, sampling tuned for the merge/clean prompts (temp 0.05, top-p 0.35), reasoning off, MTP draft with 4 tokens.",
+        "preview": "Command that will run",
+        "previewDescription": "Restart the server after changing anything here.",
+        "port": "Port",
+        "portDescription": "The provider base URL is http://127.0.0.1:<port>/v1.",
+        "context_size": "Context size (-c)",
+        "context_sizeDescription": "Tokens of context. 8192 covers long transcripts with room for the prompt.",
+        "gpu_layers": "GPU layers (-ngl)",
+        "gpu_layersDescription": "-1 puts every layer on the GPU.",
+        "threads": "Threads",
+        "threadsDescription": "-1 lets llama.cpp choose.",
+        "top_k": "top-k",
+        "top_kDescription": "Sampling: keep the k most likely tokens.",
+        "spec_draft_n_max": "Draft tokens (spec-draft-n-max)",
+        "spec_draft_n_maxDescription": "Tokens the MTP draft proposes per step. 4 in the script.",
+        "temperature": "Temperature",
+        "temperatureDescription": "0.05 in the script: near-deterministic cleanup.",
+        "top_p": "top-p",
+        "top_pDescription": "0.35 in the script.",
+        "min_p": "min-p",
+        "min_pDescription": "0 in the script.",
+        "alias": "Alias",
+        "aliasDescription": "Model name the server answers to; the provider sends it as the model.",
+        "flashAttn": "Flash attention",
+        "flashAttnDescription": "--flash-attn on. Faster on CUDA.",
+        "reasoning": "Reasoning (thinking mode)",
+        "reasoningDescription": "--reasoning on. Off is much faster and what the cleanup prompts expect.",
+        "attnRot": "LLAMA_ATTN_ROT_DISABLE=1",
+        "attnRotDescription": "Environment flag that measured +3–4 % on short prompts.",
+        "extraArgs": "Extra arguments",
+        "extraArgsDescription": "Appended to the generated command.",
+        "customArgs": "Custom arguments (advanced)",
+        "customArgsDescription": "When not empty, replaces everything after llama-server. Use the preview above as a starting point."
+      }
+    },
+    "liveCanvas": {
+      "open": "Open canvas",
+      "animation": "Character arrival",
+      "description": "One white particle carries each character from the analyzer. The character fades in after the particle is 75% faded out. Changes apply to the next character.",
+      "speed": {
+        "label": "Overall speed",
+        "description": "Scale all three stages together. Higher values make the animation faster."
+      },
+      "travel_ms": {
+        "label": "Particle travel",
+        "description": "Time from the analyzer center to the next character, at 1× speed."
+      },
+      "particle_fade_ms": {
+        "label": "Particle fade out",
+        "description": "Time for the point to expand and disappear after it arrives, at 1× speed."
+      },
+      "character_fade_ms": {
+        "label": "Character fade in",
+        "description": "Time for the character to become fully visible, at 1× speed."
+      },
+      "handoff": "Character fade begins after {{ms}} ms, with 25% of the particle remaining.",
+      "reset": "Reset animation",
+      "signal": "FFT signal",
+      "signal_scale": {
+        "label": "Signal scale",
+        "description": "Scale the circular FFT and its waveform from 0.1× to 4×. This changes only the visualizer, not recording or transcription."
+      },
+      "corrections": "Text corrections",
+      "correctionDescription": "Only changed characters fade in place. Corrections never replay particles or backspace.",
+      "correction_out_ms": {
+        "label": "Correction fade out",
+        "description": "Time to fade the changed characters before replacing them."
+      },
+      "correction_in_ms": {
+        "label": "Correction fade in",
+        "description": "Time to reveal the replacement characters. These timings are independent of particle speed."
+      },
+      "telemetry": {
+        "title": "Telemetry",
+        "words": "Words",
+        "wpm": "WPM",
+        "speech": "Speech",
+        "elapsed": "Elapsed"
+      },
+      "window": {
+        "minimize": "Minimize",
+        "maximize": "Maximize",
+        "restore": "Restore"
+      }
+    }
+  },
+  "footer": {
+    "checkingUpdates": "กำลังตรวจสอบอัปเดต...",
+    "updateAvailableShort": "มีอัปเดตใหม่",
+    "upToDate": "เป็นเวอร์ชันล่าสุดแล้ว",
+    "updateCheckingDisabled": "การตรวจสอบอัปเดตถูกปิดอยู่",
+    "downloading": "กำลังดาวน์โหลด... {{progress}}%",
+    "installing": "กำลังติดตั้ง...",
+    "preparing": "กำลังเตรียมการ...",
+    "checkForUpdates": "ตรวจสอบอัปเดต",
+    "portableUpdateTitle": "ต้องอัปเดตด้วยตนเอง",
+    "portableUpdateMessage": "การติดตั้งแบบพกพาไม่สามารถอัปเดตอัตโนมัติได้ ดาวน์โหลดตัวติดตั้งสำหรับระบบของคุณด้านล่าง เรียกใช้ และติดตั้งลงในโฟลเดอร์เดิม โดยโฟลเดอร์ Data/ ของคุณ (การตั้งค่า โมเดล ไฟล์เสียงที่บันทึก) จะยังคงอยู่เหมือนเดิม",
+    "portableUpdateButton": "ดาวน์โหลดตัวติดตั้ง",
+    "portableUpdateBrowseMessage": "การติดตั้งแบบพกพาไม่สามารถอัปเดตอัตโนมัติได้ ดาวน์โหลดเวอร์ชันล่าสุดสำหรับระบบของคุณจาก GitHub Releases และติดตั้งลงในโฟลเดอร์เดิม โดยโฟลเดอร์ Data/ ของคุณ (การตั้งค่า โมเดล ไฟล์เสียงที่บันทึก) จะยังคงอยู่เหมือนเดิม",
+    "portableUpdateBrowseButton": "เปิด GitHub Releases",
+    "brain": "Local LLM",
+    "meters": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "gpu": "GPU",
+      "vram": "VRAM",
+      "cpuTitle": "CPU load {{percent}}%",
+      "ramTitle": "RAM {{used}} of {{total}}",
+      "gpuTitle": "{{name}}: {{percent}}% busy, {{temp}}",
+      "vramTitle": "VRAM {{used}} of {{total}}"
+    }
+  },
+  "whatsNew": {
+    "title": "มีอะไรใหม่ใน {{app}} v{{version}}"
+  },
+  "common": {
+    "loading": "กำลังโหลด...",
+    "downloading": "Downloading...",
+    "downloadingCount": "{{count}} downloading...",
+    "downloadSpeed": "{{speed}} MB/s",
+    "delete": "ลบ",
+    "cancel": "ยกเลิก",
+    "close": "ปิด",
+    "open": "เปิด",
+    "copy": "คัดลอก",
+    "clear": "ล้าง",
+    "noOptionsFound": "ไม่พบตัวเลือก",
+    "play": "Play",
+    "pause": "หยุดชั่วคราว",
+    "moreInformation": "More information",
+    "selectOption": "Select an option...",
+    "unknownSize": "Unknown size",
+    "charsPerSecond": "{{value}} chars/s",
+    "resetSetting": "รีเซ็ต {{setting}} เป็นค่าเริ่มต้น",
+    "playbackPosition": "ตำแหน่งการเล่น"
+  },
+  "accessibility": {
+    "permissionsDescription": "{{app}} needs accessibility permissions to type transcribed text.",
+    "openSettings": "Open System Settings"
+  },
+  "errors": {
+    "loadDirectory": "เกิดข้อผิดพลาดในการโหลดโฟลเดอร์: {{error}}",
+    "loadDirectoryUnknown": "unknown error",
+    "micPermissionDeniedTitle": "การเข้าถึงไมโครโฟนถูกปฏิเสธ",
+    "micPermissionDenied": {
+      "generic": "ระบบปฏิบัติการไม่อนุญาตให้เข้าถึงไมโครโฟน โปรดอนุญาตการใช้ไมโครโฟนในการตั้งค่าระบบ",
+      "windows": "เปิดการเข้าถึงไมโครโฟนใน การตั้งค่า → ความเป็นส่วนตัวและความปลอดภัย → ไมโครโฟน (รวมถึงการเข้าถึงของแอปเดสก์ท็อป)",
+      "macos": "อนุญาตการเข้าถึงไมโครโฟนใน การตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → ไมโครโฟน",
+      "linux": "อนุญาตการเข้าถึงไมโครโฟนในการตั้งค่าเสียงหรือความเป็นส่วนตัวของระบบ"
+    },
+    "noInputDeviceTitle": "ไม่พบไมโครโฟน",
+    "noInputDevice": "ไม่พบอุปกรณ์รับเสียง โปรดเชื่อมต่อไมโครโฟนหรือชุดหูฟังแล้วลองอีกครั้ง",
+    "recordingFailed": "Failed to start recording: {{error}}",
+    "modelLoadFailed": "Failed to load model: {{model}}",
+    "modelLoadFailedUnknown": "unknown model",
+    "pasteFailedTitle": "วางข้อความไม่สำเร็จ",
+    "pasteFailed": "ไม่สามารถวางข้อความลงในแอปที่กำลังใช้งานอยู่ได้",
+    "transcriptionFailedTitle": "ถอดเสียงไม่สำเร็จ",
+    "unknownError": "Unknown error",
+    "recordingFailedTitle": "เริ่มการบันทึกเสียงไม่สำเร็จ",
+    "modelLoadFailedTitle": "โหลดโมเดลไม่สำเร็จ",
+    "postProcessFailedTitle": "วางโดยไม่มีการปรับแต่งข้อความ",
+    "postProcessFailed": "การปรับแต่งข้อความไม่เสร็จสมบูรณ์ จึงวางข้อความที่ถอดได้ตามเดิม",
+    "mergeFailedTitle": "Pasted Without the Merge",
+    "mergeFailed": "The Multi-STT merge didn't finish, so the models' outputs were pasted one per line.",
+    "fileTranscriptionFailedTitle": "ถอดเสียงไฟล์ไม่สำเร็จ",
+    "gpuFallbackTitle": "Running on CPU After a GPU Error",
+    "gpuFallback": "The GPU failed twice while transcribing, so this model now runs on the CPU, which is slower. Change a backend setting or restart the app to use the GPU again.",
+    "llamaServerFailedTitle": "Local LLM Failed to Start",
+    "llamaServerFailed": "The llama.cpp server stopped or could not start, so post-processing and merges that use it will not run.",
+    "noModelSelectedTitle": "ยังไม่ได้เลือกโมเดล",
+    "noModelSelected": "ดาวน์โหลดหรือเลือกโมเดลใน การตั้งค่า > โมเดล",
+    "microphoneSilentTitle": "ไมโครโฟนไม่มีเสียง",
+    "microphoneSilent": "ไมโครโฟนของคุณไม่มีเสียงส่งเข้ามา ตรวจสอบว่าไม่ได้ปิดเสียงไว้ หรือเลือกไมโครโฟนอื่นในการตั้งค่า",
+    "pasteBlockedElevatedTitle": "ไม่สามารถวางลงในแอปที่ใช้สิทธิ์ผู้ดูแลระบบ",
+    "pasteBlockedElevated": "แอปที่กำลังใช้งานทำงานด้วยสิทธิ์ผู้ดูแลระบบ {{app}} จึงไม่สามารถวางข้อความลงไปได้ คุณสามารถคัดลอกข้อความที่ถอดได้จากประวัติ"
+  },
+  "notices": {
+    "errorOne": "ข้อผิดพลาด {{n}} รายการ",
+    "errorMany": "ข้อผิดพลาด {{n}} รายการ",
+    "warningOne": "คำเตือน {{n}} รายการ",
+    "warningMany": "คำเตือน {{n}} รายการ",
+    "errorsAndWarnings": "{{errors}}, {{warnings}}",
+    "title": "Notices",
+    "subtitle": "Problems that happened in the background. Each one clears when it next works.",
+    "dismiss": "ปิด",
+    "dismissAll": "Dismiss all",
+    "show": "Show"
+  },
+  "appLanguage": {
+    "title": "ภาษาของแอป",
+    "description": "เปลี่ยนภาษาของอินเทอร์เฟซ {{app}}"
+  },
+  "theme": {
+    "title": "ธีมของแอป",
+    "description": "เลือกว่าจะให้ {{app}} ใช้ธีมตามระบบ หรือใช้ธีมสว่างหรือธีมมืด",
+    "options": {
+      "system": "ตามระบบ",
+      "light": "สว่าง",
+      "dark": "มืด"
+    }
+  },
+  "accentColor": {
+    "title": "Accent Color",
+    "description": "Choose a custom color for the interface, icons, and recording overlay",
+    "custom": "Custom Color",
+    "reset": "Reset to Default",
+    "presets": {
+      "cyan": "Neon Cyan",
+      "magenta": "Neon Magenta",
+      "lime": "Terminal Green",
+      "gold": "Gold",
+      "pink": "Rose",
+      "amber": "Amber",
+      "emerald": "Emerald",
+      "sky": "Sky Blue",
+      "indigo": "Indigo",
+      "crimson": "Crimson",
+      "purple": "Purple"
+    }
+  },
+  "overlay": {
+    "transcribing": "กำลังถอดเสียง...",
+    "processing": "กำลังประมวลผล...",
+    "wpm": "wpm",
+    "chunkFailed_one": "{{count}} chunk failed",
+    "chunkFailed_other": "{{count}} chunks failed",
+    "chunkFailedHint": "The merge of this chunk failed, so its text is the models' outputs side by side. The next pause retries it.",
+    "mergeAndCleaned": "Merge & Cleaned",
+    "awaitingText": "no live text yet",
+    "dragGripTooltip": "Drag to reposition the overlay",
+    "loadingModel": "กำลังโหลดโมเดล..."
+  },
+  "secureInput": {
+    "blockedWithCulprit_one": "{{name}} อาจกำลังบล็อกปุ่มลัด 1 รายการ",
+    "blockedWithCulprit_other": "{{name}} อาจกำลังบล็อกปุ่มลัด {{count}} รายการ",
+    "blockedNoCulprit_one": "macOS กำลังบล็อกปุ่มลัด 1 รายการชั่วคราว",
+    "blockedNoCulprit_other": "macOS กำลังบล็อกปุ่มลัด {{count}} รายการชั่วคราว",
+    "recorderBlockedWithCulprit": "{{name}} อาจกำลังบล็อกการเปลี่ยนปุ่มลัด",
+    "recorderBlockedNoCulprit": "macOS กำลังบล็อกการเปลี่ยนปุ่มลัดชั่วคราว",
+    "learnMore": "วิธีแก้ไข",
+    "recorderBlocked": "ไม่สามารถเปลี่ยนปุ่มลัดได้ในขณะนี้ — Secure Input ของ macOS กำลังบล็อกการกดปุ่มอยู่ โปรดแก้ไขคำเตือน Secure Input ก่อน",
+    "dismiss": "ปิด"
+  },
+  "multiStt": {
+    "enabled": {
+      "label": "Enable Multi STT",
+      "description": "Run multiple speech-to-text models simultaneously and merge their results"
+    },
+    "shortcut": {
+      "title": "Multi STT Shortcut"
+    },
+    "models": {
+      "title": "Additional Models",
+      "backend": "Backend",
+      "primaryModel": "Primary Model ({{model}})",
+      "noPrimaryModel": "No primary model selected",
+      "notSelected": "Not selected",
+      "loaded": "Loaded",
+      "notLoaded": "Not loaded",
+      "loadModel": "Load Model",
+      "unloadModel": "เอาโมเดลออกจากหน่วยความจำ",
+      "loadingModel": "กำลังโหลด...",
+      "unloadingModel": "Unloading...",
+      "loadedSuccessfully": "Model loaded successfully",
+      "unloadedSuccessfully": "Model unloaded successfully",
+      "loadFailed": "Failed to load model",
+      "unloadFailed": "Failed to unload model",
+      "languageNotApplicable": "This model does not support language selection",
+      "disableModel": "Disable",
+      "translateToEnglish": "แปลเป็นภาษาอังกฤษ",
+      "count": {
+        "label": "Number of extra models",
+        "description": "How many models run alongside the primary model, up to {{max}}. Each one adds a transcription of every recording (and a live stream in Multi Streaming STT), so more models means more work for your GPU and CPU."
+      },
+      "slotTitle": "Model {{number}}",
+      "slotDescription": "Select an STT model to run alongside the primary model. Its output fills {{placeholder}} in the merge prompt.",
+      "slotLanguage": "Language for Model {{number}}",
+      "latency": "Model {{number}} streaming latency",
+      "latencyHint": "Used when this model streams live beside the primary (Multi Streaming STT), for this slot only.",
+      "latencyFollowModel": "Use model setting"
+    },
+    "keepModelsLoaded": {
+      "label": "Keep Extra Models Loaded",
+      "description": "Keep the 2nd, 3rd, and 4th models in memory between multi-STT uses for faster subsequent transcriptions (uses more memory)"
+    },
+    "mergePrompt": {
+      "title": "Merge Prompt",
+      "description": "Configure how the multiple transcriptions are merged",
+      "promptName": "Prompt Name",
+      "promptNamePlaceholder": "e.g. Merge Prompt",
+      "promptLabel": "Merge Instructions",
+      "promptPlaceholder": "Enter instructions for merging the transcriptions...",
+      "savePrompt": "Save Merge Prompt",
+      "noPrompt": "Without a merge prompt, outputs will be concatenated",
+      "clearPrompt": "Clear Merge Prompt",
+      "placeholderTip": "Use <code>{{first}}</code> for the primary model and {{list}} for the extra models, in slot order",
+      "missingPlaceholders": "The merge prompt does not use {{placeholders}}, so those models' outputs never reach the merge. Add them to the prompt."
+    },
+    "streamingFirst": {
+      "title": "Experimental Live Streaming Merge & Clean",
+      "enabledLabel": "Merge and clean the live text while I speak",
+      "enabledDescription": "Experimental. The primary model streams live and its rough text is the 1st output, forming as you speak. Every pause longer than the one below closes a chunk: the extra models re-transcribe that chunk's audio and the merge prompt rewrites it in place, so the transcript is cleaned up at your own pauses instead of being re-transcribed at the end. Needs a streaming-capable primary model and a merge prompt — without either, Multi-STT runs its normal batch path.",
+      "multi": {
+        "label": "Stream the other models beside the first",
+        "description": "Every Multi-STT slot that can stream runs beside the primary model, and each one forms its own live text as you speak. Nothing is re-transcribed at your pauses: at each pause the models' own live texts are handed to the merge prompt, and what it returns is the session's text — the text in the overlay and the text that gets pasted. Non-streaming slots are ignored and not even loaded. The pause setting below is what ends a chunk; the context setting does not apply here, since nothing is re-run. Needs a streaming-capable primary model and a merge prompt — without either, Multi-STT runs its normal batch path.",
+        "note": "Every model in the Secondary, Tertiary and Quaternary slots that can stream takes part; a slot whose model cannot stream is left out of the session and its model is not loaded. Two models are enough — the mode runs with however many the list holds."
+      },
+      "debugView": {
+        "label": "Show the detailed view: every model's live text, and the merged result",
+        "description": "The detailed view of this mode. The overlay gets one column per streaming model, each showing that model's own live text as it forms, and under them the merged-and-cleaned text of the last pause — the block labelled Merge & Cleaned, which is the session's result. A model's column appears as soon as its stream starts, so a model that is running but producing no text shows as an empty column, marked \"no live text yet\", rather than as no column at all. With this off, the overlay has the single block the mode normally shows: fed by the first streaming model and corrected in place every time a merge lands, which is also what gets pasted. This changes what the overlay shows, not what the mode does."
+      },
+      "pauseLabel": "Pause that ends a chunk",
+      "pauseDescription": "How long you have to stop speaking to end the chunk being spoken. Every pause this long closes one, and a chunk is the only unit here: nothing in the text (punctuation, sentence ends) decides where a chunk ends, so the text is corrected at your own pauses and nowhere else. After 60 seconds with no pause the chunk is closed anyway.",
+      "contextLabel": "Previous chunks re-run with the new one",
+      "contextDescription": "How many chunks you have already closed are handed to the extra models together with the new one. One sentence can run across many pauses — a hum, a breath, a long reasoning — and this is what lets the merge finish it and correct the chunks carrying it, in the preview and in the final text. What is re-decoded at each pause stays the same size however long the session runs, so it never grows with what you have already said. 0 hands over only the new chunk.",
+      "contextOff": "None, only the new chunk",
+      "contextValue_one": "{{count}} chunk of context",
+      "contextValue_other": "{{count}} chunks of context",
+      "note": "Needs a streaming-capable primary model and a merge prompt; without either, Multi-STT runs as usual. The 1st slot is the streaming model's own live text. With the Ctrl+V paste method the overlay is the only live view and the finished text is pasted once when you stop; with Direct Streaming the text is typed into the app as it forms and each merge retypes the part it corrected.",
+      "chunkFailedTitle": "A chunk could not be merged",
+      "chunkFailedToast": "Chunk {{chunk}} failed to merge, so its text is the models' outputs side by side. The next pause retries it."
+    },
+    "status": {
+      "title": "Model Status",
+      "noModels": "No additional models loaded",
+      "primary": "Primary"
+    },
+    "performanceMode": {
+      "title": "Performance Mode",
+      "fullPowerLabel": "Full Power Shortcut",
+      "fullPowerDescription": "Shortcut to simulate when Multi-STT recording finishes and audio is sent to models",
+      "normalModeLabel": "Normal Mode Shortcut",
+      "normalModeDescription": "Shortcut to simulate after the LLM merge succeeds, or after paste if the LLM doesn't respond",
+      "enabled": {
+        "label": "Enable Performance Mode",
+        "description": "Automatically toggle performance mode during Multi-STT transcription"
+      },
+      "triggerOnStart": {
+        "label": "Trigger Performance Mode at 1st Keybind",
+        "description": "Trigger the Full Power shortcut immediately upon starting Multi-STT recording instead of waiting until recording ends"
+      }
+    }
+  },
+  "hotkeySidebar": {
+    "title": "Your shortcuts",
+    "openSidebar": "Show shortcuts",
+    "closeSidebar": "ปิด",
+    "configureHint": "Click a shortcut to change it.",
+    "jumpTo": "Go to the {{name}} setting",
+    "categories": {
+      "recording": "Recording",
+      "modes": "Modes"
+    },
+    "empty": {
+      "title": "No shortcut set yet",
+      "message": "{{app}} has no transcription hotkey until you pick one, so nothing happens when you press keys. Choose one in General.",
+      "action": "Set the Transcribe shortcut"
+    }
+  },
+  "quickHelp": {
+    "learnMore": "Learn more",
+    "general": "Pick the shortcut you hold or tap to dictate, the microphone {{app}} listens to, and the sounds it plays.",
+    "history": "Every transcription is kept here with its audio. Re-run it with another mode, copy it, or save the ones worth keeping.",
+    "recall": "A local vault of Markdown notes: dictate straight into the editor at the cursor, edit manually, or file transcriptions from History. The vault is a plain folder of files you own.",
+    "statistics": "How much you dictate, how fast you speak, and how long transcription and post-processing take.",
+    "models": "Download and switch the local speech model. Everything runs on this computer through transcribe.cpp; smaller models are faster, larger ones more accurate.",
+    "multiStt": "Record once and transcribe with several models in parallel (up to nine), then let a language model merge the outputs into one text.",
+    "fileTranscription": "Turn audio files or whole folders into .txt or .md transcripts, with the same modes as live dictation.",
+    "liveMode": "Keep the microphone open for as long as you like: the audio is saved in chunks and the transcript written to a file while you speak.",
+    "liveFft": "A real-time spectrum analyser for the microphone: perceptual frequency scales, EQ, window, weighting, dB references, ballistics and a waterfall.",
+    "overlay": "Everything about the recording overlay: whether and where it shows, how live text arrives, the speech statistics it carries, and the spectrum and waveform it draws.",
+    "advanced": "Noise suppression, voice detection with a live test, paste behaviour, and the settings that trade latency for accuracy.",
+    "postprocessing": "Send the transcript through a language model to clean it up, using a prompt you write, before it is pasted.",
+    "debug": "Diagnostics: recent errors, log level, live logs, keyboard checks, and the timing knobs behind pasting.",
+    "llama": "Run the llama.cpp server that post-processing and the Multi-STT merge talk to: install a build, pick the model files, tune the command, start it.",
+    "liveCanvas": "A full-window Live Mode view with an animated transcript; this page tunes its animation and the analyser's signal scale."
+  },
+  "help": {
+    "title": "Help",
+    "intro": "{{app}} turns speech into text on this computer and pastes it where you were typing. Pick a goal below, search, or read through the sections.",
+    "contents": "Contents",
+    "openPage": "Open {{page}}",
+    "aboutLink": "Version, licences and acknowledgments are on the About page.",
+    "search": {
+      "placeholder": "Search help…",
+      "noResults": "Nothing matches. Try another word, or open the Debug page for diagnostics."
+    },
+    "smartHelp": {
+      "title": "What do you want to do?",
+      "actions": {
+        "setup": {
+          "label": "Set up my microphone and shortcut",
+          "description": "Start dictating: pick a hotkey and a microphone."
+        },
+        "model": {
+          "label": "Choose a model",
+          "description": "Faster or more accurate, English-only or multilingual."
+        },
+        "tune": {
+          "label": "Stop noise or clipped words",
+          "description": "Noise suppression, voice detection and the live test."
+        },
+        "files": {
+          "label": "Transcribe recordings",
+          "description": "Files, folders, or a long live session into a file."
+        },
+        "broken": {
+          "label": "Something is not working",
+          "description": "Where to look first, and what to send with a bug report."
+        }
+      }
+    },
+    "sections": {
+      "transcription": {
+        "title": "Press the shortcut. Speak. Text appears.",
+        "summary": "Set a Transcribe shortcut in General (a fresh install has none) and choose whether it toggles recording or works while held. Pick the microphone {{app}} listens to. When you stop, the text is pasted into the app you were using; the History page keeps a copy with the audio.\n\nThe right-edge tab shows the shortcuts that are currently assigned and jumps to the control that changes them."
+      },
+      "models": {
+        "title": "Choose a local model.",
+        "summary": "Every model runs on this computer through transcribe.cpp; nothing is sent anywhere. Smaller models answer faster, larger ones make fewer mistakes, and some are English-only while others handle many languages. Models marked as streaming can show text while you are still speaking (Live overlay, Live Mode). Download from the Models page; the first download is chosen during onboarding. Quantization variants trade a little accuracy for less memory, and the benchmark next to the quantization list measures them on your machine."
+      },
+      "advanced": {
+        "title": "Advanced: paste behaviour and timing.",
+        "summary": "How the text reaches the target app (clipboard paste, typing, or direct streaming while you speak), whether a space or newline is appended, filler-word removal and custom words, plus the microphone idle timeout and model unload timeout that trade memory for start-up speed."
+      },
+      "vad": {
+        "title": "Noise suppression, voice detection and the live test.",
+        "summary": "Noise suppression (RNNoise) cleans the microphone signal before anything else hears it. Voice activity detection then drops the silent frames so the model only sees speech; the VAD Threshold slider sets how sure the detector must be. Press \"Test with microphone\" next to the slider: talk, then pause, and move the slider until normal speech shows as Speech and background noise stays Silence. The On/Off pill in the test toggles noise suppression so you can compare. Recordings with no detected speech are never sent to a model."
+      },
+      "postProcessing": {
+        "title": "Let a language model clean up the transcript.",
+        "summary": "With post-processing on, the transcript is sent to the language model provider you configure (a local server or an online API) with a prompt you write, and the polished result is pasted instead. A dedicated hotkey always applies it; the History page shows both the raw and the polished text.",
+        "warning": "Online providers charge per request and need an API key. Never share the key, and set a spending limit at the provider."
+      },
+      "multiStt": {
+        "title": "Multi-STT: several models, one transcript.",
+        "summary": "Record once with the Multi STT shortcut and several models (up to nine) transcribe the same audio in parallel. A merge prompt with ${output}, ${output2}… placeholders lets a language model combine them; without a prompt the outputs are simply listed. Performance mode can send a keyboard shortcut to an external power-profile tool while the models run."
+      },
+      "fileTranscription": {
+        "title": "Transcribe files and folders.",
+        "summary": "Drop audio files (WAV, MP3, M4A, FLAC, OGG) or folders on the Transcribe Files page and choose a mode: plain, post-processed, Multi-STT, or both. Long files are cut at quiet points, and a .txt or .md is written next to each file or into a folder you choose."
+      },
+      "liveMode": {
+        "title": "Live Mode: dictate for hours into a file.",
+        "summary": "Live Mode keeps the microphone open, saves the audio as numbered chunk files and mirrors the live transcript into a text file while you speak. It needs a streaming-capable model. The transcription hotkeys are paused while a session runs; the cancel hotkey ends the current chunk."
+      },
+      "liveFft": {
+        "title": "Live FFT.",
+        "summary": "Live FFT opens the microphone and shows its spectrum in real time — bars, line or area with peak hold, plus a scrolling waterfall. The analysis parameters are grouped as Spectrum (scale, warp, window length, zero-pad length), EQ, Window & weighting, Loudness & ballistics and Performance. Presets give quick starting points, including a raw linear-magnitude preset. Nothing is transcribed or saved; the dictation hotkeys are paused while it runs and the cancel hotkey stops it."
+      },
+      "overlay": {
+        "title": "The recording overlay.",
+        "summary": "The Overlay page gathers the overlay's settings: style (none, minimal, live) and position, direct typing of the live text and its speed, the speech statistics, and the analyser it draws while you record. The analyser shows a spectrum and a trace of the raw microphone audio; choose which views to show, the spectrum style, how many samples the trace covers, how its ends fade, its auto-gain floor and the size of the views. The analysis itself (scale, window, EQ, weighting, dB range, ballistics, update rate) is configured on the Live FFT page and used as is."
+      },
+      "history": {
+        "title": "History and Statistics.",
+        "summary": "History lists every transcription with its audio, word count and speaking rate, and can re-run it with another mode. Statistics adds totals, streaks and latency distributions. Raw, unprocessed microphone audio can also be saved from Advanced → History."
+      },
+      "troubleshooting": {
+        "title": "Something is not working.",
+        "summary": "Nothing happens on the hotkey: check that one is set in General and not used by another app. No text: open the Debug page (Ctrl+Shift+D) and look at recent errors and the live log. Words missing: lower the VAD Threshold or run the live test. Slow: pick a smaller model or a lighter quantization. When reporting a problem, include the log file from the Debug page and the model name."
+      },
+      "llama": {
+        "title": "Local LLM: the brain behind post-processing and merging.",
+        "summary": "The Local LLM page runs llama.cpp for you. Install a build (CUDA, Vulkan or CPU) from the releases list or point {{app}} at a folder that already has llama-server, pick the model, its MTP draft and the optional mmproj, and press Start. The command line shown is exactly what runs. \"Use for post-processing & merge\" points the LLM provider at this server; with \"Start when needed\" on, the first post-process request starts it and waits. The status-bar brain shows Stopped / Starting / Ready / Error, next to the CPU, RAM, GPU and VRAM meters."
+      },
+      "liveCanvas": {
+        "title": "Live Canvas.",
+        "summary": "Live Canvas turns the whole window into a quiet view of a Live Mode session: a circular analyser, a microphone button and the live transcript, each character carried in from the analyser by a particle. Open it with the button at the top of the sidebar. The title bar is hidden while it is open: drag the top edge to move the window, use the minimize and maximize buttons at the top right, and press Esc or the exit button to come back. Ctrl+L clears the text on screen without touching the transcript file. This page sets the animation timings and the analyser's signal scale."
+      }
+    }
+  },
+  "fonts": {
+    "title": "Fonts",
+    "description": "Libron is included and works offline. Choose a font for each part of the app, or type the name of any font installed on your computer.",
+    "options": {
+      "inherit": "Follow interface font",
+      "libron": "Libron (bundled default)",
+      "sans": "System sans serif",
+      "serif": "System serif",
+      "mono": "System monospace"
+    },
+    "roles": {
+      "ui": {
+        "title": "Interface font",
+        "description": "Settings, labels, buttons and dialogs. Other areas follow this font unless you choose another."
+      },
+      "menus": {
+        "title": "Menu font",
+        "description": "Sidebar navigation, dropdowns and model menus. Native system menus use your operating system's font."
+      },
+      "overlay": {
+        "title": "Overlay font",
+        "description": "Recording status, controls and speech statistics in the floating overlay."
+      },
+      "transcript": {
+        "title": "Transcript font",
+        "description": "Live Canvas, overlay transcripts, history, file results and Recall notes. Pasted and exported text uses the destination app's formatting."
+      },
+      "mono": {
+        "title": "Code and numbers font",
+        "description": "Logs, code, keyboard shortcuts, metrics and chart labels. Choose System monospace for fixed-width text."
+      }
+    },
+    "useFont": "Use installed font “{{name}}”",
+    "preview": "A clear voice, a thought in writing. 0123456789",
+    "note": "Only Libron is bundled. Other named fonts must be installed; unavailable fonts fall back to Libron. Characters outside a font's coverage use system fallback fonts. Font changes apply immediately in both windows.",
+    "reset": "Reset fonts to Libron"
+  },
+  "languagePicker": {
+    "search": "ค้นหาภาษา",
+    "addAnother": "เพิ่มอีกภาษา",
+    "remove": "ลบภาษา {{language}}"
+  }
+}
