@@ -25,6 +25,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Thai, Hungarian and Armenian (2026-11-25).** Three new interface
+  languages from upstream. Strings for ZER0's own features are in English
+  until someone translates them, as in every other language.
+
+- **Custom words reach Parakeet (2026-11-25).** Parakeet TDT and RNN-T
+  models now bias their decoding toward your custom words (the engine's new
+  phrase boosting) instead of having the text corrected afterwards, the way
+  Whisper, Qwen3-ASR, FunASR-Nano, Granite and MOSS already did. Live
+  streaming keeps the after-the-fact correction.
+
+- **`--toggle-transcription` starts ZER0 (2026-11-25).** Run while ZER0 is
+  closed, `--toggle-transcription` and `--toggle-post-process` now start it
+  and begin recording; before, the flag was dropped and the first press of a
+  desktop shortcut bound to it did nothing. Ported from upstream.
+
 - **Opus voice notes in Transcribe Files (2026-11-18).** `.opus`, Opus in
   `.ogg` and `.webm` files (the format of most voice messages and browser
   recordings) now transcribe; before, only Vorbis `.ogg` did. Ported from
@@ -890,6 +905,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nothing the idle watcher did not already do.
 
 ### Fixed
+
+- **Feedback sounds on Bluetooth headsets (2026-11-25).** The start and stop
+  chimes let the output device choose its buffer size; some Bluetooth
+  outputs refused the fixed one and every chime failed. Ported from upstream.
+
+- **The tray icon keeps its settings on Linux (2026-11-25).** It has a
+  stable ID now, so desktops such as KDE Plasma remember whether it is shown
+  across launches. Ported from upstream.
+
+- **Builds with Cargo 1.100 and newer (2026-11-25).** Cargo's new build
+  layout made the compiler command line too long for sccache before 0.20
+  (os error 206 on Windows), and moved the engine's DLLs where the old
+  staging did not look. `bun run update` now keeps rustup, the Rust
+  toolchains, bun, sccache and the other cargo tools current along with the
+  dependencies, and the engine finds its DLLs again.
 
 - **Linux and macOS fixes from upstream (2026-11-18).** On Linux the
   default shortcuts no longer use Ctrl+Space (ibus's input-method switch);

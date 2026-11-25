@@ -20,8 +20,11 @@
 // The gate is not the routine. The routine is what a person runs before a
 // commit, and the gate is what git then enforces:
 //
-//   1. `bun run update` — rtk, then every dependency (npm + Cargo) to its
-//      newest PUBLISHED version, **prereleases included**: `--prerelease` is
+//   1. `bun run update` — the toolchain (rustup and every channel Rust
+//      toolchain, bun canary, the cargo-installed tools and sccache), rtk,
+//      then every dependency (npm + Cargo) to its
+//      newest PUBLISHED version, **prereleases included**, then the Playwright
+//      browser that matches: `--prerelease` is
 //      always on in this project, never a flag someone has to remember. The
 //      point is to test the next release against what is actually newest, and
 //      for part of the stack the newest is only ever a prerelease — the Solid 2

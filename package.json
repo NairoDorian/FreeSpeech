@@ -46,6 +46,8 @@
     "update": "bun scripts/update-all.ts",
     "update-deps": "bun scripts/update-deps.ts",
     "update:rtk": "bun scripts/update-rtk.ts",
+    "update:toolchain": "bun scripts/update-toolchain.ts",
+    "update:browsers": "bun scripts/update-playwright-browsers.ts",
     "docs:fetch": "bun scripts/fetch-stack-docs.ts",
     "track:aivorelay": "bun scripts/track-aivorelay.ts",
     "hooks:install": "git config core.hooksPath .githooks",
@@ -53,7 +55,7 @@
     "postinstall": "bun scripts/check-nix-deps.ts"
   },
   "dependencies": {
-    "@solidjs/web": "2.0.1",
+    "@solidjs/web": "2.0.4",
     "@tailwindcss/vite": "4.3.5",
     "@tauri-apps/api": "3.0.0-alpha.3",
     "@tauri-apps/plugin-dialog": "3.0.0-alpha.4",
@@ -62,25 +64,25 @@
     "@tauri-apps/plugin-os": "3.0.0-alpha.3",
     "@tauri-apps/plugin-process": "3.0.0-alpha.3",
     "@tauri-apps/plugin-updater": "3.0.0-alpha.3",
-    "i18next": "27.1.5",
-    "solid-js": "2.0.1",
+    "i18next": "27.2.9",
+    "solid-js": "2.0.4",
     "tailwindcss": "4.3.5",
     "tauri-plugin-macos-permissions-api": "git+https://github.com/NairoDorian/tauri-plugin-macos-permissions.git"
   },
   "devDependencies": {
-    "@playwright/test": "1.66.0-alpha-2026-11-18",
+    "@playwright/test": "1.66.0-alpha-2026-11-25",
     "@solidjs/vite-plugin": "3.0.1",
     "@tauri-apps/cli": "3.0.0-alpha.6",
-    "@types/bun": "1.4.4",
-    "@types/node": "26.6.6",
-    "bun-types": "1.4.5-canary.20261117T141241",
+    "@types/bun": "1.4.5",
+    "@types/node": "26.6.10",
+    "bun-types": "1.4.5-canary.20261125T141208",
     "cheerio": "^1.2.0",
     "eslint-plugin-i18next": "^6.1.5",
-    "oxlint": "1.94.0",
+    "oxlint": "1.95.0",
     "prettier": "4.0.0-alpha.13",
     "turndown": "7.2.5",
     "turndown-plugin-gfm": "^1.0.2",
-    "typescript": "7.1.0-dev.20261118.1",
-    "vite": "8.4.0-beta.1"
+    "typescript": "7.1.0-dev.20261125.1",
+    "vite": "8.4.0-beta.2"
   }
 }

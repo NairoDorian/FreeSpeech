@@ -277,6 +277,40 @@ changed. What it means here:
   change). The CMake build tree is kept, so incremental builds stay
   incremental; the app's own pruning in `build.rs` stays as well.
 
+## Update: 2026-11-25 (engine `60644e11`)
+
+Moved by `bun run update` (the git pin tracks the fork's `main`), from
+`b34474e6`. What changed for the app:
+
+- **Parakeet takes `RunOptions::vocabulary`** (upstream #221, `35d86179`):
+  the TDT and RNN-T greedy decoders use the terms as phrase boosting, and the
+  model advertises `Feature::Vocabulary` for every non-CTC head. ZER0 reads
+  the feature per model (`vocabulary_for_model`), so Parakeet batch runs now
+  send the custom words and skip the fuzzy post-correction with no app change.
+  Streaming and CTC heads ignore the terms; ZER0's live streams never sent
+  them, so they keep the fuzzy correction. Boosting only re-ranks a token the
+  model already chose to emit, so it cannot produce the read-back
+  `echoes_vocabulary` guards against.
+- **Cargo 1.100's build-dir layout** (upstream #264, `4ae6a164`): the
+  binding finds the Windows DLLs under the new per-unit `build/<crate>/<hash>/
+out` folders. Needed by the stable 1.100 / nightly 1.102 toolchains the app
+  now builds with (the app's `build.rs` staged 13 runtime files on the first
+  build).
+- **ggml 1.0.0** (`cfa237c2`, then master `d9fe7bff`, examples only).
+- **System BLAS off by default** (`a0729fa5`): libtranscribe no longer links
+  OpenBLAS on Linux (Apple keeps Accelerate); the engine measured no
+  significant difference. ZER0's deb / rpm bundles still declare
+  `libopenblas0` / `libopenblas.so.0` (`tauri.conf.json`), BUILD.md asks for
+  `libopenblas-dev` and CI checks it is installed: harmless but no longer
+  needed. Drop all three once a Linux build confirms the binary does not link
+  it (Phase 12, no Linux build here). `-DTRANSCRIBE_USE_SYSTEM_BLAS=ON` in
+  `TRANSCRIBE_CMAKE_ARGS` restores the old link.
+- The fork's own lint cleanup for clippy 1.100 / nightly and refreshed
+  dependencies. No API or ABI change the app calls.
+
+Verified: CPU-lane `cargo check`, `clippy --all-targets` and the Rust test
+suite (see the dependency commit).
+
 ## Update: 2026-11-18 (app side, a contract the app now relies on)
 
 - **`ErrorKind::Backend` from run / feed / finalize is now load-bearing.**

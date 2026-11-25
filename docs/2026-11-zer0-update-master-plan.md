@@ -352,6 +352,12 @@ src-tauri/Cargo.lock` must print nothing.
    restore or an install, empties a cache entry before saving it, and prunes
    ggml DLLs the current install does not contain. Build script only, no
    library or API change.
+9. **Fifth bump, 2026-11-25: `b34474e6` → `60644e11`**, by `bun run update`:
+   Parakeet phrase boosting (custom words reach Parakeet through
+   `Feature::Vocabulary`), the Cargo 1.100 build-dir DLL staging fix, ggml
+   1.0.0, system BLAS off by default. See TRANSCRIBE_CPP_INTEGRATION.md's
+   2026-11-25 update; the Linux `libopenblas` bundle dependency is now
+   unneeded and waits for a Linux build (Phase 12).
 
 ---
 

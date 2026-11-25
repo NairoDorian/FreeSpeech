@@ -176,10 +176,29 @@ async function fetchLatestTag(): Promise<string> {
   return latest;
 }
 
+/**
+ * The tag the installed rtk was built from, read from cargo's install record
+ * (`rtk v0.49.0 (https://github.com/rtk-ai/rtk?tag=dev-1.3.0-rc.643#9cc447b2):`).
+ * Null when rtk is not installed through `cargo install --git`, or was
+ * installed from a commit rather than a tag.
+ */
+function installedTag(): string | null {
+  try {
+    const list = execSync("cargo install --list", { encoding: "utf8" });
+    const line = list
+      .split(/\r?\n/)
+      .find((l) => l.startsWith(`${PACKAGE} v`) && l.includes(GIT_URL));
+    return /[?&]tag=([^#)]+)/.exec(line ?? "")?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface Flags {
   tag?: string;
   commit?: boolean;
   check?: boolean;
+  force?: boolean;
   help?: boolean;
 }
 
@@ -198,6 +217,9 @@ function parseFlags(args: string[]): Flags {
       case "--commit":
         out.commit = true;
         break;
+      case "--force":
+        out.force = true;
+        break;
       case "--tag": {
         const value = args[i + 1];
         if (!value) {
@@ -213,15 +235,18 @@ function parseFlags(args: string[]): Flags {
 }
 
 const HELP_TEXT = `
-Usage: bun run update:rtk [--commit] [--tag <tag>] [--check]
+Usage: bun run update:rtk [--commit] [--tag <tag>] [--check] [--force]
 
 Reinstalls RTK at the ABSOLUTE LATEST GitHub release tag or commit:
   cargo install --git ${GIT_URL} ${PACKAGE} [--tag <tag>] --force
+An rtk already built from that tag is left alone (it would be a full rebuild
+for nothing).
 
 Flags:
   --commit      Install from the latest git commit on default branch (HEAD).
   --tag <tag>   Pin an exact tag instead of fetching the latest.
-  --check       Resolve and print the latest tag, then exit without installing.
+  --check       Print the latest and the installed tag, then exit without installing.
+  --force       Reinstall even when the installed rtk is already at that tag.
   --help, -h    Show this usage.
 `;
 
@@ -250,12 +275,26 @@ const run = async (): Promise<void> => {
     throw new Error(`Invalid tag "${tag}" — expected a value like v0.43.0.`);
   }
 
+  const installed = installedTag();
+
   if (flags.check) {
-    console.log(`Latest RTK tag: ${tag}`);
+    console.log(
+      `Latest RTK tag: ${tag} (installed: ${installed ?? "unknown"}` +
+        `${installed === tag ? ", current" : ", would update"})`,
+    );
     return;
   }
 
-  console.log(`Reinstalling RTK at tag ${tag}...`);
+  if (installed === tag && !flags.force) {
+    console.log(
+      `RTK is already at ${tag}; nothing to do (--force reinstalls).`,
+    );
+    return;
+  }
+
+  console.log(
+    `Reinstalling RTK at tag ${tag} (installed: ${installed ?? "unknown"})...`,
+  );
   execSync(`cargo install --git ${GIT_URL} ${PACKAGE} --tag ${tag} --force`, {
     stdio: "inherit",
   });
