@@ -53,6 +53,14 @@ v0.10.1, Live Canvas, the llama.cpp CUDA fix) is
 [`docs/2026-11-zer0-update-master-plan.md`](docs/2026-11-zer0-update-master-plan.md).
 Follow its phase order and fill in its ledger as commits land.
 
+ZER0 is the app that becomes **FreeSpeech** and gets a voice through audio.cpp
+(text-to-speech), while transcribe.cpp keeps speech-to-text; speech.cpp is
+retired. The decisions, the rules for linking a second ggml engine and the
+integration plan are in
+[`docs/2026-11-tts-audiocpp-and-freespeech.md`](docs/2026-11-tts-audiocpp-and-freespeech.md)
+(2026-11-25). The binding lives in `C:/Users/Z/Downloads/PROJECTS/audiocpp-rs`;
+read its `AGENTS.md` and `docs/coexistence.md` before linking it.
+
 ## Performance first
 
 This is a real-time tool. Read [docs/PERFORMANCE.md](docs/PERFORMANCE.md)
