@@ -87,13 +87,14 @@ let audio = result.audio().unwrap();    // &[f32] + sample_rate + channels → r
 ## 5. Open items found during the checkpoint
 
 - **The fork, Windows build bug.** ggml's `GGML_CCACHE` hook wraps the resource compiler in sccache, which cannot run it, so the fork's version resource fails to build whenever sccache is on `PATH`. The fix is to set C/C++ compiler launchers instead (`audiocpp-sys/build.rs` shows how).
-- **The fork, missing upstream commits.** It lacks three official commits:
-  - ggml 1.0.0 (#262);
-  - Parakeet phrase boosting (#221);
-  - the Windows DLL lookup fix for Cargo's new build-dir layout (#264).
+- **The fork, upstream commits.** _Corrected 2026-11-25:_ the fork already contains the official ggml 1.0.0 (#262), Parakeet phrase boosting (#221) and the Windows DLL lookup fix (#264). The handoff to the fork's agent is `transcribe-fork/docs/plans/2026-11-25-speechcpp-archive-handoff.md`.
+- **audio.cpp fixes prepared** on `NairoDorian/audio.cpp` (working copy `../audiocpp-fork`; notes in its untracked `pr-notes/`). None is opened upstream yet. The first two are the section 3 VAD rules:
+  - `framework-bundled-asset-path`: the default VAD is found beside `audiocpp.dll`, so default SenseVoice requests stop failing inside an app;
+  - `silero-vad-offline-resample`: VAD chunking accepts 24, 44.1 and 48 kHz input;
+  - `ggml-cpu-msvc-barrier`: `pause` and a bounded yield in ggml's thread-pool barrier with MSVC (benchmark pending).
 - **audio.cpp pull-request candidates** (`audiocpp-rs/docs/upstream.md`):
   - install rules and a link manifest for its C API;
   - the Rust bindings;
   - an Android build lane;
-  - UTF-8 paths on Windows.
+  - UTF-8 paths on Windows (already proposed upstream by another contributor: #777).
 - **The speech.cpp v7 history** (866 commits) survives only in `Unified_Audio.cpp/_archive/speech.cpp-v7-history.git` once the GitHub repository is deleted. Copy that folder elsewhere first if it should be kept. It holds work that could still feed audio.cpp PRs: Whisper, moonshine_streaming, canary_qwen, granite_nar and medasr engine ports, and a ggml patch stack.
