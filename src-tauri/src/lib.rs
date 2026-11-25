@@ -358,7 +358,10 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     // Choose the appropriate initial icon based on theme
     let initial_icon_path = tray::get_icon_path(initial_theme, tray::TrayIconState::Idle, false);
 
-    let mut tray_builder = TrayIconBuilder::new()
+    // A stable ID: the default one contains the process ID, so on Linux the
+    // AppIndicator / SNI item changed on every launch and KDE Plasma forgot
+    // the user's tray visibility (upstream bdb68c8).
+    let mut tray_builder = TrayIconBuilder::with_id(app_identity::SLUG)
         .tooltip(tray::tray_tooltip())
         .icon_as_template(true);
 
@@ -1419,6 +1422,21 @@ pub fn run(cli_args: CliArgs) {
             let tray_available = settings.show_tray_icon && !cli_args.no_tray;
             if should_force_show || !should_hide || !tray_available {
                 show_main_window(&app_handle);
+            }
+
+            // The app was not running, so no single-instance callback sees a
+            // remote-control flag: act on it here (upstream ca2334c, #2554).
+            // Must stay at the end of setup(): recording starts at once and
+            // needs the managers, the tray and the overlay. `--cancel` has
+            // nothing to cancel on a cold start.
+            if cli_args.toggle_transcription {
+                signal_handle::send_transcription_input(&app_handle, "transcribe", "CLI");
+            } else if cli_args.toggle_post_process {
+                signal_handle::send_transcription_input(
+                    &app_handle,
+                    "transcribe_with_post_process",
+                    "CLI",
+                );
             }
 
             Ok(())

@@ -144,7 +144,7 @@ ZER0 includes an advanced debug mode for development and troubleshooting. Access
 
 ZER0 supports command-line flags for controlling a running instance and customizing startup behavior. These work on all platforms (macOS, Windows, Linux).
 
-**Remote control flags** (sent to an already-running instance via the single-instance plugin):
+**Remote control flags** (sent to an already-running instance via the single-instance plugin; if ZER0 isn't running, the toggle flags start it and begin recording):
 
 ```bash
 zer0 --toggle-transcription    # Toggle recording on/off

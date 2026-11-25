@@ -128,7 +128,7 @@ fn play_audio_file(
             }
 
             match found_device {
-                Some(device) => DeviceSinkBuilder::from_device(device)?.open_stream()?,
+                Some(device) => open_output_sink(device)?,
                 None => {
                     warn!("Device '{}' not found, using default device", device_name);
                     open_default_output_sink()?
@@ -158,7 +158,18 @@ fn play_audio_file(
 /// enumeration finds none.
 fn open_default_output_sink() -> Result<MixerDeviceSink, Box<dyn std::error::Error>> {
     match default_output_endpoint() {
-        Some(endpoint) => Ok(DeviceSinkBuilder::from_device(endpoint.device)?.open_stream()?),
+        Some(endpoint) => open_output_sink(endpoint.device),
         None => Ok(DeviceSinkBuilder::open_default_sink()?),
     }
+}
+
+/// Opens `device` with the buffer size the device chooses. rodio's
+/// `from_device` otherwise requests a fixed ~50 ms buffer (2048 frames at
+/// 48 kHz), which some outputs refuse — Bluetooth headsets that only accept
+/// 14..=1024 frames — so every chime failed with "Error opening the stream
+/// with the OS" (upstream 939c957, #2524).
+fn open_output_sink(device: rodio::Device) -> Result<MixerDeviceSink, Box<dyn std::error::Error>> {
+    Ok(DeviceSinkBuilder::from_device(device)?
+        .with_buffer_size(rodio::cpal::BufferSize::Default)
+        .open_stream()?)
 }

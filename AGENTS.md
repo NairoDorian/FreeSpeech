@@ -1709,7 +1709,7 @@ Backend: `recall/` + `commands/recall.rs`; frontend: `settings/recall/RecallPage
 
 ### Single Instance Architecture
 
-The app enforces single instance behavior — launching when already running brings the settings window to front rather than creating a new process. Remote control flags (`--toggle-transcription`, etc.) work by launching a second instance that sends args to the running instance via `tauri_plugin_single_instance`, then exits.
+The app enforces single instance behavior — launching when already running brings the settings window to front rather than creating a new process. Remote control flags (`--toggle-transcription`, etc.) work by launching a second instance that sends args to the running instance via `tauri_plugin_single_instance`, then exits. If the app isn't running, the toggle flags start it and begin recording; `--cancel` does nothing.
 
 ## Internationalization (i18n)
 
@@ -1804,8 +1804,8 @@ ZER0 supports command-line parameters on all platforms for integration with scri
 
 | Flag                                              | Description                                                                                                                                                                                |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--toggle-transcription`                          | Toggle recording on/off on a running instance                                                                                                                                              |
-| `--toggle-post-process`                           | Toggle recording with post-processing on/off                                                                                                                                               |
+| `--toggle-transcription`                          | Toggle recording on/off; starts the app and begins recording if it is not running                                                                                                          |
+| `--toggle-post-process`                           | Toggle recording with post-processing on/off; also starts the app if it is not running                                                                                                     |
 | `--cancel`                                        | Cancel the current operation on a running instance                                                                                                                                         |
 | `--start-hidden`                                  | Launch without showing the main window (tray icon visible)                                                                                                                                 |
 | `--no-tray`                                       | Launch without system tray (closing window quits the app)                                                                                                                                  |
@@ -1821,7 +1821,9 @@ ZER0 supports command-line parameters on all platforms for integration with scri
 **Key design decisions:**
 
 - CLI flags are runtime-only overrides — they do NOT modify persisted settings
-- Remote control flags work via `tauri_plugin_single_instance`: second instance sends args, then exits
+- Remote control flags work via `tauri_plugin_single_instance`: second instance sends args, then exits.
+  On a cold start no callback runs, so the end of `setup()` sends the toggle
+  itself (upstream `ca2334c`); `--cancel` does nothing then
 - `send_transcription_input()` in `signal_handle.rs` is shared between signal handlers and CLI
 
 ## Debug Mode
