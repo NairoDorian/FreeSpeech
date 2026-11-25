@@ -1,5 +1,5 @@
 use crate::managers::history::HistoryManager;
-use crate::managers::model::{ModelInfo, ModelManager, default_quant_file};
+use crate::managers::model::{ModelDownloadFailed, ModelInfo, ModelManager, default_quant_file};
 use crate::managers::transcription::{
     BenchmarkResult, ModelStateEvent, ModelStateKind, StreamingBenchmarkResult,
     TranscriptionManager,
@@ -198,8 +198,11 @@ pub async fn download_model(
         // historically been undiagnosable because logs showed nothing (#1579).
         error!("Model download failed for {}: {}", model_id, error);
         let _ = app_handle.emit(
-            "model-download-failed",
-            serde_json::json!({ "model_id": &model_id, "error": error }),
+            ModelDownloadFailed::NAME,
+            ModelDownloadFailed {
+                model_id: model_id.clone(),
+                error: error.clone(),
+            },
         );
     }
 

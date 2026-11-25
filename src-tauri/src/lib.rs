@@ -520,7 +520,10 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     });
     // A download or a delete can change what the Language submenu offers: the
     // language detector arriving makes Auto usable.
-    for event in ["model-download-complete", "model-deleted"] {
+    for event in [
+        managers::model::ModelDownloadComplete::NAME,
+        managers::model::ModelDeleted::NAME,
+    ] {
         let app_handle_for_listener = app_handle.clone();
         app_handle.listen(event, move |_| {
             tray::update_tray_menu(&app_handle_for_listener);
@@ -1101,6 +1104,14 @@ pub fn run(cli_args: CliArgs) {
             managers::transcription::StreamPhaseEvent,
             managers::transcription::ModelStateEvent,
             managers::transcription::BenchmarkProgressEvent,
+            managers::model::DownloadProgress,
+            managers::model::ModelDownloadComplete,
+            managers::model::ModelDownloadCancelled,
+            managers::model::ModelDownloadFailed,
+            managers::model::ModelVerificationStarted,
+            managers::model::ModelVerificationCompleted,
+            managers::model::ModelDeleted,
+            managers::model::ModelsUpdated,
             managers::statistics::StatisticsUpdatedEvent,
             overlay::SpeechActivityEvent,
             managers::audio::VadTestEvent,

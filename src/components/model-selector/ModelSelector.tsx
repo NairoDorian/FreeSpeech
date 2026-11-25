@@ -7,7 +7,6 @@ import {
   onSettled,
 } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
-import { listen } from "@tauri-apps/api/event";
 import {
   Cpu,
   Gauge,
@@ -154,8 +153,7 @@ const ModelSelector = (props: ModelSelectorProps): JSX.Element => {
           break;
       }
     });
-    const downloadCompleteUnlisten = listen<string>(
-      "model-download-complete",
+    const downloadCompleteUnlisten = events.modelDownloadComplete.listen(
       (event) => {
         const modelId = event.payload;
         setPendingDownloads((prev) => {

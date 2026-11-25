@@ -7,8 +7,7 @@ import {
   onSettled,
 } from "solid-js";
 import type { JSX } from "@solidjs/web";
-import { listen } from "@tauri-apps/api/event";
-import { commands, type LanguageStatus } from "@/bindings";
+import { commands, events, type LanguageStatus } from "@/bindings";
 import { useTranslation } from "@/i18n/useTranslation";
 import { SettingContainer } from "../ui/SettingContainer";
 import { ToggleSwitch } from "../ui/ToggleSwitch";
@@ -69,12 +68,14 @@ export const SpokenLanguages = (props: SpokenLanguagesProps): JSX.Element => {
   onSettled(() => {
     let cancelled = false;
     let unlisten: (() => void) | undefined;
-    listen<string>("model-download-complete", () => {
-      void refreshStatus();
-    }).then((fn) => {
-      if (cancelled) fn();
-      else unlisten = fn;
-    });
+    events.modelDownloadComplete
+      .listen(() => {
+        void refreshStatus();
+      })
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
+      });
     return () => {
       cancelled = true;
       unlisten?.();

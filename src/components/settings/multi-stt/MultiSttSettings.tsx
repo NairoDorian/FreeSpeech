@@ -7,7 +7,6 @@ import {
   onSettled,
 } from "solid-js";
 import { useTranslation, TranslatedMarkup } from "@/i18n/useTranslation";
-import { listen } from "@tauri-apps/api/event";
 import { sessionToast as toast } from "@/lib/sessionToast";
 import {
   type ModelInfo,
@@ -429,12 +428,14 @@ export const MultiSttSettings = () => {
   onSettled(() => {
     let cancelled = false;
     let unlisten: (() => void) | undefined;
-    listen<string>("model-download-complete", () => {
-      void refreshLanguageStatuses();
-    }).then((fn) => {
-      if (cancelled) fn();
-      else unlisten = fn;
-    });
+    events.modelDownloadComplete
+      .listen(() => {
+        void refreshLanguageStatuses();
+      })
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
+      });
     return () => {
       cancelled = true;
       unlisten?.();

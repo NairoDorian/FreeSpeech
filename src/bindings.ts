@@ -635,7 +635,15 @@ export const events = {
 	liveModeTranscriptEvent: makeEvent<LiveModeTranscriptEvent, LiveModeTranscriptEvent>("live-mode-transcript-event"),
 	llamaDownloadEvent: makeEvent<LlamaDownloadEvent_Serialize, LlamaDownloadEvent_Deserialize>("llama-download-event"),
 	llamaServerStateEvent: makeEvent<LlamaServerStateEvent_Serialize, LlamaServerStateEvent_Deserialize>("llama-server-state-event"),
+	modelDeleted: makeEvent<ModelDeleted, ModelDeleted>("model-deleted"),
+	modelDownloadCancelled: makeEvent<ModelDownloadCancelled, ModelDownloadCancelled>("model-download-cancelled"),
+	modelDownloadComplete: makeEvent<ModelDownloadComplete, ModelDownloadComplete>("model-download-complete"),
+	modelDownloadFailed: makeEvent<ModelDownloadFailed, ModelDownloadFailed>("model-download-failed"),
+	modelDownloadProgress: makeEvent<DownloadProgress, DownloadProgress>("model-download-progress"),
 	modelStateChanged: makeEvent<ModelStateEvent_Serialize, ModelStateEvent_Deserialize>("model-state-changed"),
+	modelVerificationCompleted: makeEvent<ModelVerificationCompleted, ModelVerificationCompleted>("model-verification-completed"),
+	modelVerificationStarted: makeEvent<ModelVerificationStarted, ModelVerificationStarted>("model-verification-started"),
+	modelsUpdated: makeEvent<ModelsUpdated, ModelsUpdated>("models-updated"),
 	multiSttStreamChunkFailedEvent: makeEvent<MultiSttStreamChunkFailedEvent, MultiSttStreamChunkFailedEvent>("multi-stt-stream-chunk-failed-event"),
 	noticesChanged: makeEvent<NoticesChanged_Serialize, NoticesChanged_Deserialize>("notices-changed"),
 	recallInsertTextEvent: makeEvent<RecallInsertTextEvent, RecallInsertTextEvent>("recall-insert-text-event"),
@@ -1683,6 +1691,14 @@ export type CudaToolkitInfo_Serialize = {
 export type CustomSounds = {
 	start: boolean,
 	stop: boolean,
+};
+
+/**  Download progress of one model (`model-download-progress`). */
+export type DownloadProgress = {
+	model_id: string,
+	downloaded: number | null,
+	total: number | null,
+	percentage: number | null,
 };
 
 export type DurationMetricSummary = DurationMetricSummary_Serialize | DurationMetricSummary_Deserialize;
@@ -3020,6 +3036,21 @@ export type MicIdleTimeoutUnit = "seconds" | "minutes";
  */
 export type ModelBackendSetting = "auto" | "cpu" | "cuda" | "vulkan" | "vulkan_nvidia" | "vulkan_intel" | "metal" | "rocm";
 
+/**  A model's files were deleted (`model-deleted`); payload: the id. */
+export type ModelDeleted = string;
+
+/**  A download was cancelled (`model-download-cancelled`); payload: the id. */
+export type ModelDownloadCancelled = string;
+
+/**  A model finished downloading (`model-download-complete`); payload: its id. */
+export type ModelDownloadComplete = string;
+
+/**  A download failed (`model-download-failed`). */
+export type ModelDownloadFailed = {
+	model_id: string,
+	error: string,
+};
+
 export type ModelInfo = ModelInfo_Serialize | ModelInfo_Deserialize;
 
 export type ModelInfo_Deserialize = {
@@ -3190,6 +3221,18 @@ export type ModelStateKind = "loading_started" | "loading_completed" | "loading_
 "selection_changed" | "multi_stt_model_loaded" | "multi_stt_model_load_failed" | "multi_stt_model_unloaded";
 
 export type ModelUnloadTimeout = "never" | "immediately" | "min2" | "min5" | "min10" | "min15" | "hour1" | "sec15";
+
+/**  The checksum verification finished (`model-verification-completed`). */
+export type ModelVerificationCompleted = string;
+
+/**
+ *  A downloaded file's checksum is being verified
+ *  (`model-verification-started`); payload: the id.
+ */
+export type ModelVerificationStarted = string;
+
+/**  The model list changed on disk (`models-updated`); no payload. */
+export type ModelsUpdated = null;
 
 /**
  *  One extra Multi-STT slot: slot `n` of `multi_stt_extra_models` is

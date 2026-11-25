@@ -317,7 +317,7 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       });
     });
 
-    listen<string>("model-download-complete", (event) => {
+    events.modelDownloadComplete.listen((event) => {
       const modelId = event.payload;
       set((state) => {
         delete state.downloadingModels[modelId];
@@ -328,36 +328,33 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       get().loadModels();
     });
 
-    listen<{ model_id: string; error: string }>(
-      "model-download-failed",
-      (event) => {
-        const { model_id: modelId, error } = event.payload;
-        set((state) => {
-          delete state.downloadingModels[modelId];
-          delete state.verifyingModels[modelId];
-          delete state.downloadProgress[modelId];
-          delete state.downloadStats[modelId];
-          state.error = error;
-        });
-        toast.error(error);
-      },
-    );
+    events.modelDownloadFailed.listen((event) => {
+      const { model_id: modelId, error } = event.payload;
+      set((state) => {
+        delete state.downloadingModels[modelId];
+        delete state.verifyingModels[modelId];
+        delete state.downloadProgress[modelId];
+        delete state.downloadStats[modelId];
+        state.error = error;
+      });
+      toast.error(error);
+    });
 
-    listen<string>("model-verification-started", (event) => {
+    events.modelVerificationStarted.listen((event) => {
       const modelId = event.payload;
       set((state) => {
         state.verifyingModels[modelId] = true;
       });
     });
 
-    listen<string>("model-verification-completed", (event) => {
+    events.modelVerificationCompleted.listen((event) => {
       const modelId = event.payload;
       set((state) => {
         delete state.verifyingModels[modelId];
       });
     });
 
-    listen<string>("model-download-cancelled", (event) => {
+    events.modelDownloadCancelled.listen((event) => {
       const modelId = event.payload;
       set((state) => {
         delete state.downloadingModels[modelId];
@@ -367,7 +364,7 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       });
     });
 
-    listen<string>("model-deleted", () => {
+    events.modelDeleted.listen(() => {
       get().loadModels();
       get().loadCurrentModel();
     });
@@ -377,7 +374,7 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       get().loadCurrentModel();
     });
 
-    listen("models-updated", () => {
+    events.modelsUpdated.listen(() => {
       get().loadModels();
       get().loadCurrentModel();
     });

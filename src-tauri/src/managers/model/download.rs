@@ -3,7 +3,7 @@
 //! Both legacy URL models and Hugging Face mirror fallbacks use this module;
 //! source-specific orchestration and finalization remain in the parent module.
 
-use super::{DownloadProgress, ModelManager};
+use super::{DownloadProgress, ModelManager, ModelVerificationCompleted, ModelVerificationStarted};
 use anyhow::Result;
 use futures_util::StreamExt;
 use log::{info, warn};
@@ -14,6 +14,7 @@ use std::io::{Read, Write};
 use std::path::Path;
 use std::time::{Duration, Instant};
 use tauri::Emitter;
+use tauri_specta::Event;
 use tokio_util::sync::CancellationToken;
 
 /// Bound on connection setup for direct HTTP downloads (mirror + URL models).
@@ -143,13 +144,13 @@ impl ModelManager {
             &move |event| {
                 let _ = match event {
                     HttpDownloadEvent::Progress(progress) => {
-                        app_handle.emit("model-download-progress", progress)
+                        app_handle.emit(DownloadProgress::NAME, progress)
                     }
                     HttpDownloadEvent::VerificationStarted => {
-                        app_handle.emit("model-verification-started", &id)
+                        app_handle.emit(ModelVerificationStarted::NAME, &id)
                     }
                     HttpDownloadEvent::VerificationCompleted => {
-                        app_handle.emit("model-verification-completed", &id)
+                        app_handle.emit(ModelVerificationCompleted::NAME, &id)
                     }
                 };
             },

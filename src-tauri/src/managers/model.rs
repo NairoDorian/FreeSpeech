@@ -15,6 +15,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, Manager};
+use tauri_specta::Event;
 use tokio_util::sync::CancellationToken;
 
 mod download;
@@ -407,7 +408,54 @@ pub fn effective_language(
     recognition_language(&supported_languages[0]).to_string()
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+// The model lifecycle events, typed so `bindings.ts` carries their names and
+// payloads (`events.modelDownloadComplete.listen(…)`) instead of each
+// listener spelling both. Emitted as `app.emit(Event::NAME, payload)`: an id
+// event's payload is the id itself, which is exactly what its one-field
+// struct serializes to, so the wire format is the one the app always used.
+
+/// A model finished downloading (`model-download-complete`); payload: its id.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-download-complete")]
+pub struct ModelDownloadComplete(pub String);
+
+/// A download was cancelled (`model-download-cancelled`); payload: the id.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-download-cancelled")]
+pub struct ModelDownloadCancelled(pub String);
+
+/// A download failed (`model-download-failed`).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-download-failed")]
+pub struct ModelDownloadFailed {
+    pub model_id: String,
+    pub error: String,
+}
+
+/// A downloaded file's checksum is being verified
+/// (`model-verification-started`); payload: the id.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-verification-started")]
+pub struct ModelVerificationStarted(pub String);
+
+/// The checksum verification finished (`model-verification-completed`).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-verification-completed")]
+pub struct ModelVerificationCompleted(pub String);
+
+/// A model's files were deleted (`model-deleted`); payload: the id.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-deleted")]
+pub struct ModelDeleted(pub String);
+
+/// The model list changed on disk (`models-updated`); no payload.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "models-updated")]
+pub struct ModelsUpdated;
+
+/// Download progress of one model (`model-download-progress`).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-download-progress")]
 pub struct DownloadProgress {
     pub model_id: String,
     // Byte counts stay u64 in Rust (catalog files exceed 4 GiB) and cross to
@@ -738,7 +786,7 @@ impl HfDownloadProgress {
             0.0
         };
         let _ = self.app_handle.emit(
-            "model-download-progress",
+            DownloadProgress::NAME,
             &DownloadProgress {
                 model_id: self.model_id.clone(),
                 downloaded,
@@ -1192,7 +1240,7 @@ impl ModelManager {
         if added > 0 {
             info!("Model rescan discovered {} new model(s)", added);
         }
-        let _ = self.app_handle.emit("models-updated", ());
+        let _ = self.app_handle.emit(ModelsUpdated::NAME, ());
         Ok(())
     }
 
@@ -1248,7 +1296,7 @@ impl ModelManager {
                 .map_err(|e| anyhow::anyhow!("Failed to finalize the language detector: {e}"))
                 .map(|()| {
                     info!("Language detector downloaded to {}", final_path.display());
-                    let _ = self.app_handle.emit("model-download-complete", d.id);
+                    let _ = self.app_handle.emit(ModelDownloadComplete::NAME, d.id);
                 }),
             Ok(HttpDownloadOutcome::Cancelled) => Ok(()),
             Err(e) => Err(e),
@@ -1881,7 +1929,7 @@ impl ModelManager {
             || self.models_dir.join(&filename).exists()
         {
             self.update_download_status()?;
-            let _ = self.app_handle.emit("model-download-complete", &model_id);
+            let _ = self.app_handle.emit(ModelDownloadComplete::NAME, &model_id);
             return Ok(());
         }
 
@@ -2105,7 +2153,7 @@ impl ModelManager {
         cleanup.disarmed = true;
         self.update_download_status()?;
         self.cancel_flags.lock().unwrap().remove(&model_id);
-        let _ = self.app_handle.emit("model-download-complete", &model_id);
+        let _ = self.app_handle.emit(ModelDownloadComplete::NAME, &model_id);
         info!("HF model {} downloaded", model_id);
         Ok(())
     }
@@ -2270,7 +2318,7 @@ impl ModelManager {
         self.cancel_flags.lock().unwrap().remove(model_id);
 
         // Emit completion event
-        let _ = self.app_handle.emit("model-download-complete", model_id);
+        let _ = self.app_handle.emit(ModelDownloadComplete::NAME, model_id);
 
         info!(
             "Successfully downloaded model {} to {:?}",
@@ -2333,11 +2381,11 @@ impl ModelManager {
                 ),
                 Ok(true) => {}
                 Err(e) => {
-                    let _ = self.app_handle.emit("model-deleted", model_id);
+                    let _ = self.app_handle.emit(ModelDeleted::NAME, model_id);
                     return Err(e.into());
                 }
             }
-            let _ = self.app_handle.emit("model-deleted", model_id);
+            let _ = self.app_handle.emit(ModelDeleted::NAME, model_id);
             return Ok(());
         }
 
@@ -2382,7 +2430,7 @@ impl ModelManager {
         }
 
         // Emit event to notify UI
-        let _ = self.app_handle.emit("model-deleted", model_id);
+        let _ = self.app_handle.emit(ModelDeleted::NAME, model_id);
 
         Ok(())
     }
@@ -2416,7 +2464,7 @@ impl ModelManager {
         // Keep the persisted preference here: an already-loaded engine may
         // still be usable, and re-downloading this model should restore it.
         // Startup and explicit Rescan perform the broader selection cleanup.
-        let _ = self.app_handle.emit("models-updated", ());
+        let _ = self.app_handle.emit(ModelsUpdated::NAME, ());
     }
 
     pub fn get_model_path(&self, model_id: &str) -> Result<PathBuf> {
@@ -2507,7 +2555,7 @@ impl ModelManager {
         self.update_download_status()?;
 
         // Emit cancellation event so all UI components can clear their state
-        let _ = self.app_handle.emit("model-download-cancelled", model_id);
+        let _ = self.app_handle.emit(ModelDownloadCancelled::NAME, model_id);
 
         info!("Download cancellation initiated for: {}", model_id);
         Ok(())
