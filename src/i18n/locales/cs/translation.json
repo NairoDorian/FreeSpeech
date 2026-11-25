@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Mikrofon je tichý",
     "microphoneSilent": "Mikrofon posílá jen ticho. Zkontrolujte, že není ztlumený, nebo vyberte jiný mikrofon v Nastavení.",
     "pasteBlockedElevatedTitle": "Nelze vložit do aplikace správce",
-    "pasteBlockedElevated": "Aktivní aplikace běží jako správce, takže do ní {{app}} nemůže vkládat. Přepis můžete zkopírovat z Historie."
+    "pasteBlockedElevated": "Aktivní aplikace běží jako správce, takže do ní {{app}} nemůže vkládat. Přepis můžete zkopírovat z Historie.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} chyba",

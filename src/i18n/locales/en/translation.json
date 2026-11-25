@@ -2021,7 +2021,9 @@
     "microphoneSilentTitle": "Microphone Is Silent",
     "microphoneSilent": "Your microphone sent only silence. Check that it isn't muted, or choose a different microphone in Settings.",
     "pasteBlockedElevatedTitle": "Can't Paste into Admin Apps",
-    "pasteBlockedElevated": "The active application is running as administrator, so {{app}} can't paste into it. You can copy the transcript from History."
+    "pasteBlockedElevated": "The active application is running as administrator, so {{app}} can't paste into it. You can copy the transcript from History.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} error",

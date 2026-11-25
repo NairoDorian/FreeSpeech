@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Mikrofonen är tyst",
     "microphoneSilent": "Mikrofonen skickade bara tystnad. Kontrollera att den inte är avstängd, eller välj en annan mikrofon under Inställningar.",
     "pasteBlockedElevatedTitle": "Kan inte klistra in i admin-appar",
-    "pasteBlockedElevated": "Det aktiva programmet körs som administratör, så {{app}} kan inte klistra in i det. Du kan kopiera transkriptionen från Historik."
+    "pasteBlockedElevated": "Det aktiva programmet körs som administratör, så {{app}} kan inte klistra in i det. Du kan kopiera transkriptionen från Historik.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} fel",

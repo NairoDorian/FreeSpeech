@@ -137,12 +137,17 @@ asset-protocol.md, capabilities.md; plugin/store.md):
 are `onSettled`; one component-body `onCleanup` remains in `LiveCanvas.tsx`,
 which is allowed there. The same pass took the Playwright run's Solid 2
 diagnostics from ~640 to **0** (`STRICT_READ_UNTRACKED`,
-`IMMUTABLE_UPDATE_IN_STORE`); see CHANGELOG. 22. Props-destructure sweep (`WhatsNewModal`, `StreamingLatencyControl`,
+`IMMUTABLE_UPDATE_IN_STORE`); see CHANGELOG. 22. ~~Props-destructure sweep (`WhatsNewModal`, `StreamingLatencyControl`,
 `QuantizationPanel`, `ModelDropdown`, `HotkeyGroup`, `ModelSelector.onError`,
 `WhatsNewPreview`, static-config selectors), with `untrack` annotations
-for intentional snapshots (`OverlayScope.tsx:580`). 23. Wrap `renderSettingsContent` per-section (and footer) in the existing
+for intentional snapshots (`OverlayScope.tsx:580`).~~ **Done** (checked
+2026-11-27): the one destructuring component left, History's row, is a
+documented snapshot of a plain signal whose updates replace the entry. 23. ~~Wrap `renderSettingsContent` per-section (and footer) in the existing
 `ErrorBoundary` with a visible fallback — today any settings-page throw
-blanks the window. 24. Pilot conversions: one effect-fetch → async memo under `Loading`;
+blanks the window.~~ **Landed 2026-11-27**: each page renders inside a
+keyed `<Show>` + `ErrorBoundary visible` (the error and a retry in place of
+the page; switching pages starts fresh), the status bar inside a silent one.
+Verified by making a page throw. 24. Pilot conversions: one effect-fetch → async memo under `Loading`;
 `updateBinding` → `action` + optimistic primitives (pattern-setters; no
 wholesale store rewrite).
 

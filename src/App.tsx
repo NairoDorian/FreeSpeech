@@ -376,16 +376,30 @@ function App() {
                         <AccessibilityPermissions />
                         <SecureInputWarning />
                         <QuickHelp activeSection={currentSection()} />
-                        {renderSettingsContent(
-                          currentSection(),
-                          setOnboardingPreview,
-                        )}
+                        {/* Keyed: each page gets its own boundary, so a
+                            page that failed is not still failed after a
+                            switch to another one and back. */}
+                        <Show when={currentSection()} keyed>
+                          {(section) => (
+                            <ErrorBoundary
+                              context={`the ${section} page`}
+                              visible
+                            >
+                              {renderSettingsContent(
+                                section,
+                                setOnboardingPreview,
+                              )}
+                            </ErrorBoundary>
+                          )}
+                        </Show>
                       </div>
                     </div>
                   </div>
                   <HotkeySidebar />
                 </div>
-                <Footer />
+                <ErrorBoundary context="the status bar">
+                  <Footer />
+                </ErrorBoundary>
               </div>
             }
           >

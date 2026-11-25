@@ -2021,7 +2021,9 @@
     "microphoneSilentTitle": "Microfoon is stil",
     "microphoneSilent": "Je microfoon stuurde alleen stilte. Controleer of hij niet gedempt is, of kies een andere microfoon via Instellingen.",
     "pasteBlockedElevatedTitle": "Kan niet plakken in admin-apps",
-    "pasteBlockedElevated": "De actieve applicatie draait als administrator, dus {{app}} kan er niet in plakken. Je kunt de transcriptie kopiëren vanuit Geschiedenis."
+    "pasteBlockedElevated": "De actieve applicatie draait als administrator, dus {{app}} kan er niet in plakken. Je kunt de transcriptie kopiëren vanuit Geschiedenis.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} fout",

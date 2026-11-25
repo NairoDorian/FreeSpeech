@@ -2021,7 +2021,9 @@
     "microphoneSilentTitle": "Mikrofon Senyap",
     "microphoneSilent": "Mikrofon Anda hanya mengirim keheningan. Pastikan mikrofon tidak dibisukan, atau pilih mikrofon lain di Pengaturan.",
     "pasteBlockedElevatedTitle": "Gagal Tempel ke Aplikasi Admin",
-    "pasteBlockedElevated": "Aplikasi aktif berjalan sebagai administrator, jadi {{app}} tidak dapat menempel ke dalamnya. Anda dapat menyalin transkrip dari Riwayat."
+    "pasteBlockedElevated": "Aplikasi aktif berjalan sebagai administrator, jadi {{app}} tidak dapat menempel ke dalamnya. Anda dapat menyalin transkrip dari Riwayat.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} kesalahan",

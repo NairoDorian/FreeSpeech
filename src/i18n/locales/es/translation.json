@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "El micrófono está en silencio",
     "microphoneSilent": "Tu micrófono solo envió silencio. Comprueba que no esté silenciado o elige otro micrófono en Configuración.",
     "pasteBlockedElevatedTitle": "No se puede pegar en apps admin",
-    "pasteBlockedElevated": "La aplicación activa se ejecuta como administrador, así que {{app}} no puede pegar en ella. Puedes copiar la transcripción desde Historial."
+    "pasteBlockedElevated": "La aplicación activa se ejecuta como administrador, así que {{app}} no puede pegar en ella. Puedes copiar la transcripción desde Historial.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} error",

@@ -2021,7 +2021,9 @@
     "microphoneSilentTitle": "A mikrofon néma",
     "microphoneSilent": "A mikrofonod csak csendet küldött. Ellenőrizd, hogy nincs-e némítva, vagy válassz másik mikrofont a Beállításokban.",
     "pasteBlockedElevatedTitle": "Rendszergazdai alkalmazásba nem lehet beilleszteni",
-    "pasteBlockedElevated": "Az aktív alkalmazás rendszergazdaként fut, ezért a {{app}} nem tud beilleszteni bele. Az átiratot az Előzményekből másolhatod ki."
+    "pasteBlockedElevated": "Az aktív alkalmazás rendszergazdaként fut, ezért a {{app}} nem tud beilleszteni bele. Az átiratot az Előzményekből másolhatod ki.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} hiba",

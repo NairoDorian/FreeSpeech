@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Mikrofon sessiz",
     "microphoneSilent": "Mikrofonunuz yalnızca sessizlik gönderdi. Sesinin kapalı olmadığını kontrol edin veya Ayarlar'dan başka bir mikrofon seçin.",
     "pasteBlockedElevatedTitle": "Yapıştırma engellendi",
-    "pasteBlockedElevated": "Etkin uygulama yönetici olarak çalışıyor, bu yüzden {{app}} içine yapıştıramıyor. Metni Geçmiş'ten kopyalayabilirsiniz."
+    "pasteBlockedElevated": "Etkin uygulama yönetici olarak çalışıyor, bu yüzden {{app}} içine yapıştıramıyor. Metni Geçmiş'ten kopyalayabilirsiniz.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} hata",

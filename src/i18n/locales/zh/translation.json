@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "麦克风没有声音",
     "microphoneSilent": "麦克风只传来了静音。请检查它是否已静音，或在 设置 中选择其他麦克风。",
     "pasteBlockedElevatedTitle": "无法粘贴到管理员应用",
-    "pasteBlockedElevated": "当前活动的应用程序以管理员身份运行，因此 {{app}} 无法粘贴到其中。可以从历史记录中复制转录内容。"
+    "pasteBlockedElevated": "当前活动的应用程序以管理员身份运行，因此 {{app}} 无法粘贴到其中。可以从历史记录中复制转录内容。",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} 个错误",

@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "الميكروفون صامت",
     "microphoneSilent": "لم يرسل الميكروفون سوى الصمت. تأكد من أنه غير مكتوم، أو اختر ميكروفونًا آخر من الإعدادات.",
     "pasteBlockedElevatedTitle": "تعذر اللصق في تطبيقات المسؤول",
-    "pasteBlockedElevated": "التطبيق النشط يعمل بصلاحيات المسؤول، لذا لا يستطيع {{app}} اللصق فيه. يمكنك نسخ النص من السجل."
+    "pasteBlockedElevated": "التطبيق النشط يعمل بصلاحيات المسؤول، لذا لا يستطيع {{app}} اللصق فيه. يمكنك نسخ النص من السجل.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} خطأ",

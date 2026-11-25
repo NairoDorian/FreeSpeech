@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "O microfone está mudo",
     "microphoneSilent": "Seu microfone enviou apenas silêncio. Verifique se ele não está silenciado ou escolha outro microfone em Configurações.",
     "pasteBlockedElevatedTitle": "Colagem bloqueada por app admin",
-    "pasteBlockedElevated": "O aplicativo ativo está sendo executado como administrador, então o {{app}} não consegue colar nele. Você pode copiar a transcrição do Histórico."
+    "pasteBlockedElevated": "O aplicativo ativo está sendo executado como administrador, então o {{app}} não consegue colar nele. Você pode copiar a transcrição do Histórico.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} erro",

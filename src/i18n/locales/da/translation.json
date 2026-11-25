@@ -2021,7 +2021,9 @@
     "microphoneSilentTitle": "Mikrofonen er tavs",
     "microphoneSilent": "Mikrofonen sendte kun stilhed. Tjek, at den ikke er slået fra, eller vælg en anden mikrofon under Indstillinger.",
     "pasteBlockedElevatedTitle": "Kan ikke indsætte i admin-apps",
-    "pasteBlockedElevated": "Det aktive program kører som administrator, så {{app}} kan ikke indsætte i det. Du kan kopiere transskriptionen fra Historik."
+    "pasteBlockedElevated": "Det aktive program kører som administrator, så {{app}} kan ikke indsætte i det. Du kan kopiere transskriptionen fra Historik.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} fejl",

@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Micrô không có âm thanh",
     "microphoneSilent": "Micrô chỉ gửi về khoảng lặng. Hãy kiểm tra xem micrô có bị tắt tiếng không, hoặc chọn micrô khác trong Cài đặt.",
     "pasteBlockedElevatedTitle": "Không thể dán vào ứng dụng admin",
-    "pasteBlockedElevated": "Ứng dụng đang hoạt động chạy với quyền quản trị viên nên {{app}} không thể dán vào đó. Bạn có thể sao chép bản chép lời từ Lịch sử."
+    "pasteBlockedElevated": "Ứng dụng đang hoạt động chạy với quyền quản trị viên nên {{app}} không thể dán vào đó. Bạn có thể sao chép bản chép lời từ Lịch sử.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} lỗi",

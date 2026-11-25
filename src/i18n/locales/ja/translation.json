@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "マイクが無音です",
     "microphoneSilent": "マイクから無音しか届いていません。ミュートになっていないか確認するか、設定で別のマイクを選択してください。",
     "pasteBlockedElevatedTitle": "管理者アプリに貼り付けできません",
-    "pasteBlockedElevated": "アクティブなアプリが管理者として実行されているため、{{app}} は貼り付けできません。文字起こしは履歴からコピーできます。"
+    "pasteBlockedElevated": "アクティブなアプリが管理者として実行されているため、{{app}} は貼り付けできません。文字起こしは履歴からコピーできます。",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "エラー {{n}} 件",

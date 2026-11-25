@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "המיקרופון שקט",
     "microphoneSilent": "המיקרופון שלח רק שקט. ודאו שהוא לא מושתק, או בחרו מיקרופון אחר בהגדרות.",
     "pasteBlockedElevatedTitle": "לא ניתן להדביק ביישומי מנהל",
-    "pasteBlockedElevated": "היישום הפעיל רץ כמנהל מערכת, ולכן {{app}} לא יכול להדביק בו. אפשר להעתיק את התמלול מההיסטוריה."
+    "pasteBlockedElevated": "היישום הפעיל רץ כמנהל מערכת, ולכן {{app}} לא יכול להדביק בו. אפשר להעתיק את התמלול מההיסטוריה.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} שגיאה",

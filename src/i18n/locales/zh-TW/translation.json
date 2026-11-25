@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "麥克風沒有聲音",
     "microphoneSilent": "麥克風只傳來靜音。請檢查是否已靜音，或在 設定 中選擇其他麥克風。",
     "pasteBlockedElevatedTitle": "無法貼上到系統管理員應用程式",
-    "pasteBlockedElevated": "目前作用中的應用程式以系統管理員身分執行，因此 {{app}} 無法貼上到其中。可以從歷史紀錄中複製轉錄內容。"
+    "pasteBlockedElevated": "目前作用中的應用程式以系統管理員身分執行，因此 {{app}} 無法貼上到其中。可以從歷史紀錄中複製轉錄內容。",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} 個錯誤",

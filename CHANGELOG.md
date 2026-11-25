@@ -920,6 +920,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A settings page that fails no longer blanks the window (2026-11-27).**
+  An error while rendering one page used to unmount the whole settings
+  window. Now that page shows what failed with a "Try again" button, and the
+  sidebar, the status bar and every other page keep working.
+
 - **A dictation that runs past the model's limit keeps its text
   (2026-11-27).** When a model reached its output limit, or the engine cut a
   loop of repeated words, the whole recording failed and nothing was pasted.

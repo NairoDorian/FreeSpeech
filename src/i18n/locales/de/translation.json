@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Mikrofon ist stumm",
     "microphoneSilent": "Dein Mikrofon hat nur Stille geliefert. Prüfe, ob es stummgeschaltet ist, oder wähle unter Einstellungen ein anderes Mikrofon.",
     "pasteBlockedElevatedTitle": "Kein Einfügen in Admin-Apps",
-    "pasteBlockedElevated": "Die aktive Anwendung läuft als Administrator, daher kann {{app}} dort nichts einfügen. Du kannst das Transkript aus dem Verlauf kopieren."
+    "pasteBlockedElevated": "Die aktive Anwendung läuft als Administrator, daher kann {{app}} dort nichts einfügen. Du kannst das Transkript aus dem Verlauf kopieren.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} Fehler",

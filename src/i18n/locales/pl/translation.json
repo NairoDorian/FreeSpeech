@@ -2018,7 +2018,9 @@
     "microphoneSilentTitle": "Mikrofon milczy",
     "microphoneSilent": "Mikrofon przesyła tylko ciszę. Sprawdź, czy nie jest wyciszony, lub wybierz inny mikrofon w Ustawieniach.",
     "pasteBlockedElevatedTitle": "Nie można wkleić do aplikacji admina",
-    "pasteBlockedElevated": "Aktywna aplikacja działa jako administrator, więc {{app}} nie może do niej wklejać. Transkrypcję możesz skopiować z Historii."
+    "pasteBlockedElevated": "Aktywna aplikacja działa jako administrator, więc {{app}} nie może do niej wklejać. Transkrypcję możesz skopiować z Historii.",
+    "pageFailed": "This page failed to load: {{message}}",
+    "pageFailedRetry": "Try again"
   },
   "notices": {
     "errorOne": "{{n}} błąd",
