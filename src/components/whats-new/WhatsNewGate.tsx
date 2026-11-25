@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, createEffect, createMemo, Show } from "solid-js";
 
 import { getVersion } from "@tauri-apps/api/app";
 import { useSettings } from "../../hooks/useSettings";
@@ -12,17 +12,32 @@ export const WhatsNewGate = () => {
   const [isOpen, setIsOpen] = createSignal(false);
   let dismissedVersionRef: string | null = null;
 
-  // The compute phase is the dependency list: reading the settings there is
-  // what makes the gate re-evaluate once they load (they are null at mount)
-  // and on every later settings change.
+  // The two settings the gate depends on, as plain values. The memo is the
+  // dependency list: it re-evaluates once settings load (they are null at
+  // mount) and on every settings refresh — each one replaces the whole node —
+  // but its `equals` passes the effect only a change in one of these fields.
+  // The effect's apply phase is untracked, so it is handed values rather than
+  // the settings store to read fields from.
+  const gate = createMemo(
+    () => {
+      const current = settings();
+      return {
+        ready: !isLoading() && current !== null,
+        enabled: current?.show_whats_new_on_update ?? false,
+        lastSeenVersion: current?.whats_new_last_seen_version ?? "",
+      };
+    },
+    {
+      equals: (a, b) =>
+        a.ready === b.ready &&
+        a.enabled === b.enabled &&
+        a.lastSeenVersion === b.lastSeenVersion,
+    },
+  );
   createEffect(
-    () => ({ settings: settings(), loading: isLoading() }) as const,
-    ({ settings: currentSettings, loading }) => {
-      if (
-        loading ||
-        !currentSettings ||
-        !currentSettings.show_whats_new_on_update
-      ) {
+    () => gate(),
+    ({ ready, enabled, lastSeenVersion }) => {
+      if (!ready || !enabled) {
         setIsOpen(false);
         setNote(null);
         return;
@@ -37,7 +52,7 @@ export const WhatsNewGate = () => {
 
           const releaseNote = findReleaseNoteToShow({
             currentVersion,
-            lastSeenVersion: currentSettings.whats_new_last_seen_version ?? "",
+            lastSeenVersion,
           });
 
           if (!releaseNote || dismissedVersionRef === releaseNote.version) {

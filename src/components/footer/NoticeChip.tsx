@@ -1,5 +1,5 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role */
-import { createEffect, For, Show } from "solid-js";
+import { createEffect, For, Show, onSettled } from "solid-js";
 import { listen } from "@tauri-apps/api/event";
 import type { Notice } from "@/bindings";
 import { TriangleAlert, X } from "@/components/icons/lucide";
@@ -20,17 +20,14 @@ function NoticeChip() {
   const store = useNoticeStore();
   let root: HTMLDivElement | undefined;
 
-  createEffect(
-    () => undefined,
-    () => {
-      void store.initialize();
-      // The tray's notice line opens the window on the panel.
-      const unlisten = listen("open-notices", () => store.setPanelOpen(true));
-      return () => {
-        void unlisten.then((fn) => fn());
-      };
-    },
-  );
+  onSettled(() => {
+    void store.initialize();
+    // The tray's notice line opens the window on the panel.
+    const unlisten = listen("open-notices", () => store.setPanelOpen(true));
+    return () => {
+      void unlisten.then((fn) => fn());
+    };
+  });
 
   createEffect(
     () => store.panelOpen,
@@ -121,7 +118,9 @@ function NoticeChip() {
             <div class="max-h-[50vh] divide-y divide-mid-gray/15 overflow-y-auto">
               <For each={store.notices}>
                 {(notice) => {
-                  const display = noticeDisplay(notice.code);
+                  // An accessor: notices carry no `id`, so a refreshed list is
+                  // merged by position and a row's notice can change its code.
+                  const display = () => noticeDisplay(notice.code);
                   return (
                     <div class="flex items-start gap-2.5 px-3 py-2.5 whitespace-normal">
                       <TriangleAlert
@@ -129,9 +128,9 @@ function NoticeChip() {
                       />
                       <div class="min-w-0 flex-1 select-text break-words text-xs text-text/70">
                         <p class="text-sm font-medium text-text">
-                          {t(display.title)}
+                          {t(display().title)}
                         </p>
-                        <Show when={display.explanation}>
+                        <Show when={display().explanation}>
                           {(explain) => <p class="mt-0.5">{explain()(t)}</p>}
                         </Show>
                         <Show when={notice.detail}>

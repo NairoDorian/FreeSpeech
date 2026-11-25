@@ -585,6 +585,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Settings and every page react to exactly what changed (2026-11-27).**
+  Changing one setting used to rebuild the whole settings object in the
+  interface, so every settings control re-checked itself; now only the
+  controls that show that setting update, and edited fields such as a
+  prompt you are typing are no longer reset by an unrelated setting
+  changing. Under the hood this is a Solid 2 correctness pass that takes the
+  framework's reactivity warnings from about 640 per test run to none: store
+  actions are kept out of the reactive store, updates are merged instead of
+  replaced, the 42 mount effects use Solid 2's `onSettled`, and a dozen
+  components read their reactive values where Solid tracks them. Toasts past
+  the third are dropped as a new one arrives instead of by an effect, and
+  Live Mode, the Live Canvas, the overlay's analyser and the What's New
+  check each stopped reading values in places that would not update.
+
 - **The engine owns voice activity detection and noise suppression
   (2026-11-17).** The capture path's Earshot is now transcribe.cpp's speech
   gate (`transcribe_cpp::VadGate`: SIMD Earshot, the two-threshold hysteresis,

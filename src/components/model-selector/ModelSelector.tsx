@@ -4,6 +4,7 @@ import {
   createMemo,
   createUniqueId,
   Show,
+  onSettled,
 } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { listen } from "@tauri-apps/api/event";
@@ -127,71 +128,68 @@ const ModelSelector = (props: ModelSelectorProps): JSX.Element => {
     },
   );
 
-  createEffect(
-    () => undefined,
-    () => {
-      // The post-download auto-select waits 500 ms; a timer still pending at
-      // unmount must not switch the model behind a component that is gone.
-      const autoSelectTimers = new Set<ReturnType<typeof setTimeout>>();
-      const modelStateUnlisten = listen<ModelStateEvent>(
-        "model-state-changed",
-        (event) => {
-          const { event_type, error } = event.payload;
-          switch (event_type) {
-            case "loading_started":
-              setModelStatus("loading");
+  onSettled(() => {
+    // The post-download auto-select waits 500 ms; a timer still pending at
+    // unmount must not switch the model behind a component that is gone.
+    const autoSelectTimers = new Set<ReturnType<typeof setTimeout>>();
+    const modelStateUnlisten = listen<ModelStateEvent>(
+      "model-state-changed",
+      (event) => {
+        const { event_type, error } = event.payload;
+        switch (event_type) {
+          case "loading_started":
+            setModelStatus("loading");
+            setModelError(null);
+            break;
+          case "loading_completed":
+            setModelStatus("ready");
+            setModelError(null);
+            setPendingModelId(null);
+            break;
+          case "loading_failed":
+            setModelStatus("error");
+            setModelError(error || t("modelSelector.errors.loadFailed"));
+            setPendingModelId(null);
+            break;
+          case "unloaded":
+            setModelStatus("unloaded");
+            setModelError(null);
+            break;
+        }
+      },
+    );
+    const downloadCompleteUnlisten = listen<string>(
+      "model-download-complete",
+      (event) => {
+        const modelId = event.payload;
+        setPendingDownloads((prev) => {
+          if (!prev.has(modelId)) return prev;
+          const next = new Set(prev);
+          next.delete(modelId);
+          return next;
+        });
+        const timer = setTimeout(async () => {
+          autoSelectTimers.delete(timer);
+          try {
+            const isRecording = await commands.isRecording();
+            if (!isRecording) {
+              setPendingModelId(modelId);
               setModelError(null);
-              break;
-            case "loading_completed":
-              setModelStatus("ready");
-              setModelError(null);
-              setPendingModelId(null);
-              break;
-            case "loading_failed":
-              setModelStatus("error");
-              setModelError(error || t("modelSelector.errors.loadFailed"));
-              setPendingModelId(null);
-              break;
-            case "unloaded":
-              setModelStatus("unloaded");
-              setModelError(null);
-              break;
-          }
-        },
-      );
-      const downloadCompleteUnlisten = listen<string>(
-        "model-download-complete",
-        (event) => {
-          const modelId = event.payload;
-          setPendingDownloads((prev) => {
-            if (!prev.has(modelId)) return prev;
-            const next = new Set(prev);
-            next.delete(modelId);
-            return next;
-          });
-          const timer = setTimeout(async () => {
-            autoSelectTimers.delete(timer);
-            try {
-              const isRecording = await commands.isRecording();
-              if (!isRecording) {
-                setPendingModelId(modelId);
-                setModelError(null);
-                const success = await selectModel(modelId);
-                if (!success) setPendingModelId(null);
-              }
-            } catch {}
-          }, 500);
-          autoSelectTimers.add(timer);
-        },
-      );
-      return () => {
-        for (const timer of autoSelectTimers) clearTimeout(timer);
-        autoSelectTimers.clear();
-        modelStateUnlisten.then((fn) => fn());
-        downloadCompleteUnlisten.then((fn) => fn());
-      };
-    },
-  );
+              const success = await selectModel(modelId);
+              if (!success) setPendingModelId(null);
+            }
+          } catch {}
+        }, 500);
+        autoSelectTimers.add(timer);
+      },
+    );
+    return () => {
+      for (const timer of autoSelectTimers) clearTimeout(timer);
+      autoSelectTimers.clear();
+      modelStateUnlisten.then((fn) => fn());
+      downloadCompleteUnlisten.then((fn) => fn());
+    };
+  });
 
   createEffect(
     () => openPanel(),

@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { commands, events, type SystemStatsEvent } from "@/bindings";
 import { clampPercent } from "@/lib/utils/format";
@@ -39,29 +39,26 @@ function SystemMeters() {
   const { t } = useTranslation();
   const [stats, setStats] = createSignal<SystemStatsEvent | null>(null);
 
-  createEffect(
-    () => undefined,
-    () => {
-      let cancelled = false;
-      let unlisten: (() => void) | undefined;
-      commands
-        .getSystemStats()
-        .then((s) => {
-          if (!cancelled && s) setStats(s);
-        })
-        .catch(() => {});
-      events.systemStatsEvent
-        .listen((event) => setStats(event.payload))
-        .then((fn) => {
-          if (cancelled) fn();
-          else unlisten = fn;
-        });
-      return () => {
-        cancelled = true;
-        unlisten?.();
-      };
-    },
-  );
+  onSettled(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+    commands
+      .getSystemStats()
+      .then((s) => {
+        if (!cancelled && s) setStats(s);
+      })
+      .catch(() => {});
+    events.systemStatsEvent
+      .listen((event) => setStats(event.payload))
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
+      });
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  });
 
   return (
     <Show when={stats()}>

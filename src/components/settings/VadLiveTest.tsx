@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, createEffect, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { sessionToast as toast } from "@/lib/sessionToast";
 import { commands } from "@/bindings";
@@ -67,14 +67,11 @@ export const VadLiveTest = (props: VadLiveTestProps): JSX.Element => {
     },
   );
 
-  createEffect(
-    () => undefined,
-    () => {
-      return () => {
-        if (running()) void commands.stopVadTest();
-      };
-    },
-  );
+  onSettled(() => {
+    return () => {
+      if (running()) void commands.stopVadTest();
+    };
+  });
 
   return (
     <Show when={vadEnabled()}>

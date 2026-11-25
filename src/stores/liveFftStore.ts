@@ -108,7 +108,6 @@ interface LiveFftStore {
   status: LiveFftStatus;
   /** Frequency of every output bin; replaced only when its version moves. */
   axis: SpectrumAxis;
-  initialized: boolean;
   /** Hold the last frame on screen; the poll pauses meanwhile. */
   frozen: boolean;
 
@@ -228,13 +227,11 @@ const liveFftState = createSolidStore<LiveFftStore>((set) => {
   return {
     status: IDLE_FFT_STATUS,
     axis: EMPTY_AXIS,
-    initialized: false,
     frozen: false,
 
     initialize: async () => {
       if (initialized) return;
       initialized = true;
-      set({ initialized: true });
       if (typeof document !== "undefined") {
         document.addEventListener("visibilitychange", syncPoll);
       }

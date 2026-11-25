@@ -38,7 +38,6 @@ interface LiveModeStore {
   viewing: LiveSessionInfo | null;
   viewingText: string;
   defaultOutputDir: string | null;
-  initialized: boolean;
 
   initialize: () => Promise<void>;
   start: () => Promise<string | null>;
@@ -59,6 +58,12 @@ interface LiveModeStore {
  * very long session from growing the webview without limit; the oldest characters
  * dropped here are still on disk.
  */
+// A once-guard for `initialize`, not state: nothing renders it, and as a
+// store field every check was a tracked store read from an effect's apply
+// half (Solid 2's STRICT_READ_UNTRACKED). Set before the first await, so a
+// second early call cannot register the listeners twice.
+let initialized = false;
+
 const liveModeState = createSolidStore<LiveModeStore>((set, get) => ({
   status: IDLE_STATUS,
   stable: "",
@@ -67,11 +72,10 @@ const liveModeState = createSolidStore<LiveModeStore>((set, get) => ({
   viewing: null,
   viewingText: "",
   defaultOutputDir: null,
-  initialized: false,
 
   initialize: async () => {
-    if (get().initialized) return;
-    set({ initialized: true });
+    if (initialized) return;
+    initialized = true;
     await events.liveModeStateEvent.listen((event) => {
       const status = event.payload.status;
       const wasActive = isLiveActive(get().status);

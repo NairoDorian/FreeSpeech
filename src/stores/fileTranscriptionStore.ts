@@ -47,7 +47,6 @@ interface FileTranscriptionStore {
   items: QueueItem[];
   running: boolean;
   jobId: number | null;
-  initialized: boolean;
 
   initialize: () => Promise<void>;
   addPaths: (paths: string[]) => number;
@@ -96,16 +95,21 @@ const applyEvent = (
  * page) because the job keeps running in the backend while the user browses
  * other pages; the event listener is installed once and survives unmounts.
  */
+// A once-guard for `initialize`, not state: nothing renders it, and as a
+// store field every check was a tracked store read from an effect's apply
+// half (Solid 2's STRICT_READ_UNTRACKED). Set before the first await, so a
+// second early call cannot register the listeners twice.
+let initialized = false;
+
 const fileTranscriptionState = createSolidStore<FileTranscriptionStore>(
   (set, get) => ({
     items: [],
     running: false,
     jobId: null,
-    initialized: false,
 
     initialize: async () => {
-      if (get().initialized) return;
-      set({ initialized: true });
+      if (initialized) return;
+      initialized = true;
       await events.fileTranscriptionEvent.listen((event) => {
         const payload = event.payload;
         // `start` marks the store running before the start command replies,

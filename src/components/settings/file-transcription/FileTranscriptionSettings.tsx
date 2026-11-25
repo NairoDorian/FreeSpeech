@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, For } from "solid-js";
+import { createSignal, createMemo, For, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { open } from "@tauri-apps/plugin-dialog";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
@@ -246,12 +246,9 @@ export const FileTranscriptionSettings = () => {
   const saveOptions = (patch: Partial<FileTranscriptionSettingsType>) =>
     updateSetting("file_transcription", { ...options(), ...patch });
 
-  createEffect(
-    () => undefined,
-    () => {
-      void store.initialize();
-    },
-  );
+  onSettled(() => {
+    void store.initialize();
+  });
 
   const addFolder = async (folder: string) => {
     const result = await commands.listAudioFilesInFolder(
@@ -296,36 +293,33 @@ export const FileTranscriptionSettings = () => {
 
   // Installed once for the page's lifetime; the handler itself ignores drops
   // while a run is in progress.
-  createEffect(
-    () => undefined,
-    () => {
-      let disposed = false;
-      let unlisten: (() => void) | null = null;
-      getCurrentWebviewWindow()
-        .onDragDropEvent((event) => {
-          if (store.running) return;
-          if (event.payload.type === "enter" || event.payload.type === "over") {
-            setDragOver(true);
-          } else if (event.payload.type === "leave") {
-            setDragOver(false);
-          } else if (event.payload.type === "drop") {
-            setDragOver(false);
-            void addDropped(event.payload.paths);
-          }
-        })
-        .then((fn) => {
-          if (disposed) fn();
-          else unlisten = fn;
-        })
-        .catch((error) =>
-          console.error("Drag & drop listener unavailable:", error),
-        );
-      return () => {
-        disposed = true;
-        unlisten?.();
-      };
-    },
-  );
+  onSettled(() => {
+    let disposed = false;
+    let unlisten: (() => void) | null = null;
+    getCurrentWebviewWindow()
+      .onDragDropEvent((event) => {
+        if (store.running) return;
+        if (event.payload.type === "enter" || event.payload.type === "over") {
+          setDragOver(true);
+        } else if (event.payload.type === "leave") {
+          setDragOver(false);
+        } else if (event.payload.type === "drop") {
+          setDragOver(false);
+          void addDropped(event.payload.paths);
+        }
+      })
+      .then((fn) => {
+        if (disposed) fn();
+        else unlisten = fn;
+      })
+      .catch((error) =>
+        console.error("Drag & drop listener unavailable:", error),
+      );
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
+  });
 
   const pickFiles = async () => {
     const selection = await open({

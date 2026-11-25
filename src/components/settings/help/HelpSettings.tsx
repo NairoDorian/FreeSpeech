@@ -257,14 +257,19 @@ export const HelpSettings = () => {
             <>
               {renderEntry(section, 2, `${i() + 1}.`)}
               <Show when={section.subsections}>
+                {/* The entry is inside JSX, not returned from the callback:
+                    the indices are accessors, and a callback body is not
+                    tracked. */}
                 <For each={section.subsections}>
-                  {(sub, j) =>
-                    renderEntry(
-                      sub,
-                      3,
-                      `${i() + 1}${String.fromCharCode(97 + j())}.`,
-                    )
-                  }
+                  {(sub, j) => (
+                    <>
+                      {renderEntry(
+                        sub,
+                        3,
+                        `${i() + 1}${String.fromCharCode(97 + j())}.`,
+                      )}
+                    </>
+                  )}
                 </For>
               </Show>
             </>

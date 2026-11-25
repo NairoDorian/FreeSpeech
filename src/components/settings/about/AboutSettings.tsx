@@ -12,23 +12,20 @@ import { AccentColorSelector } from "../AccentColorSelector";
 import { FontSettings } from "../FontSettings";
 import { LogDirectory } from "../debug";
 import { REPO_URL } from "@/lib/appIdentity";
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 
 export const AboutSettings = () => {
   const { t } = useTranslation();
   const [version, setVersion] = createSignal("");
 
-  createEffect(
-    () => undefined,
-    () => {
-      getVersion()
-        .then(setVersion)
-        .catch((error) => {
-          console.error("Failed to get app version:", error);
-          setVersion("");
-        });
-    },
-  );
+  onSettled(() => {
+    getVersion()
+      .then(setVersion)
+      .catch((error) => {
+        console.error("Failed to get app version:", error);
+        setVersion("");
+      });
+  });
 
   return (
     <div class="max-w-3xl w-full mx-auto space-y-6">

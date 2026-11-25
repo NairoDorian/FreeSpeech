@@ -28,7 +28,6 @@ interface ModelsStore {
   downloadStats: Record<string, DownloadStats>;
   loading: boolean;
   error: string | null;
-  initialized: boolean;
   isRescanning: boolean;
 
   // Actions
@@ -58,6 +57,12 @@ interface ModelsStore {
   setDownloadStats: (downloadStats: Record<string, DownloadStats>) => void;
 }
 
+// A once-guard for `initialize`, not state: nothing renders it, and as a
+// store field every check was a tracked store read from an effect's apply
+// half (Solid 2's STRICT_READ_UNTRACKED). Set before the first await, so a
+// second early call cannot register the listeners twice.
+let initialized = false;
+
 const modelState = createSolidStore<ModelsStore>((set, get) => ({
   models: [],
   currentModel: "",
@@ -67,7 +72,6 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
   downloadStats: {},
   loading: true,
   error: null,
-  initialized: false,
   isRescanning: false,
 
   // Internal setters
@@ -263,7 +267,8 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
   },
 
   initialize: async () => {
-    if (get().initialized) return;
+    if (initialized) return;
+    initialized = true;
 
     const { loadModels, loadCurrentModel } = get();
 
@@ -376,8 +381,6 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       get().loadModels();
       get().loadCurrentModel();
     });
-
-    set({ initialized: true });
   },
 }));
 

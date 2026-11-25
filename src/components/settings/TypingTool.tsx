@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { Dropdown } from "../ui/Dropdown";
 import { SettingContainer } from "../ui/SettingContainer";
@@ -28,18 +28,15 @@ export const TypingToolSetting = (props: TypingToolProps) => {
     null,
   );
 
-  createEffect(
-    () => undefined,
-    () => {
-      if (osType !== "linux") return;
-      commands
-        .getAvailableTypingTools()
-        .then(setAvailableTools)
-        .catch(() => {
-          setAvailableTools(["auto"]);
-        });
-    },
-  );
+  onSettled(() => {
+    if (osType !== "linux") return;
+    commands
+      .getAvailableTypingTools()
+      .then(setAvailableTools)
+      .catch(() => {
+        setAvailableTools(["auto"]);
+      });
+  });
 
   return (
     <Show when={osType === "linux" && getSetting("paste_method") === "direct"}>

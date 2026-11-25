@@ -36,7 +36,6 @@ interface LlamaStore {
   driverCuda: string | null;
   commandPreview: string;
   commandError: string | null;
-  initialized: boolean;
 
   initialize: () => Promise<void>;
   refreshState: () => Promise<void>;
@@ -57,6 +56,12 @@ interface LlamaStore {
   removeInstalled: (dir: string) => Promise<void>;
 }
 
+// A once-guard for `initialize`, not state: nothing renders it, and as a
+// store field every check was a tracked store read from an effect's apply
+// half (Solid 2's STRICT_READ_UNTRACKED). Set before the first await, so a
+// second early call cannot register the listeners twice.
+let initialized = false;
+
 const llamaState = createSolidStore<LlamaStore>((set, get) => ({
   state: null,
   logs: [],
@@ -70,11 +75,10 @@ const llamaState = createSolidStore<LlamaStore>((set, get) => ({
   cudaToolkit: null,
   commandPreview: "",
   commandError: null,
-  initialized: false,
 
   initialize: async () => {
-    if (get().initialized) return;
-    set({ initialized: true });
+    if (initialized) return;
+    initialized = true;
     await events.llamaServerStateEvent.listen((event) => {
       set({ state: event.payload });
     });

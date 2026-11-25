@@ -35,24 +35,37 @@ interface ToastStore {
   toasts: ToastRecord[];
 }
 
+/**
+ * How many toasts are on screen at once. A new toast past the limit drops the
+ * oldest one here, where it is added, rather than in an effect that watched
+ * the queue and dismissed the overflow after the fact (one extra render of the
+ * whole list per toast, and every read in its untracked apply half flagged).
+ */
+export const VISIBLE_TOASTS = 3;
+
 let nextToastId = 1;
 
 const [toastStore, setToastStore] = createStore<ToastStore>({
   toasts: [],
 });
 
+// Draft writes, the Solid 2 store setter's own form: only the entries that
+// change notify, and `<For>` keeps the rows of the toasts that stay.
 export function show(level: ToastLevel, content: ToastContent): number {
   const id = nextToastId++;
-  setToastStore((state) => ({
-    toasts: [...state.toasts, { id, level, ...content }],
-  }));
+  setToastStore((state) => {
+    state.toasts.push({ id, level, ...content });
+    const overflow = state.toasts.length - VISIBLE_TOASTS;
+    if (overflow > 0) state.toasts.splice(0, overflow);
+  });
   return id;
 }
 
 export function dismiss(id: number): void {
-  setToastStore((state) => ({
-    toasts: state.toasts.filter((toast) => toast.id !== id),
-  }));
+  setToastStore((state) => {
+    const index = state.toasts.findIndex((toast) => toast.id === id);
+    if (index >= 0) state.toasts.splice(index, 1);
+  });
 }
 
 export function useToastStore() {

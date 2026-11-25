@@ -162,9 +162,9 @@ export const LlamaSettings = () => {
 
   // Logs are polled only while this page shows them.
   createEffect(
-    () => [showLogs(), store.state?.status],
-    () => {
-      if (!showLogs()) return;
+    () => [showLogs(), store.state?.status] as const,
+    ([visible]) => {
+      if (!visible) return;
       void store.refreshLogs();
       const id = window.setInterval(
         () => void store.refreshLogs(),

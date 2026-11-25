@@ -1,4 +1,11 @@
-import { createSignal, createEffect, createMemo, For, Show } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  Show,
+  onSettled,
+} from "solid-js";
 import { useTranslation, TranslatedMarkup } from "@/i18n/useTranslation";
 import { listen } from "@tauri-apps/api/event";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -420,23 +427,20 @@ export const MultiSttSettings = () => {
       void refreshLanguageStatuses();
     },
   );
-  createEffect(
-    () => undefined,
-    () => {
-      let cancelled = false;
-      let unlisten: (() => void) | undefined;
-      listen<string>("model-download-complete", () => {
-        void refreshLanguageStatuses();
-      }).then((fn) => {
-        if (cancelled) fn();
-        else unlisten = fn;
-      });
-      return () => {
-        cancelled = true;
-        unlisten?.();
-      };
-    },
-  );
+  onSettled(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+    listen<string>("model-download-complete", () => {
+      void refreshLanguageStatuses();
+    }).then((fn) => {
+      if (cancelled) fn();
+      else unlisten = fn;
+    });
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  });
   const downloadDetector = async () => {
     setDetectorDownloading(true);
     try {
@@ -474,34 +478,28 @@ export const MultiSttSettings = () => {
     }
   };
 
-  createEffect(
-    () => undefined,
-    () => {
-      fetchLoadedExtraModels();
-      const unlisten = listen<ModelStateEvent>(
-        "model-state-changed",
-        (event) => {
-          const { event_type, model_id } = event.payload;
-          if (event_type === "multi_stt_model_loaded" && model_id) {
-            setLoadedExtraModels((prev) => {
-              const next = new Set(prev);
-              next.add(model_id);
-              return next;
-            });
-          } else if (event_type === "multi_stt_model_unloaded" && model_id) {
-            setLoadedExtraModels((prev) => {
-              const next = new Set(prev);
-              next.delete(model_id);
-              return next;
-            });
-          }
-        },
-      );
-      return () => {
-        unlisten.then((fn) => fn());
-      };
-    },
-  );
+  onSettled(() => {
+    fetchLoadedExtraModels();
+    const unlisten = listen<ModelStateEvent>("model-state-changed", (event) => {
+      const { event_type, model_id } = event.payload;
+      if (event_type === "multi_stt_model_loaded" && model_id) {
+        setLoadedExtraModels((prev) => {
+          const next = new Set(prev);
+          next.add(model_id);
+          return next;
+        });
+      } else if (event_type === "multi_stt_model_unloaded" && model_id) {
+        setLoadedExtraModels((prev) => {
+          const next = new Set(prev);
+          next.delete(model_id);
+          return next;
+        });
+      }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  });
 
   const downloadedModels = createMemo(() =>
     models().filter((m) => m.is_downloaded || m.is_custom),
@@ -555,16 +553,17 @@ export const MultiSttSettings = () => {
         .join(", "),
     });
 
+  // Seed the drafts from the saved merge prompt. The compute reads the fields
+  // themselves, not the prompt object: a settings refresh merges into the
+  // store, so a changed prompt keeps its object, and the apply is untracked.
   createEffect(
-    () => multiSttMergePrompt(),
-    (prompt) => {
-      if (prompt) {
-        setDraftName(prompt.name || "");
-        setDraftText(prompt.prompt || "");
-      } else {
-        setDraftName("");
-        setDraftText("");
-      }
+    () => {
+      const prompt = multiSttMergePrompt();
+      return { name: prompt?.name || "", text: prompt?.prompt || "" };
+    },
+    ({ name, text }) => {
+      setDraftName(name);
+      setDraftText(text);
     },
   );
 

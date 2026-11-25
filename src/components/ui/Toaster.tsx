@@ -1,10 +1,9 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, jsx-a11y/no-noninteractive-element-interactions */
-import { createSignal, createEffect, For } from "solid-js";
+import { createSignal, createEffect, For, onSettled } from "solid-js";
 import { useToastStore, type ToastRecord, dismiss } from "@/stores/toastStore";
 import type { JSX } from "@solidjs/web";
 
 const TOAST_DURATION_MS = 4000;
-const VISIBLE_TOASTS = 3;
 const TRANSITION_MS = 200;
 
 const CONTAINER_CLASS =
@@ -31,12 +30,9 @@ const ToastItem = (props: ToastItemProps): JSX.Element => {
   const remaining = { current: TOAST_DURATION_MS };
   const deadline = { current: 0 };
 
-  createEffect(
-    () => undefined,
-    () => {
-      setEntered(true);
-    },
-  );
+  onSettled(() => {
+    setEntered(true);
+  });
 
   // The auto-dismiss timer, keyed on what blocks it. Hover or keyboard focus
   // parks the countdown rather than restarting it: `remaining` is whatever was
@@ -99,22 +95,11 @@ const ToastItem = (props: ToastItemProps): JSX.Element => {
 
 export const Toaster = (): JSX.Element => {
   const store = useToastStore();
-  // Accessors, not snapshots. A Solid component body runs once, so capturing
-  // `store.toasts` here would freeze the list at whatever it held at mount and
-  // no toast would ever appear.
-  const visibleToasts = () => store.toasts.slice(-VISIBLE_TOASTS);
-
-  createEffect(
-    () => store.toasts.length,
-    () => {
-      for (const toast of store.toasts.slice(0, -VISIBLE_TOASTS))
-        dismiss(toast.id);
-    },
-  );
-
+  // Read in the `each` binding, not the body: a body-level `store.toasts`
+  // would freeze the list at mount. The store keeps at most VISIBLE_TOASTS.
   return (
     <div class={CONTAINER_CLASS}>
-      <For each={visibleToasts()}>
+      <For each={store.toasts}>
         {(toast) => <ToastItem toast={toast} onDismiss={dismiss} />}
       </For>
     </div>

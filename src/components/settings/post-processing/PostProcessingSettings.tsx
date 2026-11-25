@@ -194,18 +194,21 @@ const PostProcessingSettingsPromptsComponent = (): JSX.Element => {
   const selectedPrompt = () =>
     prompts().find((prompt) => prompt.id === selectedPromptId()) || null;
 
+  // Seed the drafts from the selected prompt's saved text. The compute reads
+  // the fields themselves, not the prompt object: a settings refresh merges
+  // into the store, so an edited prompt keeps its object, and the apply half
+  // is untracked. Null while a new prompt is being written — the drafts are
+  // that prompt's then — so leaving creation re-seeds them.
   createEffect(
-    () => selectedPrompt(),
-    (prompt) => {
-      if (isCreating()) return;
-
-      if (prompt) {
-        setDraftName(prompt.name);
-        setDraftText(prompt.prompt);
-      } else {
-        setDraftName("");
-        setDraftText("");
-      }
+    () => {
+      if (isCreating()) return null;
+      const prompt = selectedPrompt();
+      return { name: prompt?.name ?? "", text: prompt?.prompt ?? "" };
+    },
+    (saved) => {
+      if (!saved) return;
+      setDraftName(saved.name);
+      setDraftText(saved.text);
     },
   );
 

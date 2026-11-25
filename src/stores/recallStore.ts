@@ -22,7 +22,6 @@ const parseTags = (tags: string): string[] =>
 interface RecallStore {
   notes: RecallNoteMeta[];
   vault: RecallVaultInfo | null;
-  initialized: boolean;
 
   /** Encryption state of the vault, or null until first read. */
   encryption: { enabled: boolean; unlocked: boolean } | null;
@@ -68,10 +67,15 @@ const EMPTY_DRAFT: RecallDraft = { title: "", tags: "", body: "" };
  * event stream — so this store installs no listeners and nothing survives a
  * reload except what the backend has written.
  */
+// A once-guard for `initialize`, not state: nothing renders it, and as a
+// store field every check was a tracked store read from an effect's apply
+// half (Solid 2's STRICT_READ_UNTRACKED). Set before the first await, so a
+// second early call cannot register the listeners twice.
+let initialized = false;
+
 const recallState = createSolidStore<RecallStore>((set, get) => ({
   notes: [],
   vault: null,
-  initialized: false,
 
   encryption: null,
 
@@ -82,8 +86,8 @@ const recallState = createSolidStore<RecallStore>((set, get) => ({
   dictate: "idle",
 
   initialize: async () => {
-    if (get().initialized) return;
-    set({ initialized: true });
+    if (initialized) return;
+    initialized = true;
     await get().refresh();
   },
 

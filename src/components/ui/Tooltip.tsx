@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { Portal } from "@solidjs/web";
 
@@ -74,12 +74,9 @@ export const Tooltip = (props: TooltipProps): JSX.Element => {
     setCoords({ top, left, arrowLeft, actualPosition });
   };
 
-  createEffect(
-    () => undefined,
-    () => {
-      updatePosition();
-    },
-  );
+  onSettled(() => {
+    updatePosition();
+  });
 
   return (
     <Portal mount={document.body}>

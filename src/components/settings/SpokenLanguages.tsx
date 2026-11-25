@@ -1,4 +1,11 @@
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Show,
+  onSettled,
+} from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { listen } from "@tauri-apps/api/event";
 import { commands, type LanguageStatus } from "@/bindings";
@@ -59,23 +66,20 @@ export const SpokenLanguages = (props: SpokenLanguagesProps): JSX.Element => {
       void refreshStatus();
     },
   );
-  createEffect(
-    () => undefined,
-    () => {
-      let cancelled = false;
-      let unlisten: (() => void) | undefined;
-      listen<string>("model-download-complete", () => {
-        void refreshStatus();
-      }).then((fn) => {
-        if (cancelled) fn();
-        else unlisten = fn;
-      });
-      return () => {
-        cancelled = true;
-        unlisten?.();
-      };
-    },
-  );
+  onSettled(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+    listen<string>("model-download-complete", () => {
+      void refreshStatus();
+    }).then((fn) => {
+      if (cancelled) fn();
+      else unlisten = fn;
+    });
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  });
 
   const downloadDetector = async () => {
     setDownloading(true);
@@ -91,20 +95,17 @@ export const SpokenLanguages = (props: SpokenLanguagesProps): JSX.Element => {
   // applied on its own: the list is the engine's allowlist, so the user
   // confirms it (upstream backfills it from the same guess instead).
   const [suggestion, setSuggestion] = createSignal<string[]>([]);
-  createEffect(
-    () => undefined,
-    () => {
-      let cancelled = false;
-      void commands.getSystemLanguages().then((result) => {
-        if (cancelled) return;
-        const tags = result.status === "ok" ? result.data : [];
-        setSuggestion(suggestedSpokenLanguages([...tags, navigator.language]));
-      });
-      return () => {
-        cancelled = true;
-      };
-    },
-  );
+  onSettled(() => {
+    let cancelled = false;
+    void commands.getSystemLanguages().then((result) => {
+      if (cancelled) return;
+      const tags = result.status === "ok" ? result.data : [];
+      setSuggestion(suggestedSpokenLanguages([...tags, navigator.language]));
+    });
+    return () => {
+      cancelled = true;
+    };
+  });
 
   // The line under the list; nothing when Auto simply works.
   const statusText = (): string | null =>

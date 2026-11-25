@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { commands } from "@/bindings";
 import { Dropdown } from "../ui/Dropdown";
@@ -27,20 +27,17 @@ export const ClamshellMicrophoneSelector = (
 
   const [isLaptop, setIsLaptop] = createSignal<boolean>(false);
 
-  createEffect(
-    () => undefined,
-    () => {
-      commands
-        .isLaptop()
-        .then((result) => {
-          setIsLaptop(result.status === "ok" ? result.data : false);
-        })
-        .catch((error) => {
-          console.error("Failed to check if device is laptop:", error);
-          setIsLaptop(false);
-        });
-    },
-  );
+  onSettled(() => {
+    commands
+      .isLaptop()
+      .then((result) => {
+        setIsLaptop(result.status === "ok" ? result.data : false);
+      })
+      .catch((error) => {
+        console.error("Failed to check if device is laptop:", error);
+        setIsLaptop(false);
+      });
+  });
 
   // An accessor, and the laptop check lives in the JSX: the body runs once,
   // before the `isLaptop` IPC has answered.

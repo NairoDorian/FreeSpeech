@@ -209,6 +209,15 @@ const geometry = (h: number, mirror: boolean): Geometry => {
   return { base, top: (v) => base - v * plotH, bottom: () => base };
 };
 
+/** The props the paint loop reads, as plain values (see `inputs` below). */
+interface ScopeInputs {
+  config: ResolvedOverlayScope;
+  ready: boolean;
+  quiet: boolean;
+  background: boolean;
+  rateHz: number;
+}
+
 interface OverlayScopeProps {
   /** Poll rate: the analyser's `update_rate_hz`. */
   rateHz: number;
@@ -243,17 +252,45 @@ export function OverlayScope(props: OverlayScopeProps) {
   // so the loop is not torn down — and its ceiling, peak-hold and column state
   // not reset — by a parent update that changed nothing. (An effect with a bare
   // compute would re-run: `createEffect` applies no equality gate of its own.)
-  const pollKey = createMemo(() => {
-    const c = props.config;
-    const circBlock = c.show_circular && !c.circular_background;
-    return `${props.background ? "bg" : "block"}:${props.rateHz}:${
-      c.show_spectrum
-    }:${c.show_wave}:${circBlock}:${c.wave_inside_circular}`;
+  //
+  // The loop is imperative: it repaints on every poll and reads the current
+  // config each time. It is handed plain values, never the props: a prop read
+  // in its setup (the effect's untracked apply) or its first paint was a
+  // reactive read outside any tracking scope (Solid 2's STRICT_READ_UNTRACKED),
+  // reported once per field when the parent's config is a store getter (the
+  // Live Canvas reads its motion store there). `inputs` is the tracked
+  // snapshot, `latest` the copy an effect keeps current for the loop to read,
+  // and the key memo hands the loop the snapshot it was started with.
+  const inputs = createMemo<ScopeInputs>(() => ({
+    config: { ...props.config },
+    ready: props.ready,
+    quiet: props.quiet,
+    background: props.background ?? false,
+    rateHz: props.rateHz,
+  }));
+  let latest: ScopeInputs | undefined;
+  createEffect(inputs, (next) => {
+    latest = next;
   });
 
-  createEffect(pollKey, () => {
-    const bg = props.background;
-    const cfg0 = props.config;
+  const pollKey = createMemo(
+    () => {
+      const first = inputs();
+      const c = first.config;
+      const circBlock = c.show_circular && !c.circular_background;
+      const key = `${first.background ? "bg" : "block"}:${first.rateHz}:${
+        c.show_spectrum
+      }:${c.show_wave}:${circBlock}:${c.wave_inside_circular}`;
+      return { key, first };
+    },
+    { equals: (a, b) => a.key === b.key },
+  );
+
+  createEffect(pollKey, ({ first }) => {
+    latest ??= first;
+    const current = () => latest ?? first;
+    const bg = first.background;
+    const cfg0 = first.config;
     // Gated on the config like the circular one: a view switched off leaves
     // its handle on a detached canvas, and painting it would be wasted work.
     // The standalone waveform is also absent while the wave is traced inside
@@ -270,7 +307,7 @@ export function OverlayScope(props: OverlayScopeProps) {
     const wctx =
       bg || !waveStandalone ? null : (wave?.getContext("2d") ?? null);
     const cctx =
-      bg || (circular && props.config.show_circular)
+      bg || (circular && cfg0.show_circular)
         ? (circular?.getContext("2d") ?? null)
         : null;
     // All views off: nothing to draw, so nothing to poll for. The React
@@ -283,7 +320,7 @@ export function OverlayScope(props: OverlayScopeProps) {
     let colors = readColors();
     let colorsAt = 0;
     let ceiling = 1e-6;
-    let waveCeiling = props.config.wave_gain_floor;
+    let waveCeiling = cfg0.wave_gain_floor;
     let columns = new Float32Array(0);
     let held = new Float32Array(0);
     let heldSeq = -1;
@@ -297,7 +334,7 @@ export function OverlayScope(props: OverlayScopeProps) {
     let scaledValues = new Float32Array(0);
     let scaledHeld = new Float32Array(0);
     let circPooled = new Float32Array(0);
-    const period = Math.max(16, Math.round(1000 / Math.max(1, props.rateHz)));
+    const period = Math.max(16, Math.round(1000 / Math.max(1, first.rateHz)));
 
     // The 0…1 units every view draws from, computed once per frame. The
     // circular view shares this — it must move exactly like the linear
@@ -392,10 +429,10 @@ export function OverlayScope(props: OverlayScopeProps) {
     const paintSpectrum = (frame: ScopeFrame | null) => {
       if (!spectrum || !sctx) return;
       const { w, h } = prepare(spectrum, sctx);
-      const color = props.quiet ? colors.muted : colors.accent;
-      const g = geometry(h, props.config.spectrum_mirror);
+      const color = current().quiet ? colors.muted : colors.accent;
+      const g = geometry(h, current().config.spectrum_mirror);
       const baseline = Math.round(g.base) + 0.5;
-      if (!frame || !props.ready) {
+      if (!frame || !current().ready) {
         sctx.globalAlpha = 0.35;
         sctx.strokeStyle = color;
         sctx.lineWidth = 1;
@@ -436,7 +473,7 @@ export function OverlayScope(props: OverlayScopeProps) {
       // the 0…1 signal before it is mapped to pixels, so the spectrum reads
       // taller without changing the view's pixel width. Clamped back into
       // display units so the gain-style alpha stays well-behaved.
-      const sigScale = props.config.spectrum_signal_scale;
+      const sigScale = current().config.spectrum_signal_scale;
       const scaled = (v: number) => Math.min(1, v * sigScale);
       if (scaledValues.length !== values.length) {
         scaledValues = new Float32Array(values.length);
@@ -451,7 +488,7 @@ export function OverlayScope(props: OverlayScopeProps) {
 
       const count = scaledValues.length;
       const colW = w / count;
-      const mirror = props.config.spectrum_mirror;
+      const mirror = current().config.spectrum_mirror;
 
       const tracePath = (edge: (v: number) => number, vals: Float32Array) => {
         sctx.beginPath();
@@ -463,7 +500,7 @@ export function OverlayScope(props: OverlayScopeProps) {
         }
       };
 
-      if (props.config.spectrum_style === "bars") {
+      if (current().config.spectrum_style === "bars") {
         sctx.fillStyle = color;
         const gap = colW > 3 ? 1 : 0;
         for (let i = 0; i < count; i++) {
@@ -476,7 +513,7 @@ export function OverlayScope(props: OverlayScopeProps) {
         }
         sctx.globalAlpha = 1;
       } else {
-        if (props.config.spectrum_style === "area") {
+        if (current().config.spectrum_style === "area") {
           // Upright: the trace closed down to the baseline. Mirrored: the
           // band between the trace and its reflection.
           sctx.beginPath();
@@ -507,7 +544,7 @@ export function OverlayScope(props: OverlayScopeProps) {
         }
       }
 
-      if (props.config.peak_hold) {
+      if (current().config.peak_hold) {
         sctx.fillStyle = color;
         sctx.globalAlpha = 0.7;
         const markW = Math.max(1, colW - 1);
@@ -536,14 +573,12 @@ export function OverlayScope(props: OverlayScopeProps) {
     ) => {
       if (!canvasEl || !ctx) return;
       const { w, h } = prepare(canvasEl, ctx);
-      const color = props.quiet ? colors.muted : colors.accent;
+      const color = current().quiet ? colors.muted : colors.accent;
       const cx = w / 2;
       const cy = h / 2;
       // Unit-circle scale. Block view: the loudest possible loop (1+1) fits
       // the box. Background: the ring may span the whole window.
-      const S = props.background
-        ? Math.min(w, h) / 2 - 2
-        : (Math.min(w, h) / 2 - 1) / 2;
+      const S = bg ? Math.min(w, h) / 2 - 2 : (Math.min(w, h) / 2 - 1) / 2;
       const baseRing = () => {
         ctx.globalAlpha = 0.35;
         ctx.strokeStyle = color;
@@ -553,12 +588,12 @@ export function OverlayScope(props: OverlayScopeProps) {
         ctx.stroke();
         ctx.globalAlpha = 1;
       };
-      if (!frame || !props.ready) {
+      if (!frame || !current().ready) {
         baseRing();
         return;
       }
 
-      const cfg = props.config;
+      const cfg = current().config;
       const p = Math.max(1, Math.round(cfg.circular_bins));
       if (circPooled.length !== p) circPooled = new Float32Array(p);
       // Peak-pool the shared per-frame units (the exact values the linear
@@ -694,12 +729,12 @@ export function OverlayScope(props: OverlayScopeProps) {
     const paintWave = (frame: ScopeFrame | null) => {
       if (!wave || !wctx) return;
       const { w, h } = prepare(wave, wctx);
-      const color = props.quiet ? colors.muted : colors.accent;
+      const color = current().quiet ? colors.muted : colors.accent;
       const mid = h / 2;
       wctx.strokeStyle = color;
       wctx.lineWidth = 1;
       wctx.lineJoin = "round";
-      if (!frame || !props.ready || frame.wave.length < 2) {
+      if (!frame || !current().ready || frame.wave.length < 2) {
         wctx.globalAlpha = 0.35;
         wctx.beginPath();
         wctx.moveTo(0, mid + 0.5);
@@ -713,12 +748,12 @@ export function OverlayScope(props: OverlayScopeProps) {
       // The ceiling tracks the unscaled peak and the intensity scale multiplies
       // the gain after it, as in the ring trace, so the trace really swings
       // taller (scaling before the peak search would cancel out in the gain).
-      const wScale = props.config.wave_signal_scale;
+      const wScale = current().config.wave_signal_scale;
       traceWave(wctx, frame.wave, 0, w, mid, (peak) => {
         waveCeiling = Math.max(
           peak,
           waveCeiling * WAVE_CEILING_DECAY,
-          props.config.wave_gain_floor,
+          current().config.wave_gain_floor,
         );
         return ((mid - 1) / waveCeiling) * wScale;
       });
@@ -731,7 +766,7 @@ export function OverlayScope(props: OverlayScopeProps) {
         colors = readColors();
         colorsAt = now;
       }
-      if (props.background) {
+      if (bg) {
         paintCircular(circular, cctx, frame);
         return;
       }
@@ -740,13 +775,16 @@ export function OverlayScope(props: OverlayScopeProps) {
       // ring by paintCircular — skip the standalone waveform view so they
       // don't draw on top of each other.
       const waveInside =
-        props.config.wave_inside_circular &&
-        props.config.show_circular &&
-        !props.config.circular_background;
+        current().config.wave_inside_circular &&
+        current().config.show_circular &&
+        !current().config.circular_background;
       if (!waveInside) {
         paintWave(frame);
       }
-      if (props.config.show_circular && !props.config.circular_background) {
+      if (
+        current().config.show_circular &&
+        !current().config.circular_background
+      ) {
         paintCircular(circular, cctx, frame);
       }
     };
@@ -757,8 +795,8 @@ export function OverlayScope(props: OverlayScopeProps) {
     const onFrame = (frame: ScopeFrame | null) => {
       if (disposed) return;
       const live = frame?.active ? frame : null;
-      const c = props.config;
-      const key = `${live?.seq ?? -1}:${props.ready}:${props.quiet}:${c.spectrum_style}:${c.spectrum_mirror}:${c.peak_hold}:${c.wave_gain_floor}:${c.spectrum_signal_scale}:${c.wave_signal_scale}:${c.circular_signal_scale}:${c.wave_inside_circular}:${c.circular_show_inner}:${c.show_circular}:${c.circular_bars}:${c.circular_bins}:${c.circular_gain}:${c.circular_floor}`;
+      const c = current().config;
+      const key = `${live?.seq ?? -1}:${current().ready}:${current().quiet}:${c.spectrum_style}:${c.spectrum_mirror}:${c.peak_hold}:${c.wave_gain_floor}:${c.spectrum_signal_scale}:${c.wave_signal_scale}:${c.circular_signal_scale}:${c.wave_inside_circular}:${c.circular_show_inner}:${c.show_circular}:${c.circular_bars}:${c.circular_bins}:${c.circular_gain}:${c.circular_floor}`;
       if (key !== paintedKey) {
         paintedKey = key;
         paint(live);

@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, Show } from "solid-js";
+import { createSignal, createMemo, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import type { OverlayScopeStyle } from "@/bindings";
 import { SettingContainer, SettingsGroup, ToggleSwitch } from "@/components/ui";
@@ -35,15 +35,15 @@ export const OverlayScopeGroup = () => {
     resolveOverlayScope(getSetting("overlay_scope")),
   );
 
-  // Local mirror so a slider drag feels immediate; writes are coalesced.
-  const [draft, setDraft] = createSignal<ResolvedOverlayScope>(options());
+  // Local mirror so a slider drag feels immediate; writes are coalesced. A
+  // writable derived signal: it follows the saved settings, except while a
+  // save of the user's own edit is pending (that edit is newer). `saveTimer`
+  // is declared first because the compute runs as the signal is created.
   let saveTimer: number | null = null;
-  createEffect(
-    () => options(),
-    (opts) => {
-      if (saveTimer === null) setDraft(opts);
-    },
-  );
+  const [draft, setDraft] = createSignal<ResolvedOverlayScope>((prev) => {
+    const saved = options();
+    return saveTimer !== null && prev !== undefined ? prev : saved;
+  });
 
   const save = (patch: Partial<ResolvedOverlayScope>) => {
     const next = { ...draft(), ...patch };
@@ -59,17 +59,14 @@ export const OverlayScopeGroup = () => {
       void updateSetting("overlay_scope", draft());
     }, SAVE_DEBOUNCE_MS);
   };
-  createEffect(
-    () => undefined,
-    () => {
-      return () => {
-        if (saveTimer !== null) {
-          window.clearTimeout(saveTimer);
-          void updateSetting("overlay_scope", draft());
-        }
-      };
-    },
-  );
+  onSettled(() => {
+    return () => {
+      if (saveTimer !== null) {
+        window.clearTimeout(saveTimer);
+        void updateSetting("overlay_scope", draft());
+      }
+    };
+  });
 
   const busy = () => isUpdating("overlay_scope");
   const styleOptions = createMemo<DropdownOption[]>(() =>

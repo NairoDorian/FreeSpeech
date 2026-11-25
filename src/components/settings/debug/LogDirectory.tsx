@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { commands } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -16,28 +16,25 @@ export const LogDirectory = (props: LogDirectoryProps) => {
   const [loading, setLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
 
-  createEffect(
-    () => undefined,
-    () => {
-      commands
-        .getLogDirPath()
-        .then((result) => {
-          if (result.status === "ok") {
-            setLogDir(result.data);
-          } else {
-            setError(result.error);
-          }
-        })
-        .catch((err) => {
-          setError(
-            err && typeof err === "object" && "message" in err
-              ? String(err.message)
-              : t("errors.loadDirectoryUnknown"),
-          );
-        })
-        .finally(() => setLoading(false));
-    },
-  );
+  onSettled(() => {
+    commands
+      .getLogDirPath()
+      .then((result) => {
+        if (result.status === "ok") {
+          setLogDir(result.data);
+        } else {
+          setError(result.error);
+        }
+      })
+      .catch((err) => {
+        setError(
+          err && typeof err === "object" && "message" in err
+            ? String(err.message)
+            : t("errors.loadDirectoryUnknown"),
+        );
+      })
+      .finally(() => setLoading(false));
+  });
 
   const handleOpen = async () => {
     if (!logDir()) return;

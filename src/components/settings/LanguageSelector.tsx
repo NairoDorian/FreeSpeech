@@ -1,4 +1,10 @@
-import { createSignal, createEffect, createMemo, For } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  onSettled,
+} from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { SettingContainer } from "../ui/SettingContainer";
 import { ResetButton } from "../ui/ResetButton";
@@ -38,22 +44,19 @@ export const LanguageSelector = (props: LanguageSelectorProps): JSX.Element => {
       supportsLanguageDetection(),
     );
 
-  createEffect(
-    () => undefined,
-    () => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
-          setIsOpen(false);
-          setSearchQuery("");
-        }
-      };
+  onSettled(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSearchQuery("");
+      }
+    };
 
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    },
-  );
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
 
   createEffect(
     () => isOpen(),

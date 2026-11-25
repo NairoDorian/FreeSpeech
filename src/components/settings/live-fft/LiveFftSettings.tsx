@@ -1,4 +1,10 @@
-import { createSignal, createEffect, createMemo, For } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  onSettled,
+} from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
   Activity,
@@ -153,14 +159,15 @@ export const LiveFftSettings = () => {
     resolveLiveFft(getSetting("live_fft")),
   );
 
-  const [draft, setDraft] = createSignal<ResolvedLiveFft>(options());
+  // The page's editable copy: a writable derived signal that follows the
+  // saved settings, except while a save of the user's own edit is pending —
+  // that edit is newer than what the store holds, so it stays. `saveTimer` is
+  // declared first because the compute runs as the signal is created.
   let saveTimer: number | null = null;
-  createEffect(
-    () => options(),
-    (next) => {
-      if (saveTimer === null) setDraft(next);
-    },
-  );
+  const [draft, setDraft] = createSignal<ResolvedLiveFft>((prev) => {
+    const saved = options();
+    return saveTimer !== null && prev !== undefined ? prev : saved;
+  });
 
   const save = (patch: Partial<ResolvedLiveFft>) => {
     const next = { ...draft(), ...patch };
@@ -171,15 +178,12 @@ export const LiveFftSettings = () => {
       void updateSetting("live_fft", draft());
     }, SAVE_DEBOUNCE_MS);
   };
-  createEffect(
-    () => undefined,
-    () => () => {
-      if (saveTimer !== null) {
-        window.clearTimeout(saveTimer);
-        void updateSetting("live_fft", draft());
-      }
-    },
-  );
+  onSettled(() => () => {
+    if (saveTimer !== null) {
+      window.clearTimeout(saveTimer);
+      void updateSetting("live_fft", draft());
+    }
+  });
 
   const [view, setView] = createSignal<ViewPrefs>(readView());
   const updateView = (patch: Partial<ViewPrefs>) =>
@@ -189,19 +193,17 @@ export const LiveFftSettings = () => {
       return next;
     });
 
-  createEffect(
-    () => undefined,
-    () => {
-      void initialize();
-    },
-  );
+  onSettled(() => {
+    void initialize();
+  });
 
-  createEffect(
-    () => undefined,
-    () => () => {
-      if (active()) void commands.liveFftStop();
-    },
-  );
+  // Whether a session runs, as the `active()` effect below last saw it: the
+  // teardown reads this instead of the store, which a disposal is outside
+  // any tracking scope for.
+  let running = false;
+  onSettled(() => () => {
+    if (running) void commands.liveFftStop();
+  });
 
   const [readout, setReadout] = createSignal<{
     peakHz: number;
@@ -221,6 +223,7 @@ export const LiveFftSettings = () => {
   createEffect(
     () => active(),
     (isActive) => {
+      running = isActive;
       if (!isActive) return;
       const id = window.setInterval(() => {
         const frame = getLatestFrame();

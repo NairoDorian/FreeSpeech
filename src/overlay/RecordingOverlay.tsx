@@ -284,6 +284,41 @@ const RecordingOverlay = () => {
     return Math.round(base + (max - base) * progress);
   };
 
+  // Declared before the effects below: their compute halves run at creation
+  // and read these, which a later `const` would leave in its dead zone.
+  // The mode's other models, in slot order, as `[slot, text]` pairs. Sorted
+  // rather than taken as the record's own order: the slots are numbers and an
+  // object's keys would otherwise read 1, 10, 2 — and a column that swapped
+  // places mid-recording would be the one thing this debug view must not do.
+  //
+  // A slot is in here from the moment its stream goes live, which the backend
+  // announces with an empty-text event, so the record answers "which models are
+  // running" and not only "which have spoken".
+  const extraColumns = () =>
+    Object.entries(extraTexts())
+      .map(([slot, text]) => [Number(slot), text] as const)
+      .toSorted(([a], [b]) => a - b);
+  // Whether any of them has actually said anything. Kept apart from
+  // `extraColumns()` on purpose: this one decides whether the card has text to
+  // open for, and a running-but-silent model must not open it on its own.
+  const hasExtraTexts = () =>
+    extraColumns().some(
+      ([, text]) => text.committed.length > 0 || text.tentative.length > 0,
+    );
+  // The merged-and-cleaned block, once a pause has produced one.
+  const hasMergeText = () =>
+    mergeText().committed.length > 0 || mergeText().tentative.length > 0;
+  // The detailed view: the models' own live texts side by side, with the merged
+  // result below them. In the production view neither ever arrives — the session
+  // suppresses the extra streams' raw events and composes its single block onto
+  // the primary's path — so this is exactly "which of the mode's two views is on
+  // screen", answered by what the backend actually sent rather than by a setting
+  // the overlay would have to read and keep in step. A numbered slot is the
+  // whole test, because it is the one thing only the detailed view receives;
+  // an announced column counts before it has text, which is what keeps the
+  // view's first seconds from looking like a model that never started.
+  const debugStream = () => extraColumns().length > 0 || hasMergeText();
+
   let capEl: HTMLDivElement | undefined;
   let pinned = true;
   let directMode = false;
@@ -800,9 +835,10 @@ const RecordingOverlay = () => {
         mergeText(),
         wholeSession(),
         openWidth(),
+        debugStream(),
       ] as const,
-    ([, , , whole, width]) => {
-      if (!whole && !debugStream()) return;
+    ([, , , whole, width, debug]) => {
+      if (!whole && !debug) return;
       const el = capEl;
       if (!el) return;
       const stepped =
@@ -860,38 +896,6 @@ const RecordingOverlay = () => {
     streamText().tentative.length > 0 ||
     hasExtraTexts() ||
     hasMergeText();
-  // The mode's other models, in slot order, as `[slot, text]` pairs. Sorted
-  // rather than taken as the record's own order: the slots are numbers and an
-  // object's keys would otherwise read 1, 10, 2 — and a column that swapped
-  // places mid-recording would be the one thing this debug view must not do.
-  //
-  // A slot is in here from the moment its stream goes live, which the backend
-  // announces with an empty-text event, so the record answers "which models are
-  // running" and not only "which have spoken".
-  const extraColumns = () =>
-    Object.entries(extraTexts())
-      .map(([slot, text]) => [Number(slot), text] as const)
-      .toSorted(([a], [b]) => a - b);
-  // Whether any of them has actually said anything. Kept apart from
-  // `extraColumns()` on purpose: this one decides whether the card has text to
-  // open for, and a running-but-silent model must not open it on its own.
-  const hasExtraTexts = () =>
-    extraColumns().some(
-      ([, text]) => text.committed.length > 0 || text.tentative.length > 0,
-    );
-  // The merged-and-cleaned block, once a pause has produced one.
-  const hasMergeText = () =>
-    mergeText().committed.length > 0 || mergeText().tentative.length > 0;
-  // The detailed view: the models' own live texts side by side, with the merged
-  // result below them. In the production view neither ever arrives — the session
-  // suppresses the extra streams' raw events and composes its single block onto
-  // the primary's path — so this is exactly "which of the mode's two views is on
-  // screen", answered by what the backend actually sent rather than by a setting
-  // the overlay would have to read and keep in step. A numbered slot is the
-  // whole test, because it is the one thing only the detailed view receives;
-  // an announced column counts before it has text, which is what keeps the
-  // view's first seconds from looking like a model that never started.
-  const debugStream = () => extraColumns().length > 0 || hasMergeText();
 
   const working = () => phase() === "working";
   // Keep the panel open whenever there's text — even while finalizing — so the

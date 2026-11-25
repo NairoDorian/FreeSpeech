@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Show } from "solid-js";
+import { createSignal, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { commands } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -52,14 +52,11 @@ export const OverlaySettings = () => {
   // press any more. (The cancel hotkey and the backend's 10-minute safety cap
   // cover the other ways this page can go away.) The teardown is returned
   // from the effect, the Solid 2 shape for unmount work.
-  createEffect(
-    () => undefined,
-    () => () => {
-      if (previewing()) {
-        void commands.stopOverlayPreview().catch(() => {});
-      }
-    },
-  );
+  onSettled(() => () => {
+    if (previewing()) {
+      void commands.stopOverlayPreview().catch(() => {});
+    }
+  });
 
   return (
     <div class="max-w-3xl w-full mx-auto space-y-6">

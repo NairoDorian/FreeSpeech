@@ -1,4 +1,4 @@
-import { createEffect } from "solid-js";
+import { onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { BrainCircuit } from "@/components/icons/lucide";
 import {
@@ -11,12 +11,9 @@ function BrainIndicator() {
   const { t } = useTranslation();
   const store = useLlamaStore();
 
-  createEffect(
-    () => undefined,
-    () => {
-      void initializeLlama();
-    },
-  );
+  onSettled(() => {
+    void initializeLlama();
+  });
 
   // Live accessors over the store: a body-level `const state = store.state`
   // would snapshot at mount and the dot would never leave "stopped".

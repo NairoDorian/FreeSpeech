@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For } from "solid-js";
+import { createSignal, For, onSettled } from "solid-js";
 import { commands } from "@/bindings";
 import { useTranslation } from "@/i18n/useTranslation";
 import { getLanguageLabel } from "@/lib/constants/languages";
@@ -28,25 +28,19 @@ const LanguagesOnboarding = (props: LanguagesOnboardingProps) => {
   const [chosen, setChosen] = createSignal<string[]>([]);
   const [saving, setSaving] = createSignal(false);
 
-  createEffect(
-    () => undefined,
-    () => {
-      let cancelled = false;
-      void commands.getSystemLanguages().then((result) => {
-        if (cancelled) return;
-        const tags = result.status === "ok" ? result.data : [];
-        const languages = suggestedSpokenLanguages([
-          ...tags,
-          navigator.language,
-        ]);
-        setSuggested(languages);
-        setChosen(languages);
-      });
-      return () => {
-        cancelled = true;
-      };
-    },
-  );
+  onSettled(() => {
+    let cancelled = false;
+    void commands.getSystemLanguages().then((result) => {
+      if (cancelled) return;
+      const tags = result.status === "ok" ? result.data : [];
+      const languages = suggestedSpokenLanguages([...tags, navigator.language]);
+      setSuggested(languages);
+      setChosen(languages);
+    });
+    return () => {
+      cancelled = true;
+    };
+  });
 
   // Ticking keeps the suggestion's order, which is the preference order.
   const toggle = (code: string) =>

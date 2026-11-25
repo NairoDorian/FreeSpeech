@@ -3,7 +3,6 @@ import {
   useContext,
   createSignal,
   createEffect,
-  createMemo,
   onSettled,
   Show,
 } from "solid-js";
@@ -38,7 +37,9 @@ export const AudioPlayerGroup = (props: {
   children?: JSX.Element;
 }): JSX.Element => {
   let activeAudioRef: HTMLAudioElement | null = null;
-  const value = createMemo<AudioPlayerGroupContextValue>(() => ({
+  // A plain object, not a memo: it reads nothing reactive and never changes,
+  // and the provider takes its value once.
+  const value: AudioPlayerGroupContextValue = {
     requestPlayback: (audio) => {
       if (activeAudioRef !== audio) activeAudioRef?.pause();
       activeAudioRef = audio;
@@ -46,10 +47,10 @@ export const AudioPlayerGroup = (props: {
     releasePlayback: (audio) => {
       if (activeAudioRef === audio) activeAudioRef = null;
     },
-  }));
+  };
 
   return (
-    <AudioPlayerGroupContext value={value()}>
+    <AudioPlayerGroupContext value={value}>
       {props.children}
     </AudioPlayerGroupContext>
   );

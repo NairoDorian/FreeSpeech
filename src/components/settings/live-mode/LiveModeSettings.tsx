@@ -1,4 +1,10 @@
-import { createSignal, createEffect, createMemo, For } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  onSettled,
+} from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { open } from "@tauri-apps/plugin-dialog";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -80,12 +86,9 @@ export const LiveModeSettings = () => {
   const saveOptions = (patch: Partial<LiveModeSettingsType>) =>
     updateSetting("live_mode", { ...options(), ...patch });
 
-  createEffect(
-    () => undefined,
-    () => {
-      void store.initialize();
-    },
-  );
+  onSettled(() => {
+    void store.initialize();
+  });
 
   const active = () => isLiveActive(store.status);
   const phase = () => store.status.phase;
@@ -100,10 +103,10 @@ export const LiveModeSettings = () => {
   );
 
   createEffect(
-    () => [store.stable, store.live, active()],
-    () => {
+    () => [store.stable, store.live, active()] as const,
+    ([, , isActive]) => {
       const el = previewRef;
-      if (el && active()) el.scrollTop = el.scrollHeight;
+      if (el && isActive) el.scrollTop = el.scrollHeight;
     },
   );
 

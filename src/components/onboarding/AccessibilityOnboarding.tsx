@@ -1,11 +1,4 @@
-import {
-  createSignal,
-  createEffect,
-  Match,
-  onSettled,
-  Switch,
-  untrack,
-} from "solid-js";
+import { createSignal, Match, onSettled, Switch, untrack } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { platform } from "@tauri-apps/plugin-os";
 import {
@@ -170,92 +163,87 @@ const AccessibilityOnboarding = (props: AccessibilityOnboardingProps) => {
     }, 1000);
   };
 
-  createEffect(
-    () => undefined,
-    () => {
-      const currentPlatform = platform();
-      const nextPlatform: PermissionPlatform =
-        currentPlatform === "macos"
-          ? "macos"
-          : currentPlatform === "windows"
-            ? "windows"
-            : "other";
+  onSettled(() => {
+    const currentPlatform = platform();
+    const nextPlatform: PermissionPlatform =
+      currentPlatform === "macos"
+        ? "macos"
+        : currentPlatform === "windows"
+          ? "windows"
+          : "other";
 
-      setPermissionPlatform(nextPlatform);
+    setPermissionPlatform(nextPlatform);
 
-      if (props.preview) {
-        setPermissions({
-          accessibility: nextPlatform === "macos" ? "needed" : "granted",
-          microphone: nextPlatform === "other" ? "granted" : "needed",
-        });
-        return;
-      }
+    if (props.preview) {
+      setPermissions({
+        accessibility: nextPlatform === "macos" ? "needed" : "granted",
+        microphone: nextPlatform === "other" ? "granted" : "needed",
+      });
+      return;
+    }
 
-      if (nextPlatform === "other") {
-        props.onComplete();
-        return;
-      }
+    if (nextPlatform === "other") {
+      props.onComplete();
+      return;
+    }
 
-      const checkInitial = async () => {
-        if (nextPlatform === "macos") {
-          try {
-            const [accessibilityGranted, microphoneGranted] = await Promise.all(
-              [checkAccessibilityPermission(), checkMicrophonePermission()],
-            );
+    const checkInitial = async () => {
+      if (nextPlatform === "macos") {
+        try {
+          const [accessibilityGranted, microphoneGranted] = await Promise.all([
+            checkAccessibilityPermission(),
+            checkMicrophonePermission(),
+          ]);
 
-            if (accessibilityGranted) {
-              await initializeAfterAccessibilityGrant();
-            }
-
-            const newState: PermissionsState = {
-              accessibility: accessibilityGranted ? "granted" : "needed",
-              microphone: microphoneGranted ? "granted" : "needed",
-            };
-
-            setPermissions(newState);
-
-            if (accessibilityGranted && microphoneGranted) {
-              await completeOnboarding();
-            }
-          } catch (error) {
-            console.error("Failed to check macOS permissions:", error);
-            toast.error(t("onboarding.permissions.errors.checkFailed"));
-            setPermissions({
-              accessibility: "needed",
-              microphone: "needed",
-            });
+          if (accessibilityGranted) {
+            await initializeAfterAccessibilityGrant();
           }
 
-          return;
-        }
-
-        try {
-          const microphoneGranted = await hasWindowsMicrophoneAccess();
-
-          setPermissions({
-            accessibility: "granted",
+          const newState: PermissionsState = {
+            accessibility: accessibilityGranted ? "granted" : "needed",
             microphone: microphoneGranted ? "granted" : "needed",
-          });
+          };
 
-          if (microphoneGranted) {
+          setPermissions(newState);
+
+          if (accessibilityGranted && microphoneGranted) {
             await completeOnboarding();
           }
         } catch (error) {
-          console.warn(
-            "Failed to check Windows microphone permissions:",
-            error,
-          );
+          console.error("Failed to check macOS permissions:", error);
+          toast.error(t("onboarding.permissions.errors.checkFailed"));
           setPermissions({
-            accessibility: "granted",
-            microphone: "granted",
+            accessibility: "needed",
+            microphone: "needed",
           });
+        }
+
+        return;
+      }
+
+      try {
+        const microphoneGranted = await hasWindowsMicrophoneAccess();
+
+        setPermissions({
+          accessibility: "granted",
+          microphone: microphoneGranted ? "granted" : "needed",
+        });
+
+        if (microphoneGranted) {
           await completeOnboarding();
         }
-      };
+      } catch (error) {
+        console.warn("Failed to check Windows microphone permissions:", error);
+        setPermissions({
+          accessibility: "granted",
+          microphone: "granted",
+        });
+        await completeOnboarding();
+      }
+    };
 
-      checkInitial();
-    },
-  );
+    checkInitial();
+  });
 
   onSettled(() => () => {
     if (pollingRef) {

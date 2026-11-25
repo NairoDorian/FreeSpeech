@@ -5,6 +5,7 @@ import {
   For,
   Show,
   untrack,
+  onSettled,
 } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { ask } from "@tauri-apps/plugin-dialog";
@@ -96,23 +97,19 @@ export const ModelsSettings = () => {
   }));
 
   // click outside handler for language dropdown
-  createEffect(
-    () => undefined,
-    () => {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (
-          languageDropdownRef &&
-          !languageDropdownRef.contains(event.target as Node)
-        ) {
-          setLanguageDropdownOpen(false);
-          setLanguageSearch("");
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    },
-  );
+  onSettled(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        languageDropdownRef &&
+        !languageDropdownRef.contains(event.target as Node)
+      ) {
+        setLanguageDropdownOpen(false);
+        setLanguageSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  });
 
   // focus search input when dropdown opens
   createEffect(
@@ -279,12 +276,9 @@ export const ModelsSettings = () => {
     });
   };
 
-  createEffect(
-    () => undefined,
-    () => {
-      fetchArchPlugins();
-    },
-  );
+  onSettled(() => {
+    fetchArchPlugins();
+  });
 
   const externalPluginCount = () => archPlugins().length;
 

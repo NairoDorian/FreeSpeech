@@ -7,6 +7,7 @@ import {
   Show,
   Switch,
   untrack,
+  onSettled,
 } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -208,12 +209,9 @@ export const HistorySettings = () => {
   };
 
   // Initial load
-  createEffect(
-    () => undefined,
-    () => {
-      loadPage();
-    },
-  );
+  onSettled(() => {
+    loadPage();
+  });
 
   // Infinite scroll. The compute tracks every input: the apply runs untracked,
   // so reading `loading()` / `hasMore()` there would only ever see the mount
@@ -246,31 +244,28 @@ export const HistorySettings = () => {
   );
 
   // Real-time history update events
-  createEffect(
-    () => undefined,
-    () => {
-      const unlisten = events.historyUpdatePayload.listen((event) => {
-        const payload: HistoryUpdatePayload = event.payload;
-        if (payload.action === "added") {
-          setEntries((prev) => [
-            payload.entry,
-            ...prev.filter((entry) => entry.id !== payload.entry.id),
-          ]);
-        } else if (payload.action === "updated") {
-          setEntries((prev) =>
-            prev.map((e) => (e.id === payload.entry.id ? payload.entry : e)),
-          );
-        } else if (payload.action === "cleared") {
-          setEntries([]);
-          setHasMore(false);
-        }
-      });
+  onSettled(() => {
+    const unlisten = events.historyUpdatePayload.listen((event) => {
+      const payload: HistoryUpdatePayload = event.payload;
+      if (payload.action === "added") {
+        setEntries((prev) => [
+          payload.entry,
+          ...prev.filter((entry) => entry.id !== payload.entry.id),
+        ]);
+      } else if (payload.action === "updated") {
+        setEntries((prev) =>
+          prev.map((e) => (e.id === payload.entry.id ? payload.entry : e)),
+        );
+      } else if (payload.action === "cleared") {
+        setEntries([]);
+        setHasMore(false);
+      }
+    });
 
-      return () => {
-        unlisten.then((fn) => fn());
-      };
-    },
-  );
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  });
 
   const toggleSaved = async (id: number) => {
     setEntries((prev) =>
@@ -775,37 +770,34 @@ const HistoryEntryComponent = ({
     number | null
   >(null);
 
-  createEffect(
-    () => undefined,
-    () => {
-      if (entry.audio_duration_ms == null && entry.file_name) {
-        getAudioUrl(entry.file_name).then((url) => {
-          if (!url) return;
-          const audio = new Audio(url);
-          // On Linux the URL is an object URL over the whole WAV; release it
-          // once the metadata (or an error) is in.
-          const release = () => {
-            if (url.startsWith("blob:")) URL.revokeObjectURL(url);
-          };
-          audio.addEventListener(
-            "loadedmetadata",
-            () => {
-              if (
-                audio.duration &&
-                !isNaN(audio.duration) &&
-                isFinite(audio.duration)
-              ) {
-                setLoadedAudioDurationSec(audio.duration);
-              }
-              release();
-            },
-            { once: true },
-          );
-          audio.addEventListener("error", release, { once: true });
-        });
-      }
-    },
-  );
+  onSettled(() => {
+    if (entry.audio_duration_ms == null && entry.file_name) {
+      getAudioUrl(entry.file_name).then((url) => {
+        if (!url) return;
+        const audio = new Audio(url);
+        // On Linux the URL is an object URL over the whole WAV; release it
+        // once the metadata (or an error) is in.
+        const release = () => {
+          if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+        };
+        audio.addEventListener(
+          "loadedmetadata",
+          () => {
+            if (
+              audio.duration &&
+              !isNaN(audio.duration) &&
+              isFinite(audio.duration)
+            ) {
+              setLoadedAudioDurationSec(audio.duration);
+            }
+            release();
+          },
+          { once: true },
+        );
+        audio.addEventListener("error", release, { once: true });
+      });
+    }
+  });
 
   // Metric calculations. `totalDurationSec` is an accessor: without a stored
   // duration it waits for the metadata load above.

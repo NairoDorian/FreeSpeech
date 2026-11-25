@@ -1,4 +1,4 @@
-import { createRoot, createStore, type Store } from "solid-js";
+import { createRoot, createStore, reconcile, type Store } from "solid-js";
 
 /**
  * A `set` update: either a partial to shallow-merge into the store, or a
@@ -13,6 +13,26 @@ export type StoreUpdate<T> = Partial<T> | ((state: T) => Partial<T> | void);
 
 export type StoreSet<T> = (update: StoreUpdate<T>) => void;
 
+const isPlain = (value: unknown): value is object => {
+  if (value === null || typeof value !== "object") return false;
+  if (Array.isArray(value)) return true;
+  const proto = Object.getPrototypeOf(value) as unknown;
+  return proto === Object.prototype || proto === null;
+};
+
+/**
+ * Whether `next` can be reconciled into the store node `current` rather than
+ * replacing it: both plain objects or both arrays, and — for a keyed object —
+ * the same `id`, since `reconcile` refuses a root of a different identity.
+ */
+function mergeable(current: unknown, next: unknown): boolean {
+  if (current === next || !isPlain(current) || !isPlain(next)) return false;
+  if (Array.isArray(current) !== Array.isArray(next)) return false;
+  if (Array.isArray(next)) return true;
+  const before = (current as { id?: unknown }).id;
+  return before === undefined || before === (next as { id?: unknown }).id;
+}
+
 /**
  * Create a module-level Solid store with zustand's `set`/`get` ergonomics.
  *
@@ -26,27 +46,58 @@ export type StoreSet<T> = (update: StoreUpdate<T>) => void;
  *
  *   - `set(partial)`    → `setState(draft => Object.assign(draft, partial))`
  *   - `set(fn)`         → the updater reads the draft and its result is merged
- *   - `get()`           → the store proxy itself
+ *   - `get()`           → the store, through the facade described below
  *
  * The store is created inside a detached `createRoot` so it has an owner for
  * the lifetime of the module. These are app-lifetime singletons — the app has
  * no server renderer, so the "one module instance is shared across requests"
  * caveat in the Solid docs does not apply.
+ *
+ * **Actions are not state.** The initializer returns data and functions in one
+ * object (zustand's shape), but only the data goes into the Solid store. The
+ * functions are kept beside it, and the returned object is a thin facade that
+ * answers an action key from that table and everything else from the store.
+ * Putting the functions in the store made every `store.refreshSettings` /
+ * `get().initialize` a tracked store read: outside a tracking scope (a
+ * component body, an effect's apply half, an action calling its siblings)
+ * Solid 2 reports each one as `STRICT_READ_UNTRACKED`, about a fifth of all
+ * the diagnostics a test run printed, and inside one it subscribed the caller
+ * to a property that never changes. A `set` that names an action key
+ * replaces the function in the table, so the zustand semantics hold.
+ *
+ * **Object fields are merged, not replaced.** The bodies update nested state
+ * the zustand way, `set({ settings: { ...state.settings, [key]: value } })`,
+ * and assigning that fresh object made every reader of `settings` re-run for
+ * the one leaf that moved (Solid 2's IMMUTABLE_UPDATE_IN_STORE). When the
+ * field already holds a plain object or array and the new value is the same
+ * kind, `set` reconciles the new value into it instead (`reconcile`, keyed by
+ * `id`): the store ends up equal to the new value either way, but only the
+ * leaves that changed notify, and list rows with a matching `id` keep their
+ * identity. A keyed object whose `id` changed, a class instance, or a type
+ * change is assigned as before.
  */
 export function createSolidStore<T extends object>(
   initializer: (set: StoreSet<T>, get: () => T) => T,
 ): Store<T> {
-  let state!: Store<T>;
+  let facade!: Store<T>;
   let commit!: (fn: (draft: T) => void) => void;
+  const actions: Record<PropertyKey, unknown> = {};
 
-  const get = () => state;
+  const get = () => facade;
   const set: StoreSet<T> = (update) => {
     commit((draft) => {
       const partial =
         typeof update === "function"
           ? (update as (current: T) => Partial<T> | void)(draft as T)
           : update;
-      if (partial) Object.assign(draft, partial);
+      if (!partial) return;
+      const target = draft as Record<string, unknown>;
+      for (const [key, value] of Object.entries(partial)) {
+        if (Object.hasOwn(actions, key)) actions[key] = value;
+        else if (mergeable(target[key], value))
+          reconcile(value as object, "id")(target[key] as object);
+        else target[key] = value;
+      }
     });
   };
 
@@ -65,12 +116,23 @@ export function createSolidStore<T extends object>(
     //      see a store with no actions on it. The initial value has no such
     //      delay.
     const initial = initializer(set, get);
+    const data: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(initial)) {
+      if (typeof value === "function") actions[key] = value;
+      else data[key] = value;
+    }
     // `as never` because `createStore`'s overloads reject a bare `T` that could
     // itself be callable.
-    const [store, setStore] = createStore<T>(initial as never);
-    state = store;
+    const [store, setStore] = createStore<T>(data as never);
     commit = setStore as unknown as (fn: (draft: T) => void) => void;
+    facade = new Proxy(store as object, {
+      get: (target, key) =>
+        Object.hasOwn(actions, key)
+          ? actions[key]
+          : (target as Record<PropertyKey, unknown>)[key],
+      has: (target, key) => Object.hasOwn(actions, key) || key in target,
+    }) as Store<T>;
   });
 
-  return state;
+  return facade;
 }

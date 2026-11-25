@@ -188,71 +188,62 @@ function App() {
   // returns its cleanup from the apply: `onCleanup` there has no owner and
   // never runs. None of them depends on the language: `t()` resolves against
   // the current language when a handler calls it.
-  createEffect(
-    () => undefined,
-    () => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        const isDebugShortcut =
-          event.shiftKey &&
-          event.key.toLowerCase() === "d" &&
-          (event.ctrlKey || event.metaKey);
+  onSettled(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isDebugShortcut =
+        event.shiftKey &&
+        event.key.toLowerCase() === "d" &&
+        (event.ctrlKey || event.metaKey);
 
-        if (isDebugShortcut) {
-          event.preventDefault();
-          const currentDebugMode = settings()?.debug_mode ?? false;
-          updateSetting("debug_mode", !currentDebugMode);
-        }
-      };
+      if (isDebugShortcut) {
+        event.preventDefault();
+        const currentDebugMode = settings()?.debug_mode ?? false;
+        updateSetting("debug_mode", !currentDebugMode);
+      }
+    };
 
-      document.addEventListener("keydown", handleKeyDown);
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown);
-      };
-    },
-  );
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
 
   // Recording, paste, transcription and model-load failures are notices
   // (`src-tauri/src/notices.rs`): the footer chip lists them and pops each
   // one up as a toast (`stores/noticeStore.ts`).
 
-  createEffect(
-    () => undefined,
-    () => {
-      let disposed = false;
-      let unlisten: (() => void) | null = null;
-      getCurrentWebviewWindow()
-        .onDragDropEvent((event) => {
-          if (event.payload.type === "drop")
-            routeDroppedAudio(event.payload.paths);
-        })
-        .then((fn) => {
-          if (disposed) fn();
-          else unlisten = fn;
-        })
-        .catch((error) =>
-          console.error("Drag & drop listener unavailable:", error),
-        );
-      return () => {
-        disposed = true;
-        unlisten?.();
-      };
-    },
-  );
-  createEffect(
-    () => undefined,
-    () => {
-      const unlisten = events.multiSttStreamChunkFailedEvent.listen((event) => {
-        toast.warning(t("multiStt.streamingFirst.chunkFailedTitle"), {
-          description: t("multiStt.streamingFirst.chunkFailedToast", {
-            chunk: event.payload.chunk,
-          }),
-        });
+  onSettled(() => {
+    let disposed = false;
+    let unlisten: (() => void) | null = null;
+    getCurrentWebviewWindow()
+      .onDragDropEvent((event) => {
+        if (event.payload.type === "drop")
+          routeDroppedAudio(event.payload.paths);
+      })
+      .then((fn) => {
+        if (disposed) fn();
+        else unlisten = fn;
+      })
+      .catch((error) =>
+        console.error("Drag & drop listener unavailable:", error),
+      );
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
+  });
+  onSettled(() => {
+    const unlisten = events.multiSttStreamChunkFailedEvent.listen((event) => {
+      toast.warning(t("multiStt.streamingFirst.chunkFailedTitle"), {
+        description: t("multiStt.streamingFirst.chunkFailedToast", {
+          chunk: event.payload.chunk,
+        }),
       });
-      return () => {
-        unlisten.then((fn) => fn());
-      };
-    },
-  );
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  });
 
   const checkOnboardingStatus = async () => {
     try {

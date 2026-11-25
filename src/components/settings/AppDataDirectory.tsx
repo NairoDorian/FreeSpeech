@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, Show, onSettled } from "solid-js";
 import { useTranslation } from "@/i18n/useTranslation";
 import { commands } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -16,28 +16,23 @@ export const AppDataDirectory = (props: AppDataDirectoryProps) => {
   const [loading, setLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
 
-  createEffect(
-    () => undefined,
-    () => {
-      commands
-        .getAppDirPath()
-        .then((result) => {
-          if (result.status === "ok") {
-            setAppDirPath(result.data);
-          } else {
-            setError(result.error);
-          }
-        })
-        .catch((err) => {
-          setError(
-            err instanceof Error
-              ? err.message
-              : t("errors.loadDirectoryUnknown"),
-          );
-        })
-        .finally(() => setLoading(false));
-    },
-  );
+  onSettled(() => {
+    commands
+      .getAppDirPath()
+      .then((result) => {
+        if (result.status === "ok") {
+          setAppDirPath(result.data);
+        } else {
+          setError(result.error);
+        }
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error ? err.message : t("errors.loadDirectoryUnknown"),
+        );
+      })
+      .finally(() => setLoading(false));
+  });
 
   const handleOpen = async () => {
     if (!appDirPath()) return;

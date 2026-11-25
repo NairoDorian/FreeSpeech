@@ -1,4 +1,11 @@
-import { createSignal, createEffect, onCleanup, Show, For } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  onCleanup,
+  Show,
+  For,
+  onSettled,
+} from "solid-js";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useTranslation } from "@/i18n/useTranslation";
 import { isLiveActive, useLiveModeStore } from "@/stores/liveModeStore";
@@ -77,6 +84,10 @@ export const LiveCanvas = (props: LiveCanvasProps) => {
   let typewriterTimer: ReturnType<typeof setTimeout> | null = null;
   let targetText: StreamTextEvent = { committed: "", tentative: "" };
   let revealedText = "";
+  // The window's visibility as the reveal effect last saw it. The reveal loop
+  // runs from that effect's untracked apply half and from its own timer, so
+  // it reads this copy rather than the `visible` signal.
+  let shown = !document.hidden;
   let deleting = false;
   let correctionAnimations: Animation[] = [];
   let correctionGeneration = 0;
@@ -168,67 +179,64 @@ export const LiveCanvas = (props: LiveCanvasProps) => {
       .toggleMaximize()
       .then(refreshMaximized)
       .catch((failure) => setError(String(failure)));
-  createEffect(
-    () => undefined,
-    () => {
-      let disposed = false;
-      document.documentElement.setAttribute("data-live-canvas", "");
-      window.addEventListener("keydown", handleKeyDown);
-      document.addEventListener("visibilitychange", visibilityChanged);
-      void refreshMaximized();
-      let resizeSettle: ReturnType<typeof setTimeout> | null = null;
-      const resized = getCurrentWindow().onResized(() => {
-        if (resizeSettle) clearTimeout(resizeSettle);
-        resizeSettle = setTimeout(() => {
-          resizeSettle = null;
-          if (!disposed) void refreshMaximized();
-        }, MAXIMIZED_POLL_DEBOUNCE_MS);
-      });
-      void resized.catch(() => {});
-      // Raw primary hypotheses only: no extra slots, file headers or LLM output.
-      const subscription = events.streamTextEvent.listen(({ payload }) => {
-        if (!disposed && (payload.slot == null || payload.slot === 0)) {
+  onSettled(() => {
+    let disposed = false;
+    document.documentElement.setAttribute("data-live-canvas", "");
+    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("visibilitychange", visibilityChanged);
+    void refreshMaximized();
+    let resizeSettle: ReturnType<typeof setTimeout> | null = null;
+    const resized = getCurrentWindow().onResized(() => {
+      if (resizeSettle) clearTimeout(resizeSettle);
+      resizeSettle = setTimeout(() => {
+        resizeSettle = null;
+        if (!disposed) void refreshMaximized();
+      }, MAXIMIZED_POLL_DEBOUNCE_MS);
+    });
+    void resized.catch(() => {});
+    // Raw primary hypotheses only: no extra slots, file headers or LLM output.
+    const subscription = events.streamTextEvent.listen(({ payload }) => {
+      if (!disposed && (payload.slot == null || payload.slot === 0)) {
+        setPrimaryText({
+          committed: transcript.stream(payload.committed, payload.tentative),
+          tentative: "",
+        });
+      }
+    });
+    const finalizedSubscription = events.liveModeTranscriptEvent.listen(
+      ({ payload }) => {
+        if (!disposed && !payload.reset && payload.stable_appended)
           setPrimaryText({
-            committed: transcript.stream(payload.committed, payload.tentative),
+            committed: transcript.finish(payload.stable_appended),
             tentative: "",
           });
-        }
-      });
-      const finalizedSubscription = events.liveModeTranscriptEvent.listen(
-        ({ payload }) => {
-          if (!disposed && !payload.reset && payload.stable_appended)
-            setPrimaryText({
-              committed: transcript.finish(payload.stable_appended),
-              tentative: "",
-            });
-        },
-      );
-      void finalizedSubscription.catch((failure) => {
-        if (!disposed) setError(String(failure));
-      });
-      void subscription.catch((failure) => {
-        if (!disposed) setError(String(failure));
-      });
-      void store.initialize().catch((failure) => {
-        if (!disposed) setError(String(failure));
-      });
-      return () => {
-        disposed = true;
-        if (resizeSettle) clearTimeout(resizeSettle);
-        document.documentElement.removeAttribute("data-live-canvas");
-        window.removeEventListener("keydown", handleKeyDown);
-        document.removeEventListener("visibilitychange", visibilityChanged);
-        void resized.then((unlisten) => unlisten()).catch(() => {});
-        void subscription.then((unlisten) => unlisten()).catch(console.error);
-        void finalizedSubscription
-          .then((unlisten) => unlisten())
-          .catch(console.error);
-        windowUpdate = windowUpdate
-          .then(() => setCanvasWindow(false, false))
-          .catch(console.error);
-      };
-    },
-  );
+      },
+    );
+    void finalizedSubscription.catch((failure) => {
+      if (!disposed) setError(String(failure));
+    });
+    void subscription.catch((failure) => {
+      if (!disposed) setError(String(failure));
+    });
+    void store.initialize().catch((failure) => {
+      if (!disposed) setError(String(failure));
+    });
+    return () => {
+      disposed = true;
+      if (resizeSettle) clearTimeout(resizeSettle);
+      document.documentElement.removeAttribute("data-live-canvas");
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("visibilitychange", visibilityChanged);
+      void resized.then((unlisten) => unlisten()).catch(() => {});
+      void subscription.then((unlisten) => unlisten()).catch(console.error);
+      void finalizedSubscription
+        .then((unlisten) => unlisten())
+        .catch(console.error);
+      windowUpdate = windowUpdate
+        .then(() => setCanvasWindow(false, false))
+        .catch(console.error);
+    };
+  });
   createEffect(
     () => active() && visible(),
     (isRecording) => {
@@ -371,7 +379,7 @@ export const LiveCanvas = (props: LiveCanvasProps) => {
     // This canvas is an explicitly selected particle experience. OS reduced
     // motion must not silently replace its user-tuned reveal with a text dump.
     // Hidden windows pause the queue instead of flushing it in the background.
-    if (!visible()) return;
+    if (!shown) return;
     const full = joinStreamText(targetText.committed, targetText.tentative);
     const correction = canvasCorrection(revealedText, full);
     if (correction) {
@@ -398,7 +406,8 @@ export const LiveCanvas = (props: LiveCanvasProps) => {
   };
   createEffect(
     () => [primaryText(), clearedPrefix(), visible()] as const,
-    ([primary, prefix]) => {
+    ([primary, prefix, isVisible]) => {
+      shown = isVisible;
       const full = joinStreamText(primary.committed, primary.tentative);
       const offset = prefix && full.startsWith(prefix) ? prefix.length : 0;
       targetText = {

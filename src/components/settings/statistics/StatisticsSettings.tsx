@@ -1,4 +1,11 @@
-import { createSignal, createEffect, createMemo, For, Show } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  Show,
+  onSettled,
+} from "solid-js";
 import { Dynamic, type JSX } from "@solidjs/web";
 import {
   Activity,
@@ -76,16 +83,13 @@ export const StatisticsSettings = () => {
     }
   };
 
-  createEffect(
-    () => undefined,
-    () => {
-      mountedRef = true;
-      return () => {
-        mountedRef = false;
-        requestIdRef += 1;
-      };
-    },
-  );
+  onSettled(() => {
+    mountedRef = true;
+    return () => {
+      mountedRef = false;
+      requestIdRef += 1;
+    };
+  });
 
   // The compute tracks the range, so choosing another range reloads the
   // summary (the apply runs untracked and would otherwise run once). The load

@@ -1,4 +1,11 @@
-import { createSignal, createEffect, createMemo, For, Show } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  Show,
+  onSettled,
+} from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useTranslation } from "@/i18n/useTranslation";
 import { sessionToast as toast } from "@/lib/sessionToast";
@@ -46,12 +53,9 @@ export const RecallPage = () => {
   const [disableOpen, setDisableOpen] = createSignal(false);
   const [disablePass, setDisablePass] = createSignal("");
 
-  createEffect(
-    () => undefined,
-    () => {
-      void store.initialize();
-    },
-  );
+  onSettled(() => {
+    void store.initialize();
+  });
 
   // A different note opened (or the editor closed): the two-step delete
   // must never carry over to whatever is on screen next.
@@ -146,24 +150,21 @@ export const RecallPage = () => {
   // While the editor's caret is live, the transcription and Multi-STT
   // hotkeys deliver their text here instead of pasting + writing History:
   // the backend routes the take to the vault, and it arrives as this event.
-  createEffect(
-    () => undefined,
-    () => {
-      const unlisten = events.recallInsertTextEvent.listen((e) => {
-        if (e.payload.text) insertAtCaret(e.payload.text);
-      });
-      return () => {
-        void unlisten.then((fn) => fn());
-        void commands.recallSetInsertionMode(false);
-      };
-    },
-  );
+  onSettled(() => {
+    const unlisten = events.recallInsertTextEvent.listen((e) => {
+      if (e.payload.text) insertAtCaret(e.payload.text);
+    });
+    return () => {
+      void unlisten.then((fn) => fn());
+      void commands.recallSetInsertionMode(false);
+    };
+  });
 
   // Editor closed or switched to preview: there is no caret to arm.
   createEffect(
     () => [store.activeId, mode()] as const,
-    () => {
-      if (!store.activeId || mode() !== "write") {
+    ([activeId, currentMode]) => {
+      if (!activeId || currentMode !== "write") {
         void commands.recallSetInsertionMode(false);
       }
     },

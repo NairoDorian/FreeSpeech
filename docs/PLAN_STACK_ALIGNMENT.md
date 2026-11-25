@@ -104,10 +104,13 @@ asset-protocol.md, capabilities.md; plugin/store.md):
     (StreamUpdate::buffered_ms vs the derived drain hint). The worker already
     receives it and logs it; thread it into the sink and let `break_outcome`
     use it, keeping the 500 ms tolerance as fallback.
-19. **settingsStore: `reconcile` instead of wholesale replacement**
-    (solidjs/concepts/stores.md, server-response pattern). Every
-    `settings-changed` event replaces the whole `settings` node, re-running
-    ~100 components' bindings.
+19. ~~**settingsStore: `reconcile` instead of wholesale replacement**~~
+    **Landed 2026-11-27, for every store.** `createSolidStore`'s `set`
+    reconciles an object or array value into the field it replaces (keyed by
+    `id`, assigned when a keyed root's `id` changed), so a refresh or a
+    spread-style update notifies only the leaves that moved; it also keeps
+    the actions out of the store. Effects that seed drafts read the fields
+    in their compute half, not the merged object.
 20. **tauri-specta: generate the hand-typed events** (README: event type
     generation). Three payloads (`ModelStateEvent`, `BenchmarkProgressEvent`,
     `RecordingErrorEvent`) are hand-maintained twice; derive
@@ -119,8 +122,13 @@ asset-protocol.md, capabilities.md; plugin/store.md):
 
 ## Phase 2 — modernization sweeps (mechanical, low risk)
 
-**Solid 2** (migration/from-solid-1.md): 21. Codemod ~51 `createEffect(() => undefined, …)` mount-effects →
-`onSettled`; 10 effect-local `onCleanup`s → returned cleanup. 22. Props-destructure sweep (`WhatsNewModal`, `StreamingLatencyControl`,
+**Solid 2** (migration/from-solid-1.md): 21. ~~Codemod ~51 `createEffect(() => undefined, …)` mount-effects →
+`onSettled`; 10 effect-local `onCleanup`s → returned cleanup.~~ **Landed
+2026-11-27**: the last 42 (multi-line, so a single-line grep had missed them)
+are `onSettled`; one component-body `onCleanup` remains in `LiveCanvas.tsx`,
+which is allowed there. The same pass took the Playwright run's Solid 2
+diagnostics from ~640 to **0** (`STRICT_READ_UNTRACKED`,
+`IMMUTABLE_UPDATE_IN_STORE`); see CHANGELOG. 22. Props-destructure sweep (`WhatsNewModal`, `StreamingLatencyControl`,
 `QuantizationPanel`, `ModelDropdown`, `HotkeyGroup`, `ModelSelector.onError`,
 `WhatsNewPreview`, static-config selectors), with `untrack` annotations
 for intentional snapshots (`OverlayScope.tsx:580`). 23. Wrap `renderSettingsContent` per-section (and footer) in the existing
