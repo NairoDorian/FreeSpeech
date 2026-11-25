@@ -961,4 +961,4 @@ row 9, like `a659ec6b`.
 | 6   | `a822741` | #2550 | Armenian translation                        | Adapt, as #1                                                                                  | `b9001163` |
 | 7   | `ca2334c` | #2557 | remote-control flags on a cold start        | Port: same place, the end of `setup()`; AGENTS.md / README / cli.rs wording                   | `a384b306` |
 | 8   | `bdb68c8` | #2563 | a stable tray icon ID                       | Adapt: the ID is `app_identity::SLUG`, not a hand-written name                                | `a384b306` |
-| 9   | `1f2e9ea` | #2565 | Linux: drop the OpenBLAS dependency         | Adapt: bundles, CI and BUILD.md; not the `.cargo/config.toml` env (the fork defaults it off)  | (this row) |
+| 9   | `1f2e9ea` | #2565 | Linux: drop the OpenBLAS dependency         | Adapt: bundles, CI and BUILD.md; not the `.cargo/config.toml` env (the fork defaults it off)  | `2074559a` |
