@@ -177,9 +177,20 @@ const HEADERS = {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * One request's budget, body included. Without it a server that accepts the
+ * connection and never answers stalled the whole mirror run with no output;
+ * a timed-out attempt now goes through the same retries as any failure.
+ */
+const FETCH_TIMEOUT_MS = 30_000;
+
 async function fetchText(url: string, attempt = 1): Promise<string> {
   try {
-    const res = await fetch(url, { headers: HEADERS, redirect: "follow" });
+    const res = await fetch(url, {
+      headers: HEADERS,
+      redirect: "follow",
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
   } catch (err) {
