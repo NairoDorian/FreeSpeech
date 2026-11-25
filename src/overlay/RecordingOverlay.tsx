@@ -35,7 +35,6 @@ import { getLanguageDirection } from "@/lib/utils/rtl";
 import { OverlayScope } from "./OverlayScope";
 import type { Notice } from "@/bindings";
 import { noticeDisplay } from "@/lib/notices";
-import type { ModelStateEvent } from "@/lib/types/events";
 import {
   OVERLAY_SCOPE_DEFAULTS,
   applyOverlayScopeCss,
@@ -691,29 +690,23 @@ const RecordingOverlay = () => {
       // `unloaded` (the idle watcher) is not ordered against a load in
       // flight, and the Multi-STT extras' own events are not the primary's
       // wait.
-      const unlistenModel = await listen<ModelStateEvent>(
-        "model-state-changed",
-        (event) => {
-          const type = event.payload.event_type;
-          if (type === "loading_started") {
-            clearTimeout(modelLoadTimer);
-            setModelLoading(true);
-            setModelLoadSlow(false);
-            modelLoadTimer = setTimeout(
-              () => setModelLoadSlow(true),
-              SLOW_MODEL_LOAD_MS,
-            );
-          } else if (
-            type === "loading_completed" ||
-            type === "loading_failed"
-          ) {
-            clearTimeout(modelLoadTimer);
-            modelLoadTimer = undefined;
-            setModelLoading(false);
-            setModelLoadSlow(false);
-          }
-        },
-      );
+      const unlistenModel = await events.modelStateChanged.listen((event) => {
+        const type = event.payload.event_type;
+        if (type === "loading_started") {
+          clearTimeout(modelLoadTimer);
+          setModelLoading(true);
+          setModelLoadSlow(false);
+          modelLoadTimer = setTimeout(
+            () => setModelLoadSlow(true),
+            SLOW_MODEL_LOAD_MS,
+          );
+        } else if (type === "loading_completed" || type === "loading_failed") {
+          clearTimeout(modelLoadTimer);
+          modelLoadTimer = undefined;
+          setModelLoading(false);
+          setModelLoadSlow(false);
+        }
+      });
 
       window.addEventListener("pointerup", handleDragGripPointerUp);
       window.addEventListener("pointercancel", handleDragGripPointerUp);

@@ -1,9 +1,7 @@
 import { createSignal, onSettled, type Accessor } from "solid-js";
-import { listen } from "@tauri-apps/api/event";
 import { sessionToast as toast } from "@/lib/sessionToast";
 import { commands, events } from "@/bindings";
 import type { HistoryEntry } from "@/bindings";
-import type { BenchmarkProgressEvent } from "@/lib/types/events";
 import { readPref, writePref } from "@/lib/appIdentity";
 
 export interface BenchmarkSample {
@@ -142,119 +140,116 @@ export function useQuantBenchmark(): QuantBenchmark {
   });
 
   onSettled(() => {
-    const unlisten = listen<BenchmarkProgressEvent>(
-      "benchmark-progress",
-      (event) => {
-        const {
-          event_type,
-          model_id,
-          avg_time_ms,
-          audio_secs,
-          run_index,
-          total_runs,
-          error,
-        } = event.payload;
-        switch (event_type) {
-          case "benchmark_started":
-            setIsRunningAll(true);
-            setResults({});
-            setErrors({});
-            setActiveModelId(null);
-            setActiveRun(null);
-            break;
-          case "variant_started":
-            if (model_id) setActiveModelId(model_id);
-            setActiveRun({
-              index: 0,
-              total: total_runs ?? runs(),
-              warmup: true,
-            });
-            break;
-          case "warmup_completed":
-            // The discarded first pass is over; every run from here is timed
-            // and counted, so the label can switch to "n / total".
-            setActiveRun((current) => ({
-              index: current?.index ?? 0,
-              total: total_runs ?? current?.total ?? runs(),
-              warmup: false,
+    const unlisten = events.benchmarkProgress.listen((event) => {
+      const {
+        event_type,
+        model_id,
+        avg_time_ms,
+        audio_secs,
+        run_index,
+        total_runs,
+        error,
+      } = event.payload;
+      switch (event_type) {
+        case "benchmark_started":
+          setIsRunningAll(true);
+          setResults({});
+          setErrors({});
+          setActiveModelId(null);
+          setActiveRun(null);
+          break;
+        case "variant_started":
+          if (model_id) setActiveModelId(model_id);
+          setActiveRun({
+            index: 0,
+            total: total_runs ?? runs(),
+            warmup: true,
+          });
+          break;
+        case "warmup_completed":
+          // The discarded first pass is over; every run from here is timed
+          // and counted, so the label can switch to "n / total".
+          setActiveRun((current) => ({
+            index: current?.index ?? 0,
+            total: total_runs ?? current?.total ?? runs(),
+            warmup: false,
+          }));
+          break;
+        case "run_completed":
+          setActiveRun({
+            index: run_index ?? 0,
+            total: total_runs ?? runs(),
+            warmup: false,
+          });
+          break;
+        case "variant_completed":
+          if (model_id && avg_time_ms != null) {
+            setResults((prev) => ({
+              ...prev,
+              [model_id]: {
+                avgMs: avg_time_ms,
+                audioSecs: audio_secs ?? null,
+              },
             }));
-            break;
-          case "run_completed":
-            setActiveRun({
-              index: run_index ?? 0,
-              total: total_runs ?? runs(),
-              warmup: false,
+            setErrors((prev) => {
+              if (!(model_id in prev)) return prev;
+              const next = { ...prev };
+              delete next[model_id];
+              return next;
             });
-            break;
-          case "variant_completed":
-            if (model_id && avg_time_ms != null) {
-              setResults((prev) => ({
-                ...prev,
-                [model_id]: {
-                  avgMs: avg_time_ms,
-                  audioSecs: audio_secs ?? null,
-                },
-              }));
-              setErrors((prev) => {
-                if (!(model_id in prev)) return prev;
-                const next = { ...prev };
-                delete next[model_id];
-                return next;
-              });
-            }
-            setActiveModelId((current) =>
-              current === model_id ? null : current,
-            );
-            setActiveRun(null);
-            break;
-          case "variant_error":
-            if (model_id && error)
-              setErrors((prev) => ({ ...prev, [model_id]: error }));
-            setActiveModelId((current) =>
-              current === model_id ? null : current,
-            );
-            setActiveRun(null);
-            break;
-          case "benchmark_completed":
-          case "benchmark_failed":
-            setIsRunningAll(false);
-            setActiveModelId(null);
-            setActiveRun(null);
-            break;
-          // The streaming benchmark shares this channel but is a different
-          // measurement, so its events never touch the quantization result
-          // map above — and the quantization events leave the stream state
-          // alone. The terminal events only clear the progress counter here;
-          // `runStream` owns the awaiting side.
-          case "stream_started":
-            setIsRunningStream(true);
-            setStreamProgress({
-              index: 0,
-              total: total_runs ?? runs(),
-              warmup: true,
-            });
-            break;
-          case "stream_warmup_completed":
-            setStreamProgress({
-              index: 0,
-              total: total_runs ?? runs(),
-              warmup: false,
-            });
-            break;
-          case "stream_run_completed":
-            setStreamProgress({
-              index: run_index ?? 0,
-              total: total_runs ?? runs(),
-              warmup: false,
-            });
-            break;
-          case "stream_completed":
-          case "stream_failed":
-            setStreamProgress(null);
-            break;
-        }
-      },
-    );
+          }
+          setActiveModelId((current) =>
+            current === model_id ? null : current,
+          );
+          setActiveRun(null);
+          break;
+        case "variant_error":
+          if (model_id && error)
+            setErrors((prev) => ({ ...prev, [model_id]: error }));
+          setActiveModelId((current) =>
+            current === model_id ? null : current,
+          );
+          setActiveRun(null);
+          break;
+        case "benchmark_completed":
+        case "benchmark_failed":
+          setIsRunningAll(false);
+          setActiveModelId(null);
+          setActiveRun(null);
+          break;
+        // The streaming benchmark shares this channel but is a different
+        // measurement, so its events never touch the quantization result
+        // map above — and the quantization events leave the stream state
+        // alone. The terminal events only clear the progress counter here;
+        // `runStream` owns the awaiting side.
+        case "stream_started":
+          setIsRunningStream(true);
+          setStreamProgress({
+            index: 0,
+            total: total_runs ?? runs(),
+            warmup: true,
+          });
+          break;
+        case "stream_warmup_completed":
+          setStreamProgress({
+            index: 0,
+            total: total_runs ?? runs(),
+            warmup: false,
+          });
+          break;
+        case "stream_run_completed":
+          setStreamProgress({
+            index: run_index ?? 0,
+            total: total_runs ?? runs(),
+            warmup: false,
+          });
+          break;
+        case "stream_completed":
+        case "stream_failed":
+          setStreamProgress(null);
+          break;
+      }
+    });
     return () => {
       void unlisten.then((fn) => fn());
     };

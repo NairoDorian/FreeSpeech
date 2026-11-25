@@ -42,9 +42,31 @@ fn panic_payload_message(payload: &(dyn std::any::Any + Send)) -> String {
     }
 }
 
-#[derive(Clone, Debug, Serialize)]
+/// What happened to a model, for [`ModelStateEvent`]. The `multi_stt_*` kinds
+/// are about an extra Multi-STT slot's engine rather than the primary model.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum ModelStateKind {
+    LoadingStarted,
+    LoadingCompleted,
+    LoadingFailed,
+    Unloaded,
+    /// The selection changed while the unload timeout is `Immediately`, so no
+    /// load follows to announce it.
+    SelectionChanged,
+    MultiSttModelLoaded,
+    MultiSttModelLoadFailed,
+    MultiSttModelUnloaded,
+}
+
+/// Model lifecycle notification (`model-state-changed`). A typed event so the
+/// frontend's payload type is generated from this struct instead of kept by
+/// hand beside it; emitted with `app_handle.emit(ModelStateEvent::NAME, …)`.
+/// The `Option`s always serialize (as `null` when unset).
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "model-state-changed")]
 pub struct ModelStateEvent {
-    pub event_type: String,
+    pub event_type: ModelStateKind,
     pub model_id: Option<String>,
     pub model_name: Option<String>,
     pub error: Option<String>,
@@ -164,14 +186,42 @@ struct StreamReplayMetrics {
     stream_extension: String,
 }
 
+/// What a [`BenchmarkProgressEvent`] reports. The quantization benchmark uses
+/// the plain kinds; the native-streaming benchmark shares the channel with the
+/// `stream_*` kinds. `*_failed` / `variant_error` carry `error`; the warmup
+/// pass (`*warmup_completed`) is discarded and never averaged.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum BenchmarkProgressKind {
+    /// The default only so the struct can derive `Default`; every
+    /// construction names its kind.
+    #[default]
+    BenchmarkStarted,
+    VariantStarted,
+    WarmupCompleted,
+    RunCompleted,
+    VariantCompleted,
+    VariantError,
+    BenchmarkCompleted,
+    BenchmarkFailed,
+    StreamStarted,
+    StreamWarmupCompleted,
+    StreamRunCompleted,
+    StreamCompleted,
+    StreamFailed,
+}
+
 /// Progress event emitted from the backend during a benchmark run so the
 /// frontend can show live status (which variant is being tested, etc.).
 ///
 /// Every field except `event_type` is optional; construct with
 /// `..Default::default()` and only set what the event actually carries.
-#[derive(Debug, Clone, Default, Serialize)]
+/// A typed event (`benchmark-progress`), emitted with
+/// `app_handle.emit(BenchmarkProgressEvent::NAME, …)`.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Type, tauri_specta::Event)]
+#[tauri_specta(event_name = "benchmark-progress")]
 pub struct BenchmarkProgressEvent {
-    pub event_type: String,
+    pub event_type: BenchmarkProgressKind,
     pub quant: Option<String>,
     pub model_id: Option<String>,
     /// For `run_completed` this is the elapsed time of that single run; for
@@ -747,9 +797,9 @@ impl TranscriptionManager {
 
         // Emit unloaded event
         let _ = self.app_handle.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "unloaded".to_string(),
+                event_type: ModelStateKind::Unloaded,
                 model_id: None,
                 model_name: None,
                 error: None,
@@ -823,9 +873,9 @@ impl TranscriptionManager {
 
         // Emit loading started event
         let _ = self.app_handle.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "loading_started".to_string(),
+                event_type: ModelStateKind::LoadingStarted,
                 model_id: Some(model_id.to_string()),
                 model_name: None,
                 error: None,
@@ -837,9 +887,9 @@ impl TranscriptionManager {
             None => {
                 let error_msg = format!("Model not found: {}", model_id);
                 let _ = self.app_handle.emit(
-                    "model-state-changed",
+                    ModelStateEvent::NAME,
                     ModelStateEvent {
-                        event_type: "loading_failed".to_string(),
+                        event_type: ModelStateKind::LoadingFailed,
                         model_id: Some(model_id.to_string()),
                         model_name: None,
                         error: Some(error_msg.clone()),
@@ -853,9 +903,9 @@ impl TranscriptionManager {
         // frontend can never remain in its loading state.
         let emit_loading_failed = |error_msg: &str| {
             let _ = self.app_handle.emit(
-                "model-state-changed",
+                ModelStateEvent::NAME,
                 ModelStateEvent {
-                    event_type: "loading_failed".to_string(),
+                    event_type: ModelStateKind::LoadingFailed,
                     model_id: Some(model_id.to_string()),
                     model_name: Some(model_info.name.clone()),
                     error: Some(error_msg.to_string()),
@@ -984,9 +1034,9 @@ impl TranscriptionManager {
 
         // Emit loading completed event
         let _ = self.app_handle.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "loading_completed".to_string(),
+                event_type: ModelStateKind::LoadingCompleted,
                 model_id: Some(model_id.to_string()),
                 model_name: Some(model_info.name.clone()),
                 error: None,
@@ -2658,9 +2708,9 @@ impl TranscriptionManager {
                             }
                         }
                         let _ = self.app_handle.emit(
-                            "model-state-changed",
+                            ModelStateEvent::NAME,
                             ModelStateEvent {
-                                event_type: "unloaded".to_string(),
+                                event_type: ModelStateKind::Unloaded,
                                 model_id: None,
                                 model_name: None,
                                 error: Some(e.to_string()),
@@ -2706,9 +2756,9 @@ impl TranscriptionManager {
                     }
 
                     let _ = self.app_handle.emit(
-                        "model-state-changed",
+                        ModelStateEvent::NAME,
                         ModelStateEvent {
-                            event_type: "unloaded".to_string(),
+                            event_type: ModelStateKind::Unloaded,
                             model_id: None,
                             model_name: None,
                             error: Some(format!("Engine panicked: {}", panic_msg)),
@@ -3656,9 +3706,9 @@ impl TranscriptionManager {
 
                 // Emit event for frontend
                 let _ = self.app_handle.emit(
-                    "model-state-changed",
+                    ModelStateEvent::NAME,
                     ModelStateEvent {
-                        event_type: "multi_stt_model_loaded".to_string(),
+                        event_type: ModelStateKind::MultiSttModelLoaded,
                         model_id: Some(model_id.to_string()),
                         model_name: Some(model_name.clone()),
                         error: None,
@@ -3671,9 +3721,9 @@ impl TranscriptionManager {
                 // Distinct event type: the App-level listener toasts this while
                 // the primary model selector's state stays untouched.
                 let _ = self.app_handle.emit(
-                    "model-state-changed",
+                    ModelStateEvent::NAME,
                     ModelStateEvent {
-                        event_type: "multi_stt_model_load_failed".to_string(),
+                        event_type: ModelStateKind::MultiSttModelLoadFailed,
                         model_id: Some(model_id.to_string()),
                         model_name: None,
                         error: Some(e.to_string()),
@@ -3725,9 +3775,9 @@ impl TranscriptionManager {
         }
 
         let _ = self.app_handle.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "multi_stt_model_unloaded".to_string(),
+                event_type: ModelStateKind::MultiSttModelUnloaded,
                 model_id: Some(model_id.to_string()),
                 model_name: None,
                 error: None,
@@ -3770,9 +3820,9 @@ impl TranscriptionManager {
         for model_id in &to_unload {
             info!("Extra model '{}' unloaded during full cleanup", model_id);
             let _ = self.app_handle.emit(
-                "model-state-changed",
+                ModelStateEvent::NAME,
                 ModelStateEvent {
-                    event_type: "multi_stt_model_unloaded".to_string(),
+                    event_type: ModelStateKind::MultiSttModelUnloaded,
                     model_id: Some(model_id.clone()),
                     model_name: None,
                     error: None,
@@ -3859,9 +3909,9 @@ impl TranscriptionManager {
 
     fn emit_extra_model_unloaded(&self, model_id: &str) {
         let _ = self.app_handle.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "multi_stt_model_unloaded".to_string(),
+                event_type: ModelStateKind::MultiSttModelUnloaded,
                 model_id: Some(model_id.to_string()),
                 model_name: None,
                 error: None,
@@ -4115,7 +4165,7 @@ impl TranscriptionManager {
     /// Emit a `benchmark-progress` event to the frontend, ignoring transport
     /// errors (a closed window must never abort a benchmark run).
     fn emit_benchmark_progress(&self, event: BenchmarkProgressEvent) {
-        let _ = self.app_handle.emit("benchmark-progress", event);
+        let _ = self.app_handle.emit(BenchmarkProgressEvent::NAME, event);
     }
 
     // Seven is clippy's default argument ceiling; the eighth is `timed_runs`,
@@ -4178,7 +4228,7 @@ impl TranscriptionManager {
             ),
         }
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "warmup_completed".to_string(),
+            event_type: BenchmarkProgressKind::WarmupCompleted,
             quant: Some(quant.to_string()),
             model_id: Some(variant_id.to_string()),
             audio_secs: Some(audio_secs),
@@ -4225,7 +4275,7 @@ impl TranscriptionManager {
             if let Some(message) = failure {
                 error!("Benchmark [{}]: {}", quant, message);
                 self.emit_benchmark_progress(BenchmarkProgressEvent {
-                    event_type: "variant_error".to_string(),
+                    event_type: BenchmarkProgressKind::VariantError,
                     quant: Some(quant.to_string()),
                     model_id: Some(variant_id.to_string()),
                     error: Some(message),
@@ -4235,7 +4285,7 @@ impl TranscriptionManager {
             }
 
             self.emit_benchmark_progress(BenchmarkProgressEvent {
-                event_type: "run_completed".to_string(),
+                event_type: BenchmarkProgressKind::RunCompleted,
                 quant: Some(quant.to_string()),
                 model_id: Some(variant_id.to_string()),
                 avg_time_ms: Some(elapsed_ms),
@@ -4324,7 +4374,7 @@ impl TranscriptionManager {
     fn emit_benchmark_failed(&self, model_id: &str, error: &anyhow::Error) {
         error!("Benchmark aborted for '{}': {}", model_id, error);
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "benchmark_failed".to_string(),
+            event_type: BenchmarkProgressKind::BenchmarkFailed,
             model_id: Some(model_id.to_string()),
             error: Some(error.to_string()),
             ..Default::default()
@@ -4376,7 +4426,7 @@ impl TranscriptionManager {
         let had_primary_model = self.is_model_loaded();
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "benchmark_started".to_string(),
+            event_type: BenchmarkProgressKind::BenchmarkStarted,
             audio_secs: Some(audio_secs),
             total_runs: Some(timed_runs as u32),
             ..Default::default()
@@ -4394,7 +4444,7 @@ impl TranscriptionManager {
             }
 
             self.emit_benchmark_progress(BenchmarkProgressEvent {
-                event_type: "variant_started".to_string(),
+                event_type: BenchmarkProgressKind::VariantStarted,
                 quant: Some(file.quant.clone()),
                 model_id: Some(variant_id.clone()),
                 audio_secs: Some(audio_secs),
@@ -4406,7 +4456,7 @@ impl TranscriptionManager {
                 Ok(p) => p,
                 Err(e) => {
                     self.emit_benchmark_progress(BenchmarkProgressEvent {
-                        event_type: "variant_error".to_string(),
+                        event_type: BenchmarkProgressKind::VariantError,
                         quant: Some(file.quant.clone()),
                         model_id: Some(variant_id.clone()),
                         error: Some(e.to_string()),
@@ -4434,7 +4484,7 @@ impl TranscriptionManager {
                 Ok(times) => times,
                 Err(e) => {
                     self.emit_benchmark_progress(BenchmarkProgressEvent {
-                        event_type: "variant_error".to_string(),
+                        event_type: BenchmarkProgressKind::VariantError,
                         quant: Some(file.quant.clone()),
                         model_id: Some(variant_id.clone()),
                         error: Some(format!("Failed to load model: {}", e)),
@@ -4457,7 +4507,7 @@ impl TranscriptionManager {
             );
 
             self.emit_benchmark_progress(BenchmarkProgressEvent {
-                event_type: "variant_completed".to_string(),
+                event_type: BenchmarkProgressKind::VariantCompleted,
                 quant: Some(result.quant.clone()),
                 model_id: Some(result.model_id.clone()),
                 avg_time_ms: Some(result.avg_time_ms),
@@ -4473,7 +4523,7 @@ impl TranscriptionManager {
         }
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "benchmark_completed".to_string(),
+            event_type: BenchmarkProgressKind::BenchmarkCompleted,
             ..Default::default()
         });
 
@@ -4534,7 +4584,7 @@ impl TranscriptionManager {
         let _ = self.unload_model();
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "variant_started".to_string(),
+            event_type: BenchmarkProgressKind::VariantStarted,
             quant: Some(file.quant.clone()),
             model_id: Some(model_id.to_string()),
             audio_secs: Some(audio_secs),
@@ -4589,7 +4639,7 @@ impl TranscriptionManager {
         );
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "variant_completed".to_string(),
+            event_type: BenchmarkProgressKind::VariantCompleted,
             quant: Some(result.quant.clone()),
             model_id: Some(result.model_id.clone()),
             avg_time_ms: Some(result.avg_time_ms),
@@ -4766,7 +4816,7 @@ impl TranscriptionManager {
             .inspect_err(|error| {
                 error!("Streaming benchmark aborted for '{}': {}", model_id, error);
                 self.emit_benchmark_progress(BenchmarkProgressEvent {
-                    event_type: "stream_failed".to_string(),
+                    event_type: BenchmarkProgressKind::StreamFailed,
                     model_id: Some(model_id.to_string()),
                     error: Some(error.to_string()),
                     ..Default::default()
@@ -4809,7 +4859,7 @@ impl TranscriptionManager {
         let _ = self.unload_model();
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "stream_started".to_string(),
+            event_type: BenchmarkProgressKind::StreamStarted,
             model_id: Some(model_id.to_string()),
             audio_secs: Some(audio_secs),
             total_runs: Some(timed_runs as u32),
@@ -4864,7 +4914,7 @@ impl TranscriptionManager {
             ),
         }
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "stream_warmup_completed".to_string(),
+            event_type: BenchmarkProgressKind::StreamWarmupCompleted,
             model_id: Some(model_id.to_string()),
             audio_secs: Some(audio_secs),
             run_index: Some(0),
@@ -4901,7 +4951,7 @@ impl TranscriptionManager {
                 real_time_factor(audio_secs, metrics.compute_ms / 1000.0)
             );
             self.emit_benchmark_progress(BenchmarkProgressEvent {
-                event_type: "stream_run_completed".to_string(),
+                event_type: BenchmarkProgressKind::StreamRunCompleted,
                 model_id: Some(model_id.to_string()),
                 avg_time_ms: Some(metrics.compute_ms),
                 audio_secs: Some(audio_secs),
@@ -4946,7 +4996,7 @@ impl TranscriptionManager {
         );
 
         self.emit_benchmark_progress(BenchmarkProgressEvent {
-            event_type: "stream_completed".to_string(),
+            event_type: BenchmarkProgressKind::StreamCompleted,
             model_id: Some(model_id.to_string()),
             avg_time_ms: Some(result.avg_compute_ms),
             audio_secs: Some(audio_secs),

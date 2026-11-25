@@ -627,6 +627,7 @@ export const commands = {
 
 /** Events */
 export const events = {
+	benchmarkProgress: makeEvent<BenchmarkProgressEvent_Serialize, BenchmarkProgressEvent_Deserialize>("benchmark-progress"),
 	fileTranscriptionEvent: makeEvent<FileTranscriptionEvent_Serialize, FileTranscriptionEvent_Deserialize>("file-transcription-event"),
 	historyUpdatePayload: makeEvent<HistoryUpdatePayload_Serialize, HistoryUpdatePayload_Deserialize>("history-update-payload"),
 	liveFftStateEvent: makeEvent<LiveFftStateEvent_Serialize, LiveFftStateEvent_Deserialize>("live-fft-state-event"),
@@ -634,6 +635,7 @@ export const events = {
 	liveModeTranscriptEvent: makeEvent<LiveModeTranscriptEvent, LiveModeTranscriptEvent>("live-mode-transcript-event"),
 	llamaDownloadEvent: makeEvent<LlamaDownloadEvent_Serialize, LlamaDownloadEvent_Deserialize>("llama-download-event"),
 	llamaServerStateEvent: makeEvent<LlamaServerStateEvent_Serialize, LlamaServerStateEvent_Deserialize>("llama-server-state-event"),
+	modelStateChanged: makeEvent<ModelStateEvent_Serialize, ModelStateEvent_Deserialize>("model-state-changed"),
 	multiSttStreamChunkFailedEvent: makeEvent<MultiSttStreamChunkFailedEvent, MultiSttStreamChunkFailedEvent>("multi-stt-stream-chunk-failed-event"),
 	noticesChanged: makeEvent<NoticesChanged_Serialize, NoticesChanged_Deserialize>("notices-changed"),
 	recallInsertTextEvent: makeEvent<RecallInsertTextEvent, RecallInsertTextEvent>("recall-insert-text-event"),
@@ -1463,6 +1465,96 @@ export type AvailableAccelerators = {
 	 */
 	model_backends: string[],
 };
+
+/**
+ *  Progress event emitted from the backend during a benchmark run so the
+ *  frontend can show live status (which variant is being tested, etc.).
+ * 
+ *  Every field except `event_type` is optional; construct with
+ *  `..Default::default()` and only set what the event actually carries.
+ *  A typed event (`benchmark-progress`), emitted with
+ *  `app_handle.emit(BenchmarkProgressEvent::NAME, …)`.
+ */
+export type BenchmarkProgressEvent = BenchmarkProgressEvent_Serialize | BenchmarkProgressEvent_Deserialize;
+
+/**
+ *  Progress event emitted from the backend during a benchmark run so the
+ *  frontend can show live status (which variant is being tested, etc.).
+ * 
+ *  Every field except `event_type` is optional; construct with
+ *  `..Default::default()` and only set what the event actually carries.
+ *  A typed event (`benchmark-progress`), emitted with
+ *  `app_handle.emit(BenchmarkProgressEvent::NAME, …)`.
+ */
+export type BenchmarkProgressEvent_Deserialize = {
+	event_type: BenchmarkProgressKind,
+	quant?: string | null,
+	model_id?: string | null,
+	/**
+	 *  For `run_completed` this is the elapsed time of that single run; for
+	 *  `variant_completed` it is the average across all timed runs.
+	 */
+	avg_time_ms?: number | null,
+	/**  Duration of the reference recording (see [`BenchmarkResult::audio_secs`]). */
+	audio_secs?: number | null,
+	/**
+	 *  1-based index of the run that just finished (`run_completed` only);
+	 *  0 for `warmup_completed`, the discarded first pass.
+	 */
+	run_index?: number | null,
+	/**
+	 *  Number of timed runs averaged per variant — the discarded warmup is
+	 *  not part of this count, so the UI can render "2 / 5".
+	 */
+	total_runs?: number | null,
+	error?: string | null,
+};
+
+/**
+ *  Progress event emitted from the backend during a benchmark run so the
+ *  frontend can show live status (which variant is being tested, etc.).
+ * 
+ *  Every field except `event_type` is optional; construct with
+ *  `..Default::default()` and only set what the event actually carries.
+ *  A typed event (`benchmark-progress`), emitted with
+ *  `app_handle.emit(BenchmarkProgressEvent::NAME, …)`.
+ */
+export type BenchmarkProgressEvent_Serialize = {
+	event_type: BenchmarkProgressKind,
+	quant: string | null,
+	model_id: string | null,
+	/**
+	 *  For `run_completed` this is the elapsed time of that single run; for
+	 *  `variant_completed` it is the average across all timed runs.
+	 */
+	avg_time_ms: number | null,
+	/**  Duration of the reference recording (see [`BenchmarkResult::audio_secs`]). */
+	audio_secs: number | null,
+	/**
+	 *  1-based index of the run that just finished (`run_completed` only);
+	 *  0 for `warmup_completed`, the discarded first pass.
+	 */
+	run_index: number | null,
+	/**
+	 *  Number of timed runs averaged per variant — the discarded warmup is
+	 *  not part of this count, so the UI can render "2 / 5".
+	 */
+	total_runs: number | null,
+	error: string | null,
+};
+
+/**
+ *  What a [`BenchmarkProgressEvent`] reports. The quantization benchmark uses
+ *  the plain kinds; the native-streaming benchmark shares the channel with the
+ *  `stream_*` kinds. `*_failed` / `variant_error` carry `error`; the warmup
+ *  pass (`*warmup_completed`) is discarded and never averaged.
+ */
+export type BenchmarkProgressKind = 
+/**
+ *  The default only so the struct can derive `Default`; every
+ *  construction names its kind.
+ */
+"benchmark_started" | "variant_started" | "warmup_completed" | "run_completed" | "variant_completed" | "variant_error" | "benchmark_completed" | "benchmark_failed" | "stream_started" | "stream_warmup_completed" | "stream_run_completed" | "stream_completed" | "stream_failed";
 
 /**
  *  Result of benchmarking a single quantization variant — returned to the
@@ -3051,6 +3143,51 @@ export type ModelSource_Serialize =
  *  in a shared cache. Nothing to download.
  */
 "Local";
+
+/**
+ *  Model lifecycle notification (`model-state-changed`). A typed event so the
+ *  frontend's payload type is generated from this struct instead of kept by
+ *  hand beside it; emitted with `app_handle.emit(ModelStateEvent::NAME, …)`.
+ *  The `Option`s always serialize (as `null` when unset).
+ */
+export type ModelStateEvent = ModelStateEvent_Serialize | ModelStateEvent_Deserialize;
+
+/**
+ *  Model lifecycle notification (`model-state-changed`). A typed event so the
+ *  frontend's payload type is generated from this struct instead of kept by
+ *  hand beside it; emitted with `app_handle.emit(ModelStateEvent::NAME, …)`.
+ *  The `Option`s always serialize (as `null` when unset).
+ */
+export type ModelStateEvent_Deserialize = {
+	event_type: ModelStateKind,
+	model_id?: string | null,
+	model_name?: string | null,
+	error?: string | null,
+};
+
+/**
+ *  Model lifecycle notification (`model-state-changed`). A typed event so the
+ *  frontend's payload type is generated from this struct instead of kept by
+ *  hand beside it; emitted with `app_handle.emit(ModelStateEvent::NAME, …)`.
+ *  The `Option`s always serialize (as `null` when unset).
+ */
+export type ModelStateEvent_Serialize = {
+	event_type: ModelStateKind,
+	model_id: string | null,
+	model_name: string | null,
+	error: string | null,
+};
+
+/**
+ *  What happened to a model, for [`ModelStateEvent`]. The `multi_stt_*` kinds
+ *  are about an extra Multi-STT slot's engine rather than the primary model.
+ */
+export type ModelStateKind = "loading_started" | "loading_completed" | "loading_failed" | "unloaded" | 
+/**
+ *  The selection changed while the unload timeout is `Immediately`, so no
+ *  load follows to announce it.
+ */
+"selection_changed" | "multi_stt_model_loaded" | "multi_stt_model_load_failed" | "multi_stt_model_unloaded";
 
 export type ModelUnloadTimeout = "never" | "immediately" | "min2" | "min5" | "min10" | "min15" | "hour1" | "sec15";
 

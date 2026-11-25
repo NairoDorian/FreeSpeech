@@ -15,7 +15,7 @@ import {
   Radio,
   Zap,
 } from "@/components/icons/lucide";
-import { commands } from "@/bindings";
+import { commands, events } from "@/bindings";
 import type {
   ModelBackendSetting,
   NativeStreamingLatencyPreset,
@@ -46,7 +46,6 @@ import {
   isContinuousLatency,
 } from "@/lib/streamingLatency";
 
-import { ModelStateEvent } from "@/lib/types/events";
 import type { JSX } from "@solidjs/web";
 
 type StatusPanel = "model" | "quant" | "latency" | "backend";
@@ -132,32 +131,29 @@ const ModelSelector = (props: ModelSelectorProps): JSX.Element => {
     // The post-download auto-select waits 500 ms; a timer still pending at
     // unmount must not switch the model behind a component that is gone.
     const autoSelectTimers = new Set<ReturnType<typeof setTimeout>>();
-    const modelStateUnlisten = listen<ModelStateEvent>(
-      "model-state-changed",
-      (event) => {
-        const { event_type, error } = event.payload;
-        switch (event_type) {
-          case "loading_started":
-            setModelStatus("loading");
-            setModelError(null);
-            break;
-          case "loading_completed":
-            setModelStatus("ready");
-            setModelError(null);
-            setPendingModelId(null);
-            break;
-          case "loading_failed":
-            setModelStatus("error");
-            setModelError(error || t("modelSelector.errors.loadFailed"));
-            setPendingModelId(null);
-            break;
-          case "unloaded":
-            setModelStatus("unloaded");
-            setModelError(null);
-            break;
-        }
-      },
-    );
+    const modelStateUnlisten = events.modelStateChanged.listen((event) => {
+      const { event_type, error } = event.payload;
+      switch (event_type) {
+        case "loading_started":
+          setModelStatus("loading");
+          setModelError(null);
+          break;
+        case "loading_completed":
+          setModelStatus("ready");
+          setModelError(null);
+          setPendingModelId(null);
+          break;
+        case "loading_failed":
+          setModelStatus("error");
+          setModelError(error || t("modelSelector.errors.loadFailed"));
+          setPendingModelId(null);
+          break;
+        case "unloaded":
+          setModelStatus("unloaded");
+          setModelError(null);
+          break;
+      }
+    });
     const downloadCompleteUnlisten = listen<string>(
       "model-download-complete",
       (event) => {

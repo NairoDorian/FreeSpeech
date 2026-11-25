@@ -1,7 +1,8 @@
 use crate::managers::history::HistoryManager;
 use crate::managers::model::{ModelInfo, ModelManager, default_quant_file};
 use crate::managers::transcription::{
-    BenchmarkResult, ModelStateEvent, StreamingBenchmarkResult, TranscriptionManager,
+    BenchmarkResult, ModelStateEvent, ModelStateKind, StreamingBenchmarkResult,
+    TranscriptionManager,
 };
 use crate::settings::{
     ModelUnloadTimeout, NativeStreamingLatencyPreset, get_settings, write_settings,
@@ -13,6 +14,7 @@ use specta::Type;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Manager, State};
+use tauri_specta::Event;
 
 /// A single quantization variant of a catalog model — returned to the frontend
 /// so the UI can render a quant picker (chips / dropdown) and let the user
@@ -294,9 +296,9 @@ pub fn switch_active_model(app: &AppHandle, model_id: &str) -> Result<(), String
         // Notify frontend — load_model won't be called so no events
         // would otherwise be emitted.
         let _ = app.emit(
-            "model-state-changed",
+            ModelStateEvent::NAME,
             ModelStateEvent {
-                event_type: "selection_changed".to_string(),
+                event_type: ModelStateKind::SelectionChanged,
                 model_id: Some(model_id.to_string()),
                 model_name: Some(model_info.name.clone()),
                 error: None,

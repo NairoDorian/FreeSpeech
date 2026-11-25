@@ -35,9 +35,8 @@ import {
 } from "@/lib/streamingLatency";
 import { useSettings } from "../../../hooks/useSettings";
 import { useModelStore } from "../../../stores/modelStore";
-import { commands, type LanguageStatus } from "@/bindings";
+import { commands, events, type LanguageStatus } from "@/bindings";
 import { languageStatusText } from "@/lib/languageStatus";
-import { ModelStateEvent } from "@/lib/types/events";
 import {
   SELECTABLE_LANGUAGES,
   effectiveLanguage,
@@ -480,7 +479,7 @@ export const MultiSttSettings = () => {
 
   onSettled(() => {
     fetchLoadedExtraModels();
-    const unlisten = listen<ModelStateEvent>("model-state-changed", (event) => {
+    const unlisten = events.modelStateChanged.listen((event) => {
       const { event_type, model_id } = event.payload;
       if (event_type === "multi_stt_model_loaded" && model_id) {
         setLoadedExtraModels((prev) => {

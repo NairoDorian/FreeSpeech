@@ -1,6 +1,6 @@
 import { createSolidStore } from "@/lib/solidStore";
 import { listen } from "@tauri-apps/api/event";
-import { commands, type ModelInfo } from "@/bindings";
+import { commands, events, type ModelInfo } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
 
 interface DownloadProgress {
@@ -372,7 +372,7 @@ const modelState = createSolidStore<ModelsStore>((set, get) => ({
       get().loadCurrentModel();
     });
 
-    listen("model-state-changed", () => {
+    events.modelStateChanged.listen(() => {
       get().loadModels();
       get().loadCurrentModel();
     });

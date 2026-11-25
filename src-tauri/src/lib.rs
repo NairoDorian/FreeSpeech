@@ -48,7 +48,7 @@ mod webview_hardening;
 pub use cli::CliArgs;
 #[cfg(debug_assertions)]
 use specta_typescript::Typescript;
-use tauri_specta::{Builder, ErrorHandlingMode, collect_commands, collect_events};
+use tauri_specta::{Builder, ErrorHandlingMode, Event, collect_commands, collect_events};
 pub use utils::{app_env_flag, app_env_var, env_flag_enabled, requested_gdk_backend};
 
 use managers::audio::AudioRecordingManager;
@@ -515,7 +515,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
 
     // Refresh tray menu when model state changes
     let app_handle_for_listener = app_handle.clone();
-    app_handle.listen("model-state-changed", move |_| {
+    app_handle.listen(managers::transcription::ModelStateEvent::NAME, move |_| {
         tray::update_tray_menu(&app_handle_for_listener);
     });
     // A download or a delete can change what the Language submenu offers: the
@@ -1099,6 +1099,8 @@ pub fn run(cli_args: CliArgs) {
             managers::history::HistoryUpdatePayload,
             managers::transcription::StreamTextEvent,
             managers::transcription::StreamPhaseEvent,
+            managers::transcription::ModelStateEvent,
+            managers::transcription::BenchmarkProgressEvent,
             managers::statistics::StatisticsUpdatedEvent,
             overlay::SpeechActivityEvent,
             managers::audio::VadTestEvent,
@@ -1151,40 +1153,13 @@ pub fn run(cli_args: CliArgs) {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
         .runtime(tauri_runtime_wry::Wry::default())
-        .device_event_filter(tauri::DeviceEventFilter::Always)
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(
-            LogBuilder::new()
-                .level(log::LevelFilter::Trace) // Set to most verbose level globally
-                .max_file_size(10_000_000)
-                .rotation_strategy(RotationStrategy::KeepOne)
-                .clear_targets()
-                .targets([
-                    // Interactive console output goes to stdout, headless to
-                    // stderr; see `console_stream_kind`.
-                    Target::new(console_stream_kind(headless_mode)),
-                    // The durable console uses the same capture policy as the terminal.
-                    Target::new(if let Some(data_dir) = portable::data_dir() {
-                        TargetKind::Folder {
-                            path: data_dir.join("logs"),
-                            file_name: Some(session_log::init().into()),
-                        }
-                    } else {
-                        TargetKind::LogDir {
-                            file_name: Some(session_log::init().into()),
-                        }
-                    }),
-                ])
-                .build(),
-        );
-
-    #[cfg(target_os = "macos")]
-    {
-        builder = builder.plugin(tauri_nspanel::init());
-    }
+        .device_event_filter(tauri::DeviceEventFilter::Always);
 
     // Single-instance forwards CLI args to an already-running instance and exits.
-    // That would make the headless path
+    // It is registered first, as its documentation requires: a second process
+    // then forwards its arguments and exits before any other plugin
+    // initializes (the log plugin used to open a session log file for it).
+    // Forwarding would make the headless path
     // (--transcribe-file/--list-devices/--list-models) a silent no-op whenever the
     // app is already open, so skip it in headless mode and run a standalone
     // instance instead.
@@ -1208,6 +1183,36 @@ pub fn run(cli_args: CliArgs) {
                 show_main_window(app);
             }
         }));
+    }
+
+    builder = builder.plugin(tauri_plugin_dialog::init()).plugin(
+        LogBuilder::new()
+            .level(log::LevelFilter::Trace) // Set to most verbose level globally
+            .max_file_size(10_000_000)
+            .rotation_strategy(RotationStrategy::KeepOne)
+            .clear_targets()
+            .targets([
+                // Interactive console output goes to stdout, headless to
+                // stderr; see `console_stream_kind`.
+                Target::new(console_stream_kind(headless_mode)),
+                // The durable console uses the same capture policy as the terminal.
+                Target::new(if let Some(data_dir) = portable::data_dir() {
+                    TargetKind::Folder {
+                        path: data_dir.join("logs"),
+                        file_name: Some(session_log::init().into()),
+                    }
+                } else {
+                    TargetKind::LogDir {
+                        file_name: Some(session_log::init().into()),
+                    }
+                }),
+            ])
+            .build(),
+    );
+
+    #[cfg(target_os = "macos")]
+    {
+        builder = builder.plugin(tauri_nspanel::init());
     }
 
     #[allow(unused_mut)]

@@ -18,7 +18,7 @@ import type {
   ShortcutActivation,
   TypographySettings,
 } from "@/bindings";
-import { commands, type PostProcessApiFormat } from "@/bindings";
+import { commands, events, type PostProcessApiFormat } from "@/bindings";
 import { sessionToast as toast } from "@/lib/sessionToast";
 
 interface SettingsStore {
@@ -1130,7 +1130,7 @@ const settingsState = createSolidStore<SettingsStore>((set, get) => ({
 
     // Re-fetch settings when the backend changes them (e.g. language
     // reset during model switch). The backend is the source of truth.
-    listen("model-state-changed", () => {
+    events.modelStateChanged.listen(() => {
       get().refreshSettings();
     });
     listen<{ setting?: string }>("settings-changed", (event) => {

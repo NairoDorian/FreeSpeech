@@ -735,7 +735,9 @@ download_language_detector`) when a plan wants it or when the list is
 - `overlay/` - Recording overlay window entry point (`RecordingOverlay.tsx`,
   `main.tsx`, `index.html`, `OverlayScope.tsx` for the miniature analyser);
   there is no `components/overlay/`
-- `lib/types/events.ts` - Shared TypeScript event payload types;
+- Event payload types come from `bindings.ts` (tauri-specta typed events,
+  `events.*.listen`); `model-state-changed` and `benchmark-progress` carry a
+  Rust enum as `event_type`, so the frontend's comparisons are checked.
   `lib/utils/{color,theme,keyboard,format,rtl,modelTranslation}.ts`,
   `lib/constants/languages.ts`
 
