@@ -721,7 +721,7 @@ impl ShortcutAction for TranscribeAction {
             .as_ref()
             .map(|m| m.supports_streaming)
             .unwrap_or(false);
-        let vad_policy = crate::managers::audio::vad_policy_for(&app, &settings);
+        let vad_policy = crate::managers::audio::vad_policy_for(app, &settings);
         // With post-processing the live stream is a preview only (see
         // `live_stream_is_preview_only`): no live typing, Live overlay forced.
         // Recall insertion mode is preview-only too — the final text is
@@ -2028,7 +2028,7 @@ impl ShortcutAction for MultiSttAction {
             .as_ref()
             .map(|m| m.supports_streaming)
             .unwrap_or(false);
-        let vad_policy = crate::managers::audio::vad_policy_for(&app, &settings);
+        let vad_policy = crate::managers::audio::vad_policy_for(app, &settings);
         // Multi-STT always merges/concatenates, so the primary model's live
         // stream is a preview only: never typed into the app, Live overlay
         // forced when the model can stream.

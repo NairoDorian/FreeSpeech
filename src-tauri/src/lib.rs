@@ -65,6 +65,11 @@ use tauri_plugin_log::{Builder as LogBuilder, RotationStrategy, Target, TargetKi
 
 use crate::settings::get_settings;
 
+// Declared in Cargo.toml only to pin the Tauri family to one release (see the
+// note in `[build-dependencies]`), and nothing here calls it. Naming it keeps
+// cargo's `unused_dependencies` lint quiet without switching the lint off.
+use tauri_plugin as _;
+
 /// The stream the console target writes to: **stdout** for the interactive app,
 /// **stderr** for the headless one-shots.
 ///

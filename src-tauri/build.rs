@@ -1,3 +1,8 @@
+// Declared in `[build-dependencies]` only to pin the Tauri family to one
+// release (see the note there), and nothing here calls it. Naming it keeps
+// cargo's `unused_dependencies` lint quiet without switching the lint off.
+use tauri_codegen as _;
+
 fn main() {
     // A build script's `cfg` describes the *host*; the bridge follows the
     // *target* (`mod apple_intelligence` in lib.rs is gated on an aarch64

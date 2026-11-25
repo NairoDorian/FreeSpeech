@@ -558,7 +558,7 @@ fn note_bytes_to_content(id: &str, bytes: &[u8], root: &Path) -> Result<RecallNo
     // Only encrypted notes come through here: their file is the `.rcl`.
     Ok(parse_note(
         id,
-        &raw,
+        raw,
         file_updated_ms(&crypto::encrypted_note_path(root, id)),
     ))
 }

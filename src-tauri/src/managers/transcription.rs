@@ -6754,8 +6754,8 @@ mod tests {
     #[test]
     fn available_model_backends_contains_defaults() {
         let backends = available_model_backends();
-        assert!(backends.contains(&"auto".to_string()));
-        assert!(backends.contains(&"cpu".to_string()));
+        assert!(backends.iter().any(|b| b == "auto"));
+        assert!(backends.iter().any(|b| b == "cpu"));
     }
 
     #[test]
