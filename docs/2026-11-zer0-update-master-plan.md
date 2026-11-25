@@ -821,8 +821,7 @@ segment_boundaries`), one policy for live and batch.
   `e286103` (updater off where the bundle cannot self-update), `c530a49` and
   `d2ee871` (X11 overlay resizable, no focus on map), `4ec61f0` (dotool
   multi-line), `3c7a538` (ydotoold socket lookup), `bd4b027` (next paste tool
-  on failure), `4a096e3` (Shift+Insert with the PRIMARY selection), `dce2976`
-  (macOS `tccutil` reset). Needs a Linux box, or the WSL Ubuntu with Rust,
+  on failure), `4a096e3` (Shift+Insert with the PRIMARY selection). Needs a Linux box, or the WSL Ubuntu with Rust,
   cmake and the GTK / WebKit / ALSA / Vulkan development packages installed.
 
 ---
@@ -914,7 +913,7 @@ reason), **Defer** (Phase 12). Fill the last column with the ZER0 commit.
 | 76  | `e286103` | #2448 | updater off where the build cannot update                | Adapt, P10                                                                       | — deferred (P12: needs a Linux/macOS build)             |
 | 77  | `c530a49` | #2447 | X11 overlay stays resizable                              | Adapt, P10                                                                       | — deferred (P12: needs a Linux/macOS build)             |
 | 78  | `27322df` |       | model list request timeout                               | Port, P7                                                                         | `8f7b92cc`                                              |
-| 79  | `dce2976` | #2057 | macOS: clear stale permission grants                     | Port, P10                                                                        | — deferred (P12: needs a Linux/macOS build)             |
+| 79  | `dce2976` | #2057 | macOS: clear stale permission grants                     | Port, P10                                                                        | — dropped: upstream reverted it (`b14583a`, see below)  |
 | 80  | `1fe3ae2` | #2482 | decode Opus files                                        | Adapt, P9                                                                        | `b174fd62`                                              |
 | 81  | `ca4a611` | #2434 | punctuation-only transcript is empty                     | Port, P3                                                                         | `b1a98752`                                              |
 | 82  | `d654302` | #2418 | No Model Selected notice                                 | Adapt, P8                                                                        | `ab85a966`                                              |
@@ -938,3 +937,20 @@ reason), **Defer** (Phase 12). Fill the last column with the ZER0 commit.
 | 100 | `1e10e71` | #2506 | drop custom words read back                              | Port, P7                                                                         | `a7b98d8b`                                              |
 | 101 | `4a096e3` | #2504 | Linux Shift+Insert paste                                 | Adapt, P10                                                                       | — deferred (P12: needs a Linux/macOS build)             |
 | 102 | `aca8985` |       | release v0.10.1                                          | Skip                                                                             | —                                                       |
+
+## Ledger — the v0.10.2 intake `aca89851..bdb68c85` (2026-11-25)
+
+The eight commits upstream landed after the close-out, read one by one and
+checked against ZER0's code before porting. Recorded with `git merge -s ours
+bdb68c85`, like `a659ec6b`.
+
+| #   | Upstream  | PR    | Title                                       | Disposition                                                                                   | ZER0       |
+| --- | --------- | ----- | ------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------- |
+| 1   | `4807c21` | #2529 | Thai translation                            | Adapt: brought to ZER0's key set (see the commit for the rule)                                | `b9001163` |
+| 2   | `939c957` | #2525 | feedback sound: let the device pick buffers | Port: ZER0's git rodio has the same fixed buffer; both `from_device` paths                    | `a384b306` |
+| 3   | `bebbb96` | #2549 | Hungarian translation                       | Adapt, as #1                                                                                  | `b9001163` |
+| 4   | `b14583a` | #2552 | revert: stop resetting macOS permissions    | Covered: ZER0 never took `dce2976` (row 79), so there is nothing to revert; row 79 is dropped | —          |
+| 5   | `f63ca14` | #2553 | release v0.10.2                             | Skip: ZER0 has its own release line                                                           | —          |
+| 6   | `a822741` | #2550 | Armenian translation                        | Adapt, as #1                                                                                  | `b9001163` |
+| 7   | `ca2334c` | #2557 | remote-control flags on a cold start        | Port: same place, the end of `setup()`; AGENTS.md / README / cli.rs wording                   | `a384b306` |
+| 8   | `bdb68c8` | #2563 | a stable tray icon ID                       | Adapt: the ID is `app_identity::SLUG`, not a hand-written name                                | `a384b306` |
