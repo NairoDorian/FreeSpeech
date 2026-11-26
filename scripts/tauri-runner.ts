@@ -249,6 +249,13 @@ if (process.env.TRANSCRIBE_DIR || process.env.TRANSCRIBE_PREBUILT_DIR) {
   console.log(
     "[transcribe] using the explicit local install; skipping remote pin updates",
   );
+} else if (process.env.CI) {
+  // CI builds what is committed. Moving the pins to the remotes' newest
+  // commits here made the v0.10.0 installers ship an engine (17a02066) that
+  // the CUDA add-on jobs, which build the committed lock, did not
+  // (9294084e), so the app refused its own add-on. A release must be the
+  // lockfile it was tagged from; the pin moves in a commit.
+  console.log("[transcribe] CI: building the committed pins");
 } else {
   checkTranscribeDeps();
 }
