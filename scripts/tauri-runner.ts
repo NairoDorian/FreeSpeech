@@ -324,6 +324,26 @@ if (
   }
 }
 
+// GitHub Actions cannot leave an env var out conditionally, so build.yml hands
+// the Apple signing secrets over as empty strings when it does not sign. Tauri
+// reads a set APPLE_CERTIFICATE as a certificate to import, empty or not, and
+// the macOS bundle step then fails ("security: SecKeychainItemImport: Unable
+// to decode the provided data"); a set APPLE_ID would start notarization. Empty
+// means unset here, and APPLE_SIGNING_IDENTITY="-" keeps the ad-hoc signature.
+for (const name of [
+  "APPLE_CERTIFICATE",
+  "APPLE_CERTIFICATE_PASSWORD",
+  "APPLE_ID",
+  "APPLE_ID_PASSWORD",
+  "APPLE_PASSWORD",
+  "APPLE_TEAM_ID",
+  "APPLE_API_ISSUER",
+  "APPLE_API_KEY",
+  "APPLE_API_KEY_PATH",
+]) {
+  if (process.env[name] === "") delete process.env[name];
+}
+
 // 4. Spawn tauri CLI with the posture flags removed
 const proc = Bun.spawnSync(
   [process.execPath, "x", "tauri", ...passthroughArgs],
