@@ -294,6 +294,36 @@ if (
   }
 }
 
+// No key at all: a contributor's machine, or CI before the
+// TAURI_SIGNING_PRIVATE_KEY secret exists (CI passes an empty value then). The
+// bundler would build every installer and then stop on "failed to decode
+// secret key", so a build without a key skips the updater artifacts instead:
+// the installers are the same, only the update packages and their `.sig`
+// files are missing. Unless `<PREFIX>REQUIRE_UPDATER_SIGNATURE` is set — a
+// release sets it (build.yml), and must fail rather than publish artifacts the
+// updater cannot verify.
+if (
+  passthroughArgs[0] === "build" &&
+  !process.env.TAURI_SIGNING_PRIVATE_KEY &&
+  !process.env.TAURI_SIGNING_PRIVATE_KEY_PATH
+) {
+  if (appEnvFlag("REQUIRE_UPDATER_SIGNATURE")) {
+    console.error(
+      `[tauri] no updater signing key and ${APP.envPrefix}REQUIRE_UPDATER_SIGNATURE is set: the bundler will stop after building`,
+    );
+  } else {
+    delete process.env.TAURI_SIGNING_PRIVATE_KEY;
+    delete process.env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD;
+    passthroughArgs.push(
+      "--config",
+      JSON.stringify({ bundle: { createUpdaterArtifacts: false } }),
+    );
+    console.warn(
+      "[tauri] no updater signing key: building the installers without updater artifacts (set TAURI_SIGNING_PRIVATE_KEY to sign them)",
+    );
+  }
+}
+
 // 4. Spawn tauri CLI with the posture flags removed
 const proc = Bun.spawnSync(
   [process.execPath, "x", "tauri", ...passthroughArgs],
