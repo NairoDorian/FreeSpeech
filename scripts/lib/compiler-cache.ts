@@ -14,11 +14,19 @@
 // deliberately not platform-conditional so the launcher cannot come back through
 // a stale CMake cache. ccache can drive nvcc and is passed. CUDA nvcc runs
 // directly with Ninja parallel jobs, while C, C++, and Rust enjoy full caching.
+//
+// Only sccache wraps rustc. ccache cannot compile Rust: as RUSTC_WRAPPER it
+// hands rustc a response file of quoted arguments, which rustc cannot read
+// (`couldn't read "--crate-name" …`), and that is how the first Windows build
+// on FreeSpeech's CI failed: the runner image puts Strawberry Perl's ccache on
+// PATH. CI builds use no cache at all unless asked to (`<PREFIX>COMPILER_CACHE`):
+// a runner starts cold and keeps nothing, so a cache there is only a risk.
 
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { withCmakeArg } from "./cpu-lane";
+import { appEnvFlag } from "./env-flag";
 
 /**
  * Probe for sccache, then ccache: PATH first (`Bun.which`), then the standard
@@ -53,7 +61,8 @@ export function findCompilerCacheDynamically(): string | null {
 
 /**
  * Configure compiler caching dynamically:
- * - Enables RUSTC_WRAPPER for Rust crate builds.
+ * - Enables RUSTC_WRAPPER for Rust crate builds, when the cache is sccache.
+ * - Does nothing in CI unless `<PREFIX>COMPILER_CACHE` asks for it.
  * - Passes CMAKE_C_COMPILER_LAUNCHER and CMAKE_CXX_COMPILER_LAUNCHER to TRANSCRIBE_CMAKE_ARGS.
  * - Passes CMAKE_CUDA_COMPILER_LAUNCHER for ccache; for sccache it clears the
  *   launcher instead, so nvcc compiles directly (see the header).
@@ -70,10 +79,13 @@ export function applyCompilerCache(
   // below. The launcher is set here (and cleared, where needed) instead.
   delete env.TRANSCRIBE_CCACHE_PATH;
 
+  if (env.CI && !appEnvFlag("COMPILER_CACHE")) return null;
+
   const cachePath = findCompilerCacheDynamically();
   if (cachePath) {
-    // Enable for Rust crates
-    env.RUSTC_WRAPPER ??= cachePath;
+    const isSccache = cachePath.toLowerCase().includes("sccache");
+    // Rust crates: sccache only (see the header).
+    if (isSccache) env.RUSTC_WRAPPER ??= cachePath;
 
     // Normalize forward slashes for CMake arguments
     const cmakeLauncher = cachePath.replace(/\\/g, "/");
@@ -89,7 +101,6 @@ export function applyCompilerCache(
     );
 
     // If it's real ccache (not sccache), ccache can also handle CUDA on Windows
-    const isSccache = cachePath.toLowerCase().includes("sccache");
     if (!isSccache) {
       env.TRANSCRIBE_CMAKE_ARGS = withCmakeArg(
         env.TRANSCRIBE_CMAKE_ARGS,

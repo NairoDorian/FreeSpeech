@@ -82,6 +82,17 @@ jobs:
           ref: ${{ inputs.ref }}
           fetch-depth: 0
 
+      # These artifacts run on the users' CPUs, not the runner's. The two
+      # .cargo/config.toml files hold `target-cpu=native` for local builds only:
+      # here it would tie the binaries to the runner's CPU (a crash on an older
+      # one), and on GitHub's macOS runners native detection even drops Apple
+      # Silicon's crypto features, so `ring` stops compiling (the first build on
+      # FreeSpeech, 2026-11-26). Each target's default CPU applies instead; the
+      # engine's C++ is already portable (GGML_NATIVE off, every CPU variant).
+      - name: Build for the target's baseline CPU
+        shell: bash
+        run: rm -f .cargo/config.toml src-tauri/.cargo/config.toml
+
       - name: Get version from tauri.conf.json
         id: get-version
         shell: bash
