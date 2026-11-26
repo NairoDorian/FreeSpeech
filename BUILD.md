@@ -28,10 +28,12 @@ suite), which is what `pre-commit` itself deliberately omits — see the header 
 **Keeping things current is part of the routine, not a separate chore:**
 
 ```bash
-bun run update          # rtk to latest, deps with --prerelease, then repomix
-bun run update:rtk      # just the RTK CLI used by the maintainer's agent hook
+bun run update            # all of the below in order, then repomix
+bun run update:toolchain  # rustup + every Rust toolchain, bun canary, cargo tools
+bun run update:rtk        # just the RTK CLI used by the maintainer's agent hook
 bun run update-deps -- --prerelease
-bun run docs:fetch      # refresh the mirrored stack docs (docs/STACK_WATCH.md)
+bun run update:browsers   # the Chromium build the installed @playwright/test wants
+bun run docs:fetch        # refresh the mirrored stack docs (docs/STACK_WATCH.md)
 ```
 
 The `--prerelease` flag is not optional **in this project**: it tracks the newest
@@ -54,6 +56,11 @@ see what it has saved.
 - [Rust](https://rustup.rs/) (latest stable)
 - [Bun](https://bun.sh/) package manager
 - [Tauri Prerequisites](https://tauri.app/start/prerequisites/)
+- [CMake](https://cmake.org/download/) (must be on `PATH`; transcribe.cpp is
+  compiled from source on every platform):
+  - macOS: `brew install cmake`
+  - Windows: `winget install Kitware.CMake`
+  - Linux: included in the package lists below
 
 ### Platform-Specific Requirements
 
@@ -71,12 +78,6 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 
 - Microsoft C++ Build Tools: Visual Studio 2019/2022 with C++ development
   tools, or Visual Studio Build Tools 2019/2022
-- [CMake](https://cmake.org/download/) (must be on `PATH`):
-
-  ```powershell
-  winget install Kitware.CMake
-  ```
-
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads) 13.x — this fork
   builds transcribe.cpp with the **`cuda`** feature on Windows x86_64
   (`src-tauri/Cargo.toml`). `nvcc` must be on `PATH` and must support your
