@@ -36,11 +36,11 @@ that drifts the moment the branch moves.
 
 ## The forks
 
-| Fork                                     | Working copy                                                   | Remote (branch)                                                                    | How ZER0 consumes it                                                                                                                                                                              |
-| ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tauri-specta` (typed bindings)          | `C:\Users\Z\Downloads\PROJECTS\tauri-specta-v3`                | `NairoDorian/tauri-specta-v3` (`main`)                                             | `[patch.crates-io] tauri-specta`; the manifest asks for `tauri-specta = "2.0.0-rc.29"`, and the patch replaces that crate with the fork. Generates `src/bindings.ts`                              |
-| `tauri-plugin-macos-permissions`         | `C:\Users\Z\Downloads\PROJECTS\tauri-plugin-macos-permissions` | `NairoDorian/tauri-plugin-macos-permissions` (`master`)                            | Rust: `[patch.crates-io]` plus `tauri-plugin-macos-permissions = "2.3.0"`. npm: `tauri-plugin-macos-permissions-api`, a `git+https://…/NairoDorian/tauri-plugin-macos-permissions.git` dependency |
-| `transcribe.cpp` (the inference runtime) | `C:\Users\Z\Downloads\PROJECTS\transcribe-fork`                | `NairoDorian/transcribe.cpp` (`main`); upstream is `handy-computer/transcribe.cpp` | `transcribe-cpp = { version = "*" }` in `[dependencies]` and the four platform tables, redirected to the fork's git `main` (with `transcribe-cpp-sys`) by `[patch.crates-io]`                     |
+| Fork                                     | Working copy                                                   | Remote (branch)                                                                    | How ZER0 consumes it                                                                                                                                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tauri-specta` (typed bindings)          | `C:\Users\Z\Downloads\PROJECTS\tauri-specta-v3`                | `NairoDorian/tauri-specta-v3` (`main`)                                             | `[patch.crates-io] tauri-specta`; the manifest asks for `tauri-specta = "2.0.0-rc.29"` with `default-features = false`, and the patch replaces that crate with the fork. Generates `src/bindings.ts` |
+| `tauri-plugin-macos-permissions`         | `C:\Users\Z\Downloads\PROJECTS\tauri-plugin-macos-permissions` | `NairoDorian/tauri-plugin-macos-permissions` (`master`)                            | Rust: `[patch.crates-io]` plus `tauri-plugin-macos-permissions = "2.3.0"`. npm: `tauri-plugin-macos-permissions-api`, a `git+https://…/NairoDorian/tauri-plugin-macos-permissions.git` dependency    |
+| `transcribe.cpp` (the inference runtime) | `C:\Users\Z\Downloads\PROJECTS\transcribe-fork`                | `NairoDorian/transcribe.cpp` (`main`); upstream is `handy-computer/transcribe.cpp` | `transcribe-cpp = { version = "*" }` in `[dependencies]` and the four platform tables, redirected to the fork's git `main` (with `transcribe-cpp-sys`) by `[patch.crates-io]`                        |
 
 The first two are the Tauri-adjacent ones; the local copies above are the
 folders to edit when their dependencies need bumping or their code needs a
@@ -50,28 +50,42 @@ and ZER0 refreshes its commit pin automatically (see below).
 
 ### `tauri-specta-v3`
 
-Upstream `specta-rs/tauri-specta` publishes for Tauri 2 only (rc.29 still
-requires `tauri ^2`). The fork is upstream **`2.0.0-rc.29`** merged on
-2026-11-15 (`8109588`) with the Tauri 3 adaptation on top:
+Upstream `specta-rs/tauri-specta` supports Tauri 3 on `main` since #283
+(2026-11-18), but no release does yet: rc.29 still requires `tauri ^2`. And
+since #287 (2026-11-19) `main` reads command types only from Tauri's command
+metadata (tauri-apps/tauri#15326), which is merged on Tauri's `dev` branch (v2)
+and is in no Tauri 3 build, published or on the `v3` branch. The fork is
+upstream `main` as of `364abd1` (2026-11-25), merged on 2026-11-26, plus the
+three changes its README lists under "This fork":
 
-- workspace dependencies `tauri 3.0.0-alpha.6`, `tauri-build` / `tauri-plugin`
-  `3.0.0-alpha.4`, and upstream's **published** Specta (`=2.0.0-rc.28`,
-  `0.0.15`) — no `[patch.crates-io]` any more, in the fork or in ZER0;
-- `tauri::Wry` is gone in Tauri 3 (the runtime is its own crate), so docs and
-  tests use the core's `tauri::DynRuntime`, and the tests keep running on
-  `MockRuntime` (the dev dependency drops the `wry` feature);
-- upstream's example apps (Tauri 2) are `exclude`d from the workspace;
-- `tests/ipc_types.rs` is gated behind an unset cfg until Tauri 3 implements
-  `specta::Type` for `ipc::Request` / `ipc::Response` (tauri-apps/tauri#16374,
-  open against Tauri 2 — upstream patches Tauri for it);
-- `tests/command_rename.rs` invokes on `tauri://localhost`, the URL Tauri 3's
-  `MockRuntime` reports on every platform.
+1. **Commands are collected with `#[specta::specta]`** where Tauri has no
+   command metadata: upstream's collector from before #287, with the
+   `introspection` feature still selecting the metadata collector. Proposed
+   upstream as
+   [specta-rs/tauri-specta#293](https://github.com/specta-rs/tauri-specta/pull/293).
+2. **Every 3.0.0 alpha is admitted** (`<3.0.0-beta`; upstream caps it at the
+   newest tested alpha, `<=3.0.0-alpha.6`). Proposed upstream as
+   [#294](https://github.com/specta-rs/tauri-specta/pull/294).
+3. **No Tauri 2 pin by default** (`default = []`): upstream's default `v2`
+   feature adds a `tauri = "2"` edge that a Tauri 3 graph cannot resolve. Not
+   proposed: upstream's own switch for a v3 application is
+   `default-features = false`, which ZER0's manifest sets, so ZER0 no longer
+   relies on this change. Sift does, until its manifest sets the same flag.
+
+The plan: keep the fork current, and close it once upstream has merged #293
+and #294 and published a release with them. ZER0 then takes `tauri-specta`
+from crates.io and drops the `[patch]`. Once a Tauri 3 release carries the
+command metadata, change 1 is optional: ZER0 can enable `introspection` and
+drop its 254 `#[specta::specta]` attributes.
 
 Upstream rc.27 made `ErrorHandlingMode::Throw` the default; ZER0 sets
 `ErrorHandlingMode::Result` explicitly in `lib.rs`, because every caller in
-`src/` reads `{ status, data | error }`. To take a newer upstream: `git fetch
-upstream && git merge upstream/main` in the fork, keep the Tauri 3 workspace
-block, run `cargo test --workspace --all-features`, push.
+`src/` reads `{ status, data | error }`. To take a newer upstream, follow the
+fork's README: merge `upstream/main` in the fork, keep the three changes, run
+its two suites (`cargo test -p tauri-specta -p tauri-specta-query -p
+tauri-specta-macros --all-features` on Tauri 2 `dev`, `cargo test` in
+`tests/tauri-v3` on published Tauri 3), compare the two exports byte for byte,
+push, then move ZER0's pin as step 4 below says.
 
 ### `tauri-plugin-macos-permissions`
 
@@ -107,15 +121,30 @@ cargo check && cargo test
 git add -A && git commit        # conventional prefix; end with the Co-Authored-By trailer
 git push origin main            # `master` for tauri-plugin-macos-permissions
 
-# 4. only now move the pin in ZER0
-cd C:\Users\Z\Downloads\PROJECTS\Handy_V2\src-tauri
-cargo update -p tauri-specta                        # or the crate you changed
+# 4. only now move the pin in ZER0, and only the pin. In src-tauri/Cargo.lock,
+#    replace the old commit with the new one in the fork's
+#    `source = "git+https://github.com/NairoDorian/<fork>#<commit>"` lines,
+#    then let cargo confirm the lock without changing anything:
+cd C:\Users\Z\Downloads\PROJECTS\Handy_V2
+bun scripts/cargo-cpu.ts build --locked
+git diff src-tauri/Cargo.lock      # those source lines and nothing else
+bun run check:no-downgrade         # the commit gate runs it too
 
 # 5. the whole-app check: builds the frontend and the entire Rust app, then runs it
 cd C:\Users\Z\Downloads\PROJECTS\Handy_V2
 bun run dev:cpu        # usually — no CUDA, fastest to build
 bun run dev:fast       # when GPU CUDA tests are necessary
 ```
+
+Step 4 is not `cargo update -p <crate>`. That re-resolves the whole graph, and
+on 2026-11-26, run to move the tauri-specta pin, it also moved 21 unrelated
+edges to older versions (`windows-sys` 0.61.2 → 0.59 / 0.60, one
+`windows-core` 0.62.2 → 0.58.0). Dependencies only move forward here, and the
+gate's `check:no-downgrade` step now refuses a lock like that. Only when
+`--locked` refuses the edited lock, because the fork's new commit changed its
+own dependencies, run `cargo update -p <crate>`; if `check:no-downgrade` then
+reports anything, restore the lock (`git show HEAD:src-tauri/Cargo.lock >
+src-tauri/Cargo.lock`) and resolve it by hand rather than commit a downgrade.
 
 For the npm half of `tauri-plugin-macos-permissions`, step 4 is
 `bun update tauri-plugin-macos-permissions-api` in ZER0 (the dependency is a git
@@ -124,8 +153,11 @@ spec, so it resolves the same way).
 `transcribe-cpp` is the exception to step 4: its pin is not moved by hand. The
 next `bun run tauri` (or any `build:*` lane) runs
 `scripts/check-transcribe-deps.ts`, which reads the locked commit, `git
-ls-remote`s `main` and runs `cargo update` for you if the branch has moved — so
-step 5 _is_ step 4 for that fork. The one case where you want the check to
+ls-remote`s `main` and, if the branch has moved, does step 4 for you: it moves
+only the commit and checks it with `cargo metadata --locked`, runs `cargo
+update -p` only when the new commit changed its dependencies, and refuses any
+result that moves a dependency backwards — so step 5 _is_ step 4 for that
+fork. The one case where you want the check to
 leave the pin alone is a local prebuilt install: with `TRANSCRIBE_DIR` (or
 `TRANSCRIBE_PREBUILT_DIR`) set, `scripts/tauri-runner.ts` skips the refresh
 rather than replacing the library you are testing (see

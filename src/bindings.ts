@@ -15,8 +15,8 @@ export const commands = {
 	changeSoundThemeSetting: (theme: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_sound_theme_setting", { theme }, options)),
 	changeThemeSetting: (theme: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_theme_setting", { theme }, options)),
 	/**
-	 *  Persist font changes on the blocking pool, then update both webviews once.
-	 *  No font install, polling, or work on the capture/inference paths.
+	 * Persist font changes on the blocking pool, then update both webviews once.
+	 * No font install, polling, or work on the capture/inference paths.
 	 */
 	changeTypographySetting: (typography: TypographySettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_typography_setting", { typography }, options)),
 	changeCustomAccentColorSetting: (color: string | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_custom_accent_color_setting", { color }, options)),
@@ -26,14 +26,14 @@ export const commands = {
 	changeTranslateToEnglishSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_translate_to_english_setting", { enabled }, options)),
 	changeSelectedLanguageSetting: (language: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_selected_language_setting", { language }, options)),
 	/**
-	 *  The languages the user speaks (see `AppSettings::spoken_languages`).
-	 *  Applies from the next run; a live stream keeps the list it started with.
+	 * The languages the user speaks (see `AppSettings::spoken_languages`).
+	 * Applies from the next run; a live stream keeps the list it started with.
 	 */
 	changeSpokenLanguagesSetting: (languages: string[], options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_spoken_languages_setting", { languages }, options)),
 	changeSpokenLanguagesAnyLettersSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_spoken_languages_any_letters_setting", { enabled }, options)),
 	/**
-	 *  How Mandarin and Cantonese output is written; applies from the next
-	 *  update of a live stream and to every later transcription.
+	 * How Mandarin and Cantonese output is written; applies from the next
+	 * update of a live stream and to every later transcription.
 	 */
 	changeChineseScriptSetting: (script: ChineseScript_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_chinese_script_setting", { script }, options)),
 	changeOverlayPositionSetting: (position: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_position_setting", { position }, options)),
@@ -41,11 +41,11 @@ export const commands = {
 	changeOverlayDirectModeSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_direct_mode_setting", { enabled }, options)),
 	changeOverlayDirectSpeedSetting: (speed: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_direct_speed_setting", { speed }, options)),
 	/**
-	 *  Back correction: whether the live preview may rewrite text it has already
-	 *  shown. Independent of `change_multi_stt_streaming_first_enabled_setting` —
-	 *  that one decides whether a batch pass re-transcribes each pause, this one
-	 *  only whether the display is allowed to move backwards. See the field's doc
-	 *  comment in `settings.rs` for why they are separate.
+	 * Back correction: whether the live preview may rewrite text it has already
+	 * shown. Independent of `change_multi_stt_streaming_first_enabled_setting` —
+	 * that one decides whether a batch pass re-transcribes each pause, this one
+	 * only whether the display is allowed to move backwards. See the field's doc
+	 * comment in `settings.rs` for why they are separate.
 	 */
 	changeOverlayBackCorrectionSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_back_correction_setting", { enabled }, options)),
 	changeOverlayWindowFadeMsSetting: (fadeMs: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_window_fade_ms_setting", { fadeMs }, options)),
@@ -70,44 +70,44 @@ export const commands = {
 	changeMultiSttExtraModel: (slot: number, modelId: string | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_extra_model", { slot, modelId }, options)),
 	changeMultiSttExtraModelLanguage: (slot: number, language: string | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_extra_model_language", { slot, language }, options)),
 	/**
-	 *  Streaming latency of one extra slot's live stream: a preset for the preset
-	 *  families, or R2T2's chunk size in ms. `None` for both returns the slot to
-	 *  its model's own setting. An R2T2 value outside the native range is refused
-	 *  here, like `change_native_streaming_chunk_ms_setting` does.
+	 * Streaming latency of one extra slot's live stream: a preset for the preset
+	 * families, or R2T2's chunk size in ms. `None` for both returns the slot to
+	 * its model's own setting. An R2T2 value outside the native range is refused
+	 * here, like `change_native_streaming_chunk_ms_setting` does.
 	 */
 	changeMultiSttExtraModelLatency: (slot: number, preset: NativeStreamingLatencyPreset | null, chunkMs: number | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_extra_model_latency", { slot, preset, chunkMs }, options)),
 	changeMultiSttExtraModelTranslate: (slot: number, enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_extra_model_translate", { slot, enabled }, options)),
 	/**
-	 *  How many extra models Multi-STT runs (1 to `MULTI_STT_MAX_EXTRA_MODELS`).
-	 *  New slots start empty; the models of removed slots are unloaded unless
-	 *  another slot still runs them.
+	 * How many extra models Multi-STT runs (1 to `MULTI_STT_MAX_EXTRA_MODELS`).
+	 * New slots start empty; the models of removed slots are unloaded unless
+	 * another slot still runs them.
 	 */
 	changeMultiSttExtraModelCount: (count: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_extra_model_count", { count }, options)),
 	changeMultiSttMergePrompt: (prompt: LLMPrompt | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_merge_prompt", { prompt }, options)),
 	/**
-	 *  Experimental Multi-STT streaming-first mode: the primary model's live stream
-	 *  becomes the 1st output and chunk merges replace its rough text in place.
+	 * Experimental Multi-STT streaming-first mode: the primary model's live stream
+	 * becomes the 1st output and chunk merges replace its rough text in place.
 	 */
 	changeMultiSttStreamingFirstEnabledSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_streaming_first_enabled_setting", { enabled }, options)),
 	/**
-	 *  The silence that divides the session into chunks in the experimental
-	 *  streaming-first mode: every pause this long closes the chunk being spoken.
+	 * The silence that divides the session into chunks in the experimental
+	 * streaming-first mode: every pause this long closes the chunk being spoken.
 	 */
 	changeMultiSttStreamingPauseMsSetting: (pauseMs: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_streaming_pause_ms_setting", { pauseMs }, options)),
 	/**
-	 *  How many already-closed chunks lead each merge window of the experimental
-	 *  streaming-first mode. Read at the next close, so it applies mid-session.
+	 * How many already-closed chunks lead each merge window of the experimental
+	 * streaming-first mode. Read at the next close, so it applies mid-session.
 	 */
 	changeMultiSttStreamingContextChunksSetting: (chunks: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_streaming_context_chunks_setting", { chunks }, options)),
 	/**
-	 *  Experimental Multi Streaming STT: every streaming-capable Multi-STT slot runs
-	 *  beside the primary, and at each pause their live texts are merged and cleaned
-	 *  by the brain model — the parent mode's machinery, with no re-decode.
+	 * Experimental Multi Streaming STT: every streaming-capable Multi-STT slot runs
+	 * beside the primary, and at each pause their live texts are merged and cleaned
+	 * by the brain model — the parent mode's machinery, with no re-decode.
 	 */
 	changeMultiSttStreamingMultiEnabledSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_streaming_multi_enabled_setting", { enabled }, options)),
 	/**
-	 *  Experimental Multi Streaming STT: whether the overlay shows every live model's
-	 *  text plus the merged result (debug), or only the corrected first block.
+	 * Experimental Multi Streaming STT: whether the overlay shows every live model's
+	 * text plus the merged result (debug), or only the corrected first block.
 	 */
 	changeMultiSttStreamingMultiDebugViewSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_streaming_multi_debug_view_setting", { enabled }, options)),
 	changeMultiSttKeepExtraModelsLoadedSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_multi_stt_keep_extra_models_loaded_setting", { enabled }, options)),
@@ -129,11 +129,11 @@ export const commands = {
 	setPostProcessSelectedPrompt: (id: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("set_post_process_selected_prompt", { id }, options)),
 	updateCustomWords: (words: string[], options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("update_custom_words", { words }, options)),
 	/**
-	 *  Temporarily unregister all bindings while the user is recording a
-	 *  shortcut in the UI. This avoids firing actions while keys are recorded.
+	 * Temporarily unregister all bindings while the user is recording a
+	 * shortcut in the UI. This avoids firing actions while keys are recorded.
 	 */
 	suspendAllBindings: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("suspend_all_bindings", undefined, options)),
-	/**  Re-register all bindings after the user has finished recording. */
+	/** Re-register all bindings after the user has finished recording. */
 	resumeAllBindings: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("resume_all_bindings", undefined, options)),
 	changeMuteWhileRecordingSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_mute_while_recording_setting", { enabled }, options)),
 	changeAppendTrailingSpaceSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_append_trailing_space_setting", { enabled }, options)),
@@ -142,21 +142,21 @@ export const commands = {
 	changeSaveRawAudioSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_save_raw_audio_setting", { enabled }, options)),
 	changeVadEnabledSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_vad_enabled_setting", { enabled }, options)),
 	/**
-	 *  Persist the overlay's scope picture (`overlay_scope`), refresh the cached
-	 *  geometry the show path sizes the window with, hand the waveform window
-	 *  to the analyser and re-place a visible overlay.
+	 * Persist the overlay's scope picture (`overlay_scope`), refresh the cached
+	 * geometry the show path sizes the window with, hand the waveform window
+	 * to the analyser and re-place a visible overlay.
 	 */
 	changeOverlayScopeSettings: (scope: OverlayScopeSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_overlay_scope_settings", { scope }, options)),
 	/**
-	 *  Toggle RNNoise suppression. Persisted for future recorders and pushed to
-	 *  the live one, which switches paths on its next chunk.
+	 * Toggle RNNoise suppression. Persisted for future recorders and pushed to
+	 * the live one, which switches paths on its next chunk.
 	 */
 	changeDenoiseEnabledSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_denoise_enabled_setting", { enabled }, options)),
-	/**  RNNoise wet/dry strength (0–1). */
+	/** RNNoise wet/dry strength (0–1). */
 	changeDenoiseStrengthSetting: (strength: number | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_denoise_strength_setting", { strength }, options)),
-	/**  RNNoise's own speech-probability gate threshold (0–1, 0 = off). */
+	/** RNNoise's own speech-probability gate threshold (0–1, 0 = off). */
 	changeDenoiseVadThresholdSetting: (threshold: number | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_denoise_vad_threshold_setting", { threshold }, options)),
-	/**  Grace period of that gate, in milliseconds. */
+	/** Grace period of that gate, in milliseconds. */
 	changeDenoiseVadGraceSetting: (graceMs: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_denoise_vad_grace_setting", { graceMs }, options)),
 	changeFillerWordRemovalEnabledSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_filler_word_removal_enabled_setting", { enabled }, options)),
 	changeAppLanguageSetting: (language: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_app_language_setting", { language }, options)),
@@ -164,43 +164,43 @@ export const commands = {
 	changeShowWhatsNewOnUpdateSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_show_whats_new_on_update_setting", { enabled }, options)),
 	changeWhatsNewLastSeenVersionSetting: (version: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_whats_new_last_seen_version_setting", { version }, options)),
 	/**
-	 *  Change the keyboard implementation with runtime switching.
-	 *  This will unregister all shortcuts from the old implementation,
-	 *  validate shortcuts for the new implementation (resetting invalid ones to defaults),
-	 *  and register them with the new implementation.
+	 * Change the keyboard implementation with runtime switching.
+	 * This will unregister all shortcuts from the old implementation,
+	 * validate shortcuts for the new implementation (resetting invalid ones to defaults),
+	 * and register them with the new implementation.
 	 */
 	changeKeyboardImplementationSetting: (implementation: string, options?: InvokeOptions) => typedError<ImplementationChangeResult, string>(__TAURI_INVOKE("change_keyboard_implementation_setting", { implementation }, options)),
-	/**  Get the current keyboard implementation */
+	/** Get the current keyboard implementation */
 	getKeyboardImplementation: (options?: InvokeOptions) => __TAURI_INVOKE<string>("get_keyboard_implementation", undefined, options),
 	changeShowTrayIconSetting: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_show_tray_icon_setting", { enabled }, options)),
 	changeTranscribeAcceleratorSetting: (accelerator: TranscribeAcceleratorSetting, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_transcribe_accelerator_setting", { accelerator }, options)),
 	changeTranscribeGpuDevice: (device: string | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_transcribe_gpu_device", { device }, options)),
 	/**
-	 *  Pin one model — the primary, a Multi-STT slot, any id in the registry — to a
-	 *  backend of its own, or clear the pin with `Auto`.
+	 * Pin one model — the primary, a Multi-STT slot, any id in the registry — to a
+	 * backend of its own, or clear the pin with `Auto`.
 	 * 
-	 *  A named backend is a hard request in the engine: an unavailable one would
-	 *  fail that model's load rather than fall back, so it is refused here and the
-	 *  dropdown (which lists only `get_available_accelerators().model_backends`)
-	 *  never offers it. The two places that *can* legitimately go stale are a build
-	 *  whose GPU module fails to load later in the session and a machine whose
-	 *  driver disappeared; both are handled at the load site by
-	 *  `resolve_model_backend`, which warns and applies the global policy rather
-	 *  than leaving the user with a model that will not open.
+	 * A named backend is a hard request in the engine: an unavailable one would
+	 * fail that model's load rather than fall back, so it is refused here and the
+	 * dropdown (which lists only `get_available_accelerators().model_backends`)
+	 * never offers it. The two places that *can* legitimately go stale are a build
+	 * whose GPU module fails to load later in the session and a machine whose
+	 * driver disappeared; both are handled at the load site by
+	 * `resolve_model_backend`, which warns and applies the global policy rather
+	 * than leaving the user with a model that will not open.
 	 */
 	setModelBackendSetting: (modelId: string, backend: ModelBackendSetting, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("set_model_backend_setting", { modelId, backend }, options)),
 	/**
-	 *  Return which accelerators and GPU devices are available for this build.
+	 * Return which accelerators and GPU devices are available for this build.
 	 * 
-	 *  First-call cost is dominated by enumerating GPU devices through the
-	 *  transcribe.cpp Metal/CUDA backend, which loads dynamic libraries and
-	 *  probes hardware. Run it on the blocking pool so the webview thread
-	 *  stays responsive — see also the startup pre-warm in `lib.rs`.
+	 * First-call cost is dominated by enumerating GPU devices through the
+	 * transcribe.cpp Metal/CUDA backend, which loads dynamic libraries and
+	 * probes hardware. Run it on the blocking pool so the webview thread
+	 * stays responsive — see also the startup pre-warm in `lib.rs`.
 	 */
 	getAvailableAccelerators: (options?: InvokeOptions) => __TAURI_INVOKE<AvailableAccelerators>("get_available_accelerators", undefined, options),
-	/**  Start key recording mode */
+	/** Start key recording mode */
 	startNativeKeysRecording: (bindingId: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("start_native_keys_recording", { bindingId }, options)),
-	/**  Stop key recording mode */
+	/** Stop key recording mode */
 	stopNativeKeysRecording: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("stop_native_keys_recording", undefined, options)),
 	getSecureInputStatus: (options?: InvokeOptions) => __TAURI_INVOKE<SecureInputStatus_Serialize>("get_secure_input_status", undefined, options),
 	runKeyboardDiagnostic: (durationSecs: number | null, options?: InvokeOptions) => typedError<KeyboardDiagnosticReport_Serialize, string>(__TAURI_INVOKE("run_keyboard_diagnostic", { durationSecs }, options)),
@@ -209,20 +209,20 @@ export const commands = {
 	cancelOperation: (options?: InvokeOptions) => __TAURI_INVOKE<void>("cancel_operation", undefined, options),
 	isPortable: (options?: InvokeOptions) => __TAURI_INVOKE<boolean>("is_portable", undefined, options),
 	/**
-	 *  Start the live VAD test from Settings → Advanced: microphone + detector
-	 *  only, streaming `VadTestEvent`s. No model is involved.
+	 * Start the live VAD test from Settings → Advanced: microphone + detector
+	 * only, streaming `VadTestEvent`s. No model is involved.
 	 */
 	startVadTest: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("start_vad_test", undefined, options)),
-	/**  Stop the live VAD test and discard its audio. */
+	/** Stop the live VAD test and discard its audio. */
 	stopVadTest: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("stop_vad_test", undefined, options)),
 	/**
-	 *  Start the overlay preview from Settings → Overlay: a real recording of the
-	 *  primary model (streaming live text when it can), whose only output is the
-	 *  overlay itself — nothing is typed or pasted, and the audio is discarded.
-	 *  Runs until `stop_overlay_preview`, the cancel hotkey, or the safety cap.
+	 * Start the overlay preview from Settings → Overlay: a real recording of the
+	 * primary model (streaming live text when it can), whose only output is the
+	 * overlay itself — nothing is typed or pasted, and the audio is discarded.
+	 * Runs until `stop_overlay_preview`, the cancel hotkey, or the safety cap.
 	 */
 	startOverlayPreview: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("start_overlay_preview", undefined, options)),
-	/**  Stop the overlay preview and discard everything it held. */
+	/** Stop the overlay preview and discard everything it held. */
 	stopOverlayPreview: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("stop_overlay_preview", undefined, options)),
 	getLlamaServerState: (options?: InvokeOptions) => __TAURI_INVOKE<LlamaServerStateEvent_Serialize>("get_llama_server_state", undefined, options),
 	getLlamaServerLogs: (options?: InvokeOptions) => __TAURI_INVOKE<string[]>("get_llama_server_logs", undefined, options),
@@ -230,21 +230,21 @@ export const commands = {
 	stopLlamaServer: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("stop_llama_server", undefined, options)),
 	restartLlamaServer: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("restart_llama_server", undefined, options)),
 	/**
-	 *  Persist the llama settings. A running server keeps its current command
-	 *  line until it is restarted; the UI offers that explicitly.
+	 * Persist the llama settings. A running server keeps its current command
+	 * line until it is restarted; the UI offers that explicitly.
 	 * 
-	 *  Deliberately synchronous: the server fields save on every keystroke, and
-	 *  running on the main thread keeps those writes in the order they were typed.
-	 *  Only the provider relink, which can probe a socket for ~1 s, goes to the
-	 *  blocking pool; it re-reads the settings it writes (see
-	 *  `LlamaServerManager::relink_custom_provider`), so it cannot undo an edit.
+	 * Deliberately synchronous: the server fields save on every keystroke, and
+	 * running on the main thread keeps those writes in the order they were typed.
+	 * Only the provider relink, which can probe a socket for ~1 s, goes to the
+	 * blocking pool; it re-reads the settings it writes (see
+	 * `LlamaServerManager::relink_custom_provider`), so it cannot undo an edit.
 	 */
 	changeLlamaSettings: (settings: LlamaSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_llama_settings", { settings }, options)),
 	/**
-	 *  The command line the current settings would launch, for the page preview.
-	 *  Asked for on every keystroke of the server fields, and resolving it stats
-	 *  the model files and lists the server folder, so it runs on the blocking
-	 *  pool rather than the main thread.
+	 * The command line the current settings would launch, for the page preview.
+	 * Asked for on every keystroke of the server fields, and resolving it stats
+	 * the model files and lists the server folder, so it runs on the blocking
+	 * pool rather than the main thread.
 	 */
 	getLlamaCommandPreview: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("get_llama_command_preview", undefined, options)),
 	listGgufFiles: (dir: string, options?: InvokeOptions) => __TAURI_INVOKE<GgufFile[]>("list_gguf_files", { dir }, options),
@@ -254,18 +254,18 @@ export const commands = {
 	detectLlamaBackend: (options?: InvokeOptions) => __TAURI_INVOKE<LlamaGpuInfo_Serialize>("detect_llama_backend", undefined, options),
 	listInstalledLlamaServers: (options?: InvokeOptions) => __TAURI_INVOKE<InstalledLlamaServer[]>("list_installed_llama_servers", undefined, options),
 	/**
-	 *  Download + unpack a release; progress arrives as `LlamaDownloadEvent`.
-	 *  Runs to completion in the background so the page can navigate away.
+	 * Download + unpack a release; progress arrives as `LlamaDownloadEvent`.
+	 * Runs to completion in the background so the page can navigate away.
 	 */
 	installLlamaRelease: (tag: string, backend: string, includeCudart: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("install_llama_release", { tag, backend, includeCudart }, options)),
 	removeInstalledLlamaServer: (dir: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("remove_installed_llama_server", { dir }, options)),
-	/**  The installed CUDA toolkit whose runtime DLLs a CUDA build can use. */
+	/** The installed CUDA toolkit whose runtime DLLs a CUDA build can use. */
 	detectCudaToolkit: (options?: InvokeOptions) => __TAURI_INVOKE<CudaToolkitInfo_Serialize | null>("detect_cuda_toolkit", undefined, options),
-	/**  Delete the bundled cudart/cuBLAS DLLs from an install; returns MB freed. */
+	/** Delete the bundled cudart/cuBLAS DLLs from an install; returns MB freed. */
 	removeBundledCudaRuntime: (dir: string, options?: InvokeOptions) => typedError<number, string>(__TAURI_INVOKE("remove_bundled_cuda_runtime", { dir }, options)),
 	/**
-	 *  The most recent sample, so a footer that mounts between ticks does not
-	 *  show empty meters for up to a second.
+	 * The most recent sample, so a footer that mounts between ticks does not
+	 * show empty meters for up to a second.
 	 */
 	getSystemStats: (options?: InvokeOptions) => __TAURI_INVOKE<SystemStatsEvent_Serialize | null>("get_system_stats", undefined, options),
 	isUpdateChecksLocked: (options?: InvokeOptions) => __TAURI_INVOKE<boolean>("is_update_checks_locked", undefined, options),
@@ -274,19 +274,19 @@ export const commands = {
 	getDefaultSettings: (options?: InvokeOptions) => typedError<AppSettings_Serialize, string>(__TAURI_INVOKE("get_default_settings", undefined, options)),
 	getLogDirPath: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("get_log_dir_path", undefined, options)),
 	/**
-	 *  The last `limit` lines of the log file, oldest first.
+	 * The last `limit` lines of the log file, oldest first.
 	 * 
-	 *  The debug panel's live log viewer polls this as its ground truth: the
-	 *  `log://log` webview stream only carries records emitted while a listener is
-	 *  attached, so without the file the panel's history would depend entirely on
-	 *  when the page happened to be open. The tail read is capped at 512 KiB —
-	 *  plenty for any realistic line count at ~100 bytes a line, and it keeps a
-	 *  log near its 10 MB rotation size from being read whole.
+	 * The debug panel's live log viewer polls this as its ground truth: the
+	 * `log://log` webview stream only carries records emitted while a listener is
+	 * attached, so without the file the panel's history would depend entirely on
+	 * when the page happened to be open. The tail read is capped at 512 KiB —
+	 * plenty for any realistic line count at ~100 bytes a line, and it keeps a
+	 * log near its 10 MB rotation size from being read whole.
 	 */
 	getRecentLogs: (limit: number, options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("get_recent_logs", { limit }, options)),
 	/**
-	 *  Truncate the current session's log file. Explicit user action only — the
-	 *  panel itself never clears what it shows on its own.
+	 * Truncate the current session's log file. Explicit user action only — the
+	 * panel itself never clears what it shows on its own.
 	 */
 	clearLogs: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("clear_logs", undefined, options)),
 	setLogLevel: (level: LogLevel, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("set_log_level", { level }, options)),
@@ -296,54 +296,54 @@ export const commands = {
 	openLogDir: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("open_log_dir", undefined, options)),
 	openAppDataDir: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("open_app_data_dir", undefined, options)),
 	/**
-	 *  Check if Apple Intelligence is available on this device.
-	 *  Called by the frontend when the user selects Apple Intelligence provider.
+	 * Check if Apple Intelligence is available on this device.
+	 * Called by the frontend when the user selects Apple Intelligence provider.
 	 */
 	checkAppleIntelligenceAvailable: (options?: InvokeOptions) => __TAURI_INVOKE<boolean>("check_apple_intelligence_available", undefined, options),
 	/**
-	 *  Try to initialize Enigo (keyboard/mouse simulation).
-	 *  On macOS, this will return an error if accessibility permissions are not granted.
+	 * Try to initialize Enigo (keyboard/mouse simulation).
+	 * On macOS, this will return an error if accessibility permissions are not granted.
 	 */
 	initializeEnigo: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("initialize_enigo", undefined, options)),
 	/**
-	 *  Initialize keyboard shortcuts.
-	 *  On macOS, this should be called after accessibility permissions are granted.
-	 *  This is idempotent - calling it multiple times is safe.
+	 * Initialize keyboard shortcuts.
+	 * On macOS, this should be called after accessibility permissions are granted.
+	 * This is idempotent - calling it multiple times is safe.
 	 */
 	initializeShortcuts: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("initialize_shortcuts", undefined, options)),
 	getArchPlugins: (options?: InvokeOptions) => typedError<ArchPluginInfo_Serialize[], string>(__TAURI_INVOKE("get_arch_plugins", undefined, options)),
 	/**
-	 *  What Auto does for the selected model with the spoken languages, for the
-	 *  line the General page shows under the list: the model's own detection,
-	 *  the language Auto falls back to, or that the detector is still missing.
-	 *  Derived from the same plan a transcription uses, so the two cannot
-	 *  disagree.
+	 * What Auto does for the selected model with the spoken languages, for the
+	 * line the General page shows under the list: the model's own detection,
+	 * the language Auto falls back to, or that the detector is still missing.
+	 * Derived from the same plan a transcription uses, so the two cannot
+	 * disagree.
 	 */
 	getLanguageStatus: (options?: InvokeOptions) => typedError<LanguageStatus, string>(__TAURI_INVOKE("get_language_status", undefined, options)),
 	/**
-	 *  What Auto does for each extra Multi-STT slot, in slot order ("Model 2"
-	 *  first): the slot's own language over its own model, through the same
-	 *  policy as [`get_language_status`] and the slot's runs
-	 *  (`apply_extra_model_settings`). `None` for an empty slot or a model the
-	 *  registry does not know. One call for the whole page.
+	 * What Auto does for each extra Multi-STT slot, in slot order ("Model 2"
+	 * first): the slot's own language over its own model, through the same
+	 * policy as [`get_language_status`] and the slot's runs
+	 * (`apply_extra_model_settings`). `None` for an empty slot or a model the
+	 * registry does not know. One call for the whole page.
 	 */
 	getMultiSttLanguageStatuses: (options?: InvokeOptions) => typedError<(LanguageStatus | null)[], string>(__TAURI_INVOKE("get_multi_stt_language_statuses", undefined, options)),
 	/**
-	 *  The request format of the custom post-processing provider (OpenAI Chat
-	 *  Completions or Anthropic Messages). The built-in providers' formats are
-	 *  fixed, so only `custom` accepts a change.
+	 * The request format of the custom post-processing provider (OpenAI Chat
+	 * Completions or Anthropic Messages). The built-in providers' formats are
+	 * fixed, so only `custom` accepts a change.
 	 */
 	changePostProcessApiFormatSetting: (providerId: string, apiFormat: PostProcessApiFormat, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_post_process_api_format_setting", { providerId, apiFormat }, options)),
 	/**
-	 *  The OS's preferred languages, most preferred first, as BCP-47 tags
-	 *  (`fr-FR`, `zh-Hant-TW`). Async so the first read (a WinRT call on
-	 *  Windows) never runs on the main thread.
+	 * The OS's preferred languages, most preferred first, as BCP-47 tags
+	 * (`fr-FR`, `zh-Hant-TW`). Async so the first read (a WinRT call on
+	 * Windows) never runs on the main thread.
 	 */
 	getSystemLanguages: (options?: InvokeOptions) => typedError<string[], string>(__TAURI_INVOKE("get_system_languages", undefined, options)),
 	/**
-	 *  Download the spoken-language detector now (≈27 MB, once). Progress and
-	 *  completion arrive as the usual model-download events under the
-	 *  detector's id.
+	 * Download the spoken-language detector now (≈27 MB, once). Progress and
+	 * completion arrive as the usual model-download events under the
+	 * detector's id.
 	 */
 	downloadLanguageDetector: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("download_language_detector", undefined, options)),
 	loadArchPlugin: (path: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("load_arch_plugin", { path }, options)),
@@ -355,23 +355,23 @@ export const commands = {
 	getModelQuantVariants: (modelId: string, options?: InvokeOptions) => typedError<QuantVariant[], string>(__TAURI_INVOKE("get_model_quant_variants", { modelId }, options)),
 	changeNativeStreamingLatencyPresetSetting: (modelId: string, preset: NativeStreamingLatencyPreset, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_native_streaming_latency_preset_setting", { modelId, preset }, options)),
 	/**
-	 *  Persist the R2T2 streaming chunk size for one model.
+	 * Persist the R2T2 streaming chunk size for one model.
 	 * 
-	 *  Separate from `change_native_streaming_latency_preset_setting` because the
-	 *  value is a free integer, not one of the four presets (see
-	 *  [`crate::settings::AppSettings::native_streaming_chunk_ms`]).
+	 * Separate from `change_native_streaming_latency_preset_setting` because the
+	 * value is a free integer, not one of the four presets (see
+	 * [`crate::settings::AppSettings::native_streaming_chunk_ms`]).
 	 * 
-	 *  The range is enforced *here*, at the input boundary, and the command fails
-	 *  rather than clamping: an out-of-range value is a caller bug (the UI slider
-	 *  cannot produce one), and silently storing 80 instead of 5000 would leave the
-	 *  UI and the decoder disagreeing about the actual cadence. Because the
-	 *  settings write only happens after validation, a rejected call leaves both
-	 *  the settings file and the previous transcript untouched — which is the
-	 *  contract's "reject invalid values without clearing the previous transcript".
-	 *  The resolver re-checks anyway, since the settings file is hand-editable.
+	 * The range is enforced *here*, at the input boundary, and the command fails
+	 * rather than clamping: an out-of-range value is a caller bug (the UI slider
+	 * cannot produce one), and silently storing 80 instead of 5000 would leave the
+	 * UI and the decoder disagreeing about the actual cadence. Because the
+	 * settings write only happens after validation, a rejected call leaves both
+	 * the settings file and the previous transcript untouched — which is the
+	 * contract's "reject invalid values without clearing the previous transcript".
+	 * The resolver re-checks anyway, since the settings file is hand-editable.
 	 * 
-	 *  The change applies to the *next* stream: the native side copies the value at
-	 *  `stream_begin`, so an in-flight stream keeps the cadence it started with.
+	 * The change applies to the *next* stream: the native side copies the value at
+	 * `stream_begin`, so an in-flight stream keeps the cadence it started with.
 	 */
 	changeNativeStreamingChunkMsSetting: (modelId: string, chunkMs: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_native_streaming_chunk_ms_setting", { modelId, chunkMs }, options)),
 	deleteModel: (modelId: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("delete_model", { modelId }, options)),
@@ -380,50 +380,50 @@ export const commands = {
 	getCurrentModel: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("get_current_model", undefined, options)),
 	getTranscriptionModelStatus: (options?: InvokeOptions) => typedError<string | null, string>(__TAURI_INVOKE("get_transcription_model_status", undefined, options)),
 	/**
-	 *  Returns true when no primary model is loaded (not whether a load is in
-	 *  progress).
+	 * Returns true when no primary model is loaded (not whether a load is in
+	 * progress).
 	 */
 	isModelLoading: (options?: InvokeOptions) => typedError<boolean, string>(__TAURI_INVOKE("is_model_loading", undefined, options)),
 	/**
-	 *  Re-scan local sources (custom models dir + shared HF cache) for models added
-	 *  since launch
+	 * Re-scan local sources (custom models dir + shared HF cache) for models added
+	 * since launch
 	 */
 	rescanLocalModels: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("rescan_local_models", undefined, options)),
 	/**
-	 *  Benchmark all downloaded quantization variants of the model identified by
-	 *  `model_id`. Uses the latest completed recording as the reference audio.
+	 * Benchmark all downloaded quantization variants of the model identified by
+	 * `model_id`. Uses the latest completed recording as the reference audio.
 	 * 
-	 *  For each downloaded quant (e.g. Q4_K_M, Q5_K_M, Q8_0) the model is loaded
-	 *  on a temporary engine, one warmup transcription is run and discarded (it is
-	 *  never counted in the average), `runs` timed transcriptions are averaged
-	 *  (clamped to 2..=10, default 5 when omitted), and the engine is dropped
-	 *  before the next variant. Progress events are emitted on the
-	 *  `benchmark-progress` channel and the full result vector is returned when
-	 *  all variants are done.
+	 * For each downloaded quant (e.g. Q4_K_M, Q5_K_M, Q8_0) the model is loaded
+	 * on a temporary engine, one warmup transcription is run and discarded (it is
+	 * never counted in the average), `runs` timed transcriptions are averaged
+	 * (clamped to 2..=10, default 5 when omitted), and the engine is dropped
+	 * before the next variant. Progress events are emitted on the
+	 * `benchmark-progress` channel and the full result vector is returned when
+	 * all variants are done.
 	 */
 	benchmarkModelQuantizations: (modelId: string, runs: number | null, options?: InvokeOptions) => typedError<BenchmarkResult[], string>(__TAURI_INVOKE("benchmark_model_quantizations", { modelId, runs }, options)),
 	/**
-	 *  Benchmark a single quantization variant of the current model.
-	 *  Uses the latest completed recording as the reference audio.
+	 * Benchmark a single quantization variant of the current model.
+	 * Uses the latest completed recording as the reference audio.
 	 * 
-	 *  The engine is loaded from a clean state (primary model unloaded first), one
-	 *  warmup transcription is run and discarded (never counted in the average),
-	 *  `runs` timed runs are averaged (clamped to 2..=10, default 5 when omitted),
-	 *  and the engine is dropped after the run.
+	 * The engine is loaded from a clean state (primary model unloaded first), one
+	 * warmup transcription is run and discarded (never counted in the average),
+	 * `runs` timed runs are averaged (clamped to 2..=10, default 5 when omitted),
+	 * and the engine is dropped after the run.
 	 */
 	benchmarkSingleQuantization: (modelId: string, runs: number | null, options?: InvokeOptions) => typedError<BenchmarkResult, string>(__TAURI_INVOKE("benchmark_single_quantization", { modelId, runs }, options)),
 	/**
-	 *  Benchmark `model_id` in its **native streaming mode** — the same
-	 *  `stream_begin` / `feed` / `finalize` replay the transcribe-fork
-	 *  `streaming-benchmark` driver measures, run against the latest completed
-	 *  recording.
+	 * Benchmark `model_id` in its **native streaming mode** — the same
+	 * `stream_begin` / `feed` / `finalize` replay the transcribe-fork
+	 * `streaming-benchmark` driver measures, run against the latest completed
+	 * recording.
 	 * 
-	 *  One warmup replay is discarded and never averaged; `runs` timed replays
-	 *  (clamped to 2..=10, default 5 when omitted) follow, and the result carries
-	 *  the real-time speed factor (`compute_xrt`), feed p95/max, the finalize cost
-	 *  and the audio horizon of the first text. Models that do not advertise
-	 *  streaming support are refused. Progress is reported as `stream_*` events on
-	 *  the `benchmark-progress` channel.
+	 * One warmup replay is discarded and never averaged; `runs` timed replays
+	 * (clamped to 2..=10, default 5 when omitted) follow, and the result carries
+	 * the real-time speed factor (`compute_xrt`), feed p95/max, the finalize cost
+	 * and the audio horizon of the first text. Models that do not advertise
+	 * streaming support are refused. Progress is reported as `stream_*` events on
+	 * the `benchmark-progress` channel.
 	 */
 	benchmarkModelStreaming: (modelId: string, runs: number | null, options?: InvokeOptions) => typedError<StreamingBenchmarkResult_Serialize, string>(__TAURI_INVOKE("benchmark_model_streaming", { modelId, runs }, options)),
 	updateMicrophoneMode: (alwaysOn: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("update_microphone_mode", { alwaysOn }, options)),
@@ -442,8 +442,8 @@ export const commands = {
 	getClamshellMicrophone: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("get_clamshell_microphone", undefined, options)),
 	isRecording: (options?: InvokeOptions) => __TAURI_INVOKE<boolean>("is_recording", undefined, options),
 	/**
-	 *  Window chrome and the shared analyser follow the mounted canvas. Joining a
-	 *  previous scope worker happens on the blocking pool, never the webview thread.
+	 * Window chrome and the shared analyser follow the mounted canvas. Joining a
+	 * previous scope worker happens on the blocking pool, never the webview thread.
 	 */
 	setLiveCanvasActive: (active: boolean, recording: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("set_live_canvas_active", { active, recording }, options)),
 	getMicrophoneChannels: (deviceName: string, options?: InvokeOptions) => typedError<number, string>(__TAURI_INVOKE("get_microphone_channels", { deviceName }, options)),
@@ -465,23 +465,23 @@ export const commands = {
 	updateHistoryLimit: (limit: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("update_history_limit", { limit }, options)),
 	updateRecordingRetentionPeriod: (period: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("update_recording_retention_period", { period }, options)),
 	/**
-	 *  Return the most recent history entry with non-empty transcription text,
-	 *  so the frontend can tell the user which recording will be used as the
-	 *  benchmark reference before starting the run.
+	 * Return the most recent history entry with non-empty transcription text,
+	 * so the frontend can tell the user which recording will be used as the
+	 * benchmark reference before starting the run.
 	 */
 	getLatestRecordingInfo: (options?: InvokeOptions) => typedError<HistoryEntry_Serialize | null, string>(__TAURI_INVOKE("get_latest_recording_info", undefined, options)),
 	getStatisticsSummary: (range: StatisticsRange, options?: InvokeOptions) => typedError<StatisticsSummary_Serialize, string>(__TAURI_INVOKE("get_statistics_summary", { range }, options)),
 	resetStatistics: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("reset_statistics", undefined, options)),
 	/**
-	 *  Stub implementation for non-macOS platforms
-	 *  Always returns false since laptop detection is macOS-specific
+	 * Stub implementation for non-macOS platforms
+	 * Always returns false since laptop detection is macOS-specific
 	 */
 	isLaptop: (options?: InvokeOptions) => typedError<boolean, string>(__TAURI_INVOKE("is_laptop", undefined, options)),
 	/**
-	 *  Set the speech-probability threshold of the VAD. The persisted value is
-	 *  what a freshly built recorder reads; the live detector takes the new
-	 *  threshold in place on its next frame, so this works while recording and
-	 *  while the live VAD test runs, with nothing to reopen or roll back.
+	 * Set the speech-probability threshold of the VAD. The persisted value is
+	 * what a freshly built recorder reads; the live detector takes the new
+	 * threshold in place on its next frame, so this works while recording and
+	 * while the live VAD test runs, with nothing to reopen or roll back.
 	 */
 	changeVadThresholdSetting: (threshold: number | null, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_vad_threshold_setting", { threshold }, options)),
 	changeFileTranscriptionSettings: (settings: FileTranscriptionSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_file_transcription_settings", { settings }, options)),
@@ -490,26 +490,26 @@ export const commands = {
 	cancelFileTranscription: (options?: InvokeOptions) => __TAURI_INVOKE<void>("cancel_file_transcription", undefined, options),
 	getFileTranscriptionStatus: (options?: InvokeOptions) => __TAURI_INVOKE<FileTranscriptionStatus_Serialize>("get_file_transcription_status", undefined, options),
 	/**
-	 *  Show `path` in the OS file manager: folders are opened, files are revealed
-	 *  (selected) inside their folder.
+	 * Show `path` in the OS file manager: folders are opened, files are revealed
+	 * (selected) inside their folder.
 	 */
 	revealPathInFileManager: (path: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("reveal_path_in_file_manager", { path }, options)),
 	/**
-	 *  Read a UTF-8 text file (transcript viewer). Invalid UTF-8 is replaced
-	 *  rather than rejected so a partially written live transcript still shows.
+	 * Read a UTF-8 text file (transcript viewer). Invalid UTF-8 is replaced
+	 * rather than rejected so a partially written live transcript still shows.
 	 */
 	readTextFile: (path: string, options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("read_text_file", { path }, options)),
 	changeLiveModeSettings: (settings: LiveModeSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_live_mode_settings", { settings }, options)),
 	liveModeStart: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("live_mode_start", undefined, options)),
 	liveModeStop: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("live_mode_stop", undefined, options)),
 	liveModeStatus: (options?: InvokeOptions) => __TAURI_INVOKE<LiveModeStatus_Serialize>("live_mode_status", undefined, options),
-	/**  Past sessions under the configured output folder, newest first. */
+	/** Past sessions under the configured output folder, newest first. */
 	liveModeListSessions: (options?: InvokeOptions) => typedError<LiveSessionInfo_Serialize[], string>(__TAURI_INVOKE("live_mode_list_sessions", undefined, options)),
-	/**  The folder used when no output folder is configured, for display. */
+	/** The folder used when no output folder is configured, for display. */
 	liveModeDefaultOutputDir: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("live_mode_default_output_dir", undefined, options)),
 	changeRecallSettings: (settings: RecallSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_recall_settings", { settings }, options)),
 	recallVaultInfo: (options?: InvokeOptions) => typedError<RecallVaultInfo, string>(__TAURI_INVOKE("recall_vault_info", undefined, options)),
-	/**  The folder used when none is configured, for display. */
+	/** The folder used when none is configured, for display. */
 	recallDefaultVaultDir: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("recall_default_vault_dir", undefined, options)),
 	recallListNotes: (options?: InvokeOptions) => typedError<RecallNoteMeta_Serialize[], string>(__TAURI_INVOKE("recall_list_notes", undefined, options)),
 	recallReadNote: (id: string, options?: InvokeOptions) => typedError<RecallNoteContent_Serialize, string>(__TAURI_INVOKE("recall_read_note", { id }, options)),
@@ -517,110 +517,110 @@ export const commands = {
 	recallWriteNote: (id: string, title: string, tags: string[], body: string, options?: InvokeOptions) => typedError<RecallNoteMeta_Serialize, string>(__TAURI_INVOKE("recall_write_note", { id, title, tags, body }, options)),
 	recallDeleteNote: (id: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_delete_note", { id }, options)),
 	/**
-	 *  File a transcription (or post-processed text) as a new note — the
-	 *  "Save to Recall" action on a history entry. The recording is copied into
-	 *  the vault's `audio/` folder (encrypted when the vault is), so the vault
-	 *  is self-contained.
+	 * File a transcription (or post-processed text) as a new note — the
+	 * "Save to Recall" action on a history entry. The recording is copied into
+	 * the vault's `audio/` folder (encrypted when the vault is), so the vault
+	 * is self-contained.
 	 */
 	recallSaveTranscription: (text: string, title: string | null, source: string | null, audioFile: string | null, tags: string[], options?: InvokeOptions) => typedError<RecallNoteMeta_Serialize, string>(__TAURI_INVOKE("recall_save_transcription", { text, title, source, audioFile, tags }, options)),
 	recallOpenVaultFolder: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_open_vault_folder", undefined, options)),
-	/**  Start a dictate recording: audio accumulates, nothing is typed or pasted. */
+	/** Start a dictate recording: audio accumulates, nothing is typed or pasted. */
 	recallDictateStart: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_dictate_start", undefined, options)),
 	/**
-	 *  Stop the dictate recording and transcribe it. The text comes back to the
-	 *  caller — the page inserts it at the editor's caret.
+	 * Stop the dictate recording and transcribe it. The text comes back to the
+	 * caller — the page inserts it at the editor's caret.
 	 */
 	recallDictateStop: (options?: InvokeOptions) => typedError<string, string>(__TAURI_INVOKE("recall_dictate_stop", undefined, options)),
-	/**  Cancel the dictate recording and discard the take. */
+	/** Cancel the dictate recording and discard the take. */
 	recallDictateCancel: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_dictate_cancel", undefined, options)),
 	/**
-	 *  Arm/disarm Recall insertion mode: while armed, the transcription and
-	 *  Multi-STT hotkeys deliver their text to the Recall editor's caret
-	 *  instead of pasting and writing a History row. The page arms it when the
-	 *  editor has focus and disarms on blur.
+	 * Arm/disarm Recall insertion mode: while armed, the transcription and
+	 * Multi-STT hotkeys deliver their text to the Recall editor's caret
+	 * instead of pasting and writing a History row. The page arms it when the
+	 * editor has focus and disarms on blur.
 	 */
 	recallSetInsertionMode: (enabled: boolean, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_set_insertion_mode", { enabled }, options)),
 	recallEncryptionStatus: (options?: InvokeOptions) => typedError<RecallEncryptionStatus, string>(__TAURI_INVOKE("recall_encryption_status", undefined, options)),
 	/**
-	 *  Turn encryption on: passphrase → key file + every note becomes `.rcl`.
-	 *  No plaintext copy is kept (see `crypto::enable`).
+	 * Turn encryption on: passphrase → key file + every note becomes `.rcl`.
+	 * No plaintext copy is kept (see `crypto::enable`).
 	 */
 	recallEnableEncryption: (passphrase: string, options?: InvokeOptions) => typedError<EnableReport, string>(__TAURI_INVOKE("recall_enable_encryption", { passphrase }, options)),
-	/**  Verify the passphrase and hold the key in memory until locked or exit. */
+	/** Verify the passphrase and hold the key in memory until locked or exit. */
 	recallUnlockVault: (passphrase: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_unlock_vault", { passphrase }, options)),
-	/**  Drop the in-memory key. Notes stay encrypted on disk. */
+	/** Drop the in-memory key. Notes stay encrypted on disk. */
 	recallLockVault: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("recall_lock_vault", undefined, options)),
 	/**
-	 *  Turn encryption off: verify the passphrase, decrypt every note back to
-	 *  plain Markdown, remove the key file, lock the session.
+	 * Turn encryption off: verify the passphrase, decrypt every note back to
+	 * plain Markdown, remove the key file, lock the session.
 	 */
 	recallDisableEncryption: (passphrase: string, options?: InvokeOptions) => typedError<number, string>(__TAURI_INVOKE("recall_disable_encryption", { passphrase }, options)),
 	/**
-	 *  Persist the page's parameters and hand them to the running analysis,
-	 *  which applies them on its next frame. A threading-mode or
-	 *  voice-detection (`show_vad`) change restarts the session, which can
-	 *  reopen the microphone, so the hand-off runs on a blocking thread.
+	 * Persist the page's parameters and hand them to the running analysis,
+	 * which applies them on its next frame. A threading-mode or
+	 * voice-detection (`show_vad`) change restarts the session, which can
+	 * reopen the microphone, so the hand-off runs on a blocking thread.
 	 */
 	changeLiveFftSettings: (settings: LiveFftSettings_Deserialize, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("change_live_fft_settings", { settings }, options)),
 	/**
-	 *  Start the analyser: opens the microphone (a device open can block, so
-	 *  this stays off the webview thread). Frames are then polled with
-	 *  `live_fft_frame`.
+	 * Start the analyser: opens the microphone (a device open can block, so
+	 * this stays off the webview thread). Frames are then polled with
+	 * `live_fft_frame`.
 	 */
 	liveFftStart: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("live_fft_start", undefined, options)),
 	liveFftStop: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("live_fft_stop", undefined, options)),
 	liveFftStatus: (options?: InvokeOptions) => __TAURI_INVOKE<LiveFftStatus_Serialize>("live_fft_status", undefined, options),
-	/**  The page's Reset button: clears ballistics, AGC and EQ state. */
+	/** The page's Reset button: clears ballistics, AGC and EQ state. */
 	liveFftReset: (options?: InvokeOptions) => __TAURI_INVOKE<void>("live_fft_reset", undefined, options),
-	/**  The "Raw" preset: linear magnitude, frame-peak reference, no ballistics. */
+	/** The "Raw" preset: linear magnitude, frame-peak reference, no ballistics. */
 	liveFftRawDefaults: (options?: InvokeOptions) => __TAURI_INVOKE<LiveFftSettings_Serialize>("live_fft_raw_defaults", undefined, options),
 	/**
-	 *  The Hz of every output bin of the current axis. The page fetches it when
-	 *  a frame's axis version (header word 3) differs from the one it holds; if
-	 *  the returned `version` is still not the frame's, it keeps the old axis
-	 *  and asks again on the next frame.
+	 * The Hz of every output bin of the current axis. The page fetches it when
+	 * a frame's axis version (header word 3) differs from the one it holds; if
+	 * the returned `version` is still not the frame's, it keeps the old axis
+	 * and asks again on the next frame.
 	 */
 	liveFftAxis: (options?: InvokeOptions) => typedError<LiveFftAxis, string>(__TAURI_INVOKE("live_fft_axis", undefined, options)),
 	/**
-	 *  Report the streaming card's transcript height (logical px) and grow the native
-	 *  window to fit it. Returns the height the frontend may render before scrolling.
+	 * Report the streaming card's transcript height (logical px) and grow the native
+	 * window to fit it. Returns the height the frontend may render before scrolling.
 	 * 
-	 *  Called by `RecordingOverlay.tsx` in 24 px steps while the Multi-STT
-	 *  streaming-first session fills the card, so this runs about once per line of
-	 *  text rather than per character. The reply is the same capped value the window
-	 *  was just sized with, so the cap the card applies and the window it lives in
-	 *  are one number.
+	 * Called by `RecordingOverlay.tsx` in 24 px steps while the Multi-STT
+	 * streaming-first session fills the card, so this runs about once per line of
+	 * text rather than per character. The reply is the same capped value the window
+	 * was just sized with, so the cap the card applies and the window it lives in
+	 * are one number.
 	 */
 	overlayStreamTextHeight: (heightPx: number, widthPx: number | null, options?: InvokeOptions) => __TAURI_INVOKE<number>("overlay_stream_text_height", { heightPx, widthPx }, options),
 	/**
-	 *  Move the recording overlay window to physical screen coordinates (x_px, y_px)
-	 *  during interactive dragging. Bypasses Tao's DPI conversion issues on Windows
-	 *  and multi-monitor setups.
+	 * Move the recording overlay window to physical screen coordinates (x_px, y_px)
+	 * during interactive dragging. Bypasses Tao's DPI conversion issues on Windows
+	 * and multi-monitor setups.
 	 */
 	moveRecordingOverlayWindow: (xPx: number, yPx: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("move_recording_overlay_window", { xPx, yPx }, options)),
 	/**
-	 *  Initiates an active drag loop for the recording overlay.
+	 * Initiates an active drag loop for the recording overlay.
 	 * 
-	 *  On Windows, this runs an ultra-low-latency tracking loop in a background thread
-	 *  that samples physical cursor position and moves the window via SetWindowPos while
-	 *  the left mouse button is held down. It works across multi-monitor setups with
-	 *  arbitrary DPI, doesn't depend on window activation (WS_EX_NOACTIVATE), and
-	 *  persists the final anchored position automatically upon mouse release.
+	 * On Windows, this runs an ultra-low-latency tracking loop in a background thread
+	 * that samples physical cursor position and moves the window via SetWindowPos while
+	 * the left mouse button is held down. It works across multi-monitor setups with
+	 * arbitrary DPI, doesn't depend on window activation (WS_EX_NOACTIVATE), and
+	 * persists the final anchored position automatically upon mouse release.
 	 */
 	startRecordingOverlayDrag: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("start_recording_overlay_drag", undefined, options)),
-	/**  Explicitly stops any active recording overlay drag operation. */
+	/** Explicitly stops any active recording overlay drag operation. */
 	stopRecordingOverlayDrag: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("stop_recording_overlay_drag", undefined, options)),
 	/**
-	 *  Remember the physical-pixel position of the overlay window after a drag-grip
-	 *  reposition, so the next recording shows up where the user left it.
+	 * Remember the physical-pixel position of the overlay window after a drag-grip
+	 * reposition, so the next recording shows up where the user left it.
 	 */
 	rememberRecordingOverlayWindowPosition: (xPx: number, yPx: number, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("remember_recording_overlay_window_position", { xPx, yPx }, options)),
-	/**  Reset any saved drag-grip position back to the auto (Top/Bottom) anchor. */
+	/** Reset any saved drag-grip position back to the auto (Top/Bottom) anchor. */
 	resetRecordingOverlayManualPosition: (options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("reset_recording_overlay_manual_position", undefined, options)),
 	getActiveNotices: (options?: InvokeOptions) => __TAURI_INVOKE<Notice_Serialize[]>("get_active_notices", undefined, options),
 	/**
-	 *  The user is done with a notice. Matching the code leaves alone a newer
-	 *  notice that replaced it after the user's view was drawn.
+	 * The user is done with a notice. Matching the code leaves alone a newer
+	 * notice that replaced it after the user's view was drawn.
 	 */
 	dismissNotice: (source: NoticeSource, code: NoticeCode, options?: InvokeOptions) => __TAURI_INVOKE<void>("dismiss_notice", { source, code }, options),
 };
@@ -663,6 +663,42 @@ export const events = {
 	themeChanged: makeEvent<ThemeChanged, ThemeChanged>("theme-changed"),
 	typographyChanged: makeEvent<TypographyChanged_Serialize, TypographyChanged_Deserialize>("typography-changed"),
 	vadTestEvent: makeEvent<VadTestEvent_Serialize, VadTestEvent_Deserialize>("vad-test-event"),
+};
+
+/** Built-in Tauri events */
+export const tauriEvents = {
+	/** A window was resized. Payload: the new inner size, in physical pixels. */
+	windowResized: makeEvent<{ width: number; height: number }>("tauri://resize"),
+	/** A window moved. Payload: the new outer position, in physical pixels. */
+	windowMoved: makeEvent<{ x: number; y: number }>("tauri://move"),
+	/** The user requested that a window close. */
+	windowCloseRequested: makeEvent<null>("tauri://close-requested"),
+	/** A window was destroyed. */
+	windowDestroyed: makeEvent<null>("tauri://destroyed"),
+	/** A window gained focus. */
+	windowFocus: makeEvent<null>("tauri://focus"),
+	/** A window lost focus. */
+	windowBlur: makeEvent<null>("tauri://blur"),
+	/** The scale factor of the monitor a window is on changed. Payload: the new scale factor and inner size, in physical pixels. */
+	windowScaleFactorChanged: makeEvent<{ scaleFactor: number; size: { width: number; height: number } }>("tauri://scale-change"),
+	/** The system or window theme changed. */
+	windowThemeChanged: makeEvent<"light" | "dark">("tauri://theme-changed"),
+	/** A window was created. */
+	windowCreated: makeEvent<{ label: string }>("tauri://window-created"),
+	/** A window's event loop was suspended. Mobile only. */
+	windowSuspended: makeEvent<null>("tauri://suspended"),
+	/** A window's event loop was resumed. Mobile only. */
+	windowResumed: makeEvent<null>("tauri://resumed"),
+	/** A webview was created. */
+	webviewCreated: makeEvent<{ label: string }>("tauri://webview-created"),
+	/** The user dragged files onto a window. Payload: the dragged paths and the pointer position. */
+	dragEnter: makeEvent<{ paths: string[]; position: { x: number; y: number } }>("tauri://drag-enter"),
+	/** The user is moving dragged files over a window. Payload: the pointer position. */
+	dragOver: makeEvent<{ position: { x: number; y: number } }>("tauri://drag-over"),
+	/** The user dropped files onto a window. Payload: the dropped paths and the pointer position. */
+	dragDrop: makeEvent<{ paths: string[]; position: { x: number; y: number } }>("tauri://drag-drop"),
+	/** The drag operation left a window or was cancelled. */
+	dragLeave: makeEvent<null>("tauri://drag-leave"),
 };
 
 /* Types */

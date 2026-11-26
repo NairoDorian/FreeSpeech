@@ -7103,7 +7103,7 @@ dependencies = [
 [[package]]
 name = "tauri-specta"
 version = "2.0.0-rc.29"
-source = "git+https://github.com/NairoDorian/tauri-specta-v3#8109588a0c649c89e446fde11d2fe08c8e379d41"
+source = "git+https://github.com/NairoDorian/tauri-specta-v3#963be8f2e9dbdbabf0fa3d886a28eee59a570e6e"
 dependencies = [
  "heck 0.5.0",
  "paste",
@@ -7121,7 +7121,7 @@ dependencies = [
 [[package]]
 name = "tauri-specta-macros"
 version = "2.0.0-rc.29"
-source = "git+https://github.com/NairoDorian/tauri-specta-v3#8109588a0c649c89e446fde11d2fe08c8e379d41"
+source = "git+https://github.com/NairoDorian/tauri-specta-v3#963be8f2e9dbdbabf0fa3d886a28eee59a570e6e"
 dependencies = [
  "darling 0.24.1",
  "heck 0.5.0",
