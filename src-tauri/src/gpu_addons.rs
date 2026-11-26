@@ -316,15 +316,21 @@ fn register(app: &AppHandle) -> Registered {
 }
 
 /// Every package folder under `root` with a readable manifest, skipping the
-/// ones marked for removal.
+/// ones marked for removal and an install's staging folder (which holds a
+/// manifest before its files are checked).
 fn installed(root: &Path) -> Vec<Installed> {
     let Ok(entries) = std::fs::read_dir(root) else {
         return Vec::new();
     };
+    let staging = |dir: &Path| {
+        dir.file_name()
+            .and_then(|name| name.to_str())
+            .is_some_and(|name| name.ends_with(PARTIAL))
+    };
     let mut out: Vec<Installed> = entries
         .flatten()
         .map(|entry| entry.path())
-        .filter(|dir| dir.is_dir() && !dir.join(REMOVE_MARKER).exists())
+        .filter(|dir| dir.is_dir() && !staging(dir) && !dir.join(REMOVE_MARKER).exists())
         .filter_map(|dir| {
             let text = std::fs::read_to_string(dir.join(MANIFEST)).ok()?;
             let manifest = serde_json::from_str(&text).ok()?;
@@ -743,8 +749,17 @@ fn emit(app: &AppHandle, phase: &str, part: &str, done: f64, total: f64, message
 /// none is here), after [`begin_install`] claimed the slot. It takes effect
 /// at the next start.
 pub async fn install(app: AppHandle, arch: String) -> Result<(), String> {
+    /// Releases the slot however the install ends, a panic included, so the
+    /// page is never left saying "installing" until the next start.
+    struct Slot;
+    impl Drop for Slot {
+        fn drop(&mut self) {
+            INSTALLING.store(false, Ordering::Release);
+        }
+    }
+    let slot = Slot;
     let result = install_inner(&app, &arch).await;
-    INSTALLING.store(false, Ordering::Release);
+    drop(slot);
     match &result {
         Ok(()) => {
             info!("CUDA add-on sm_{arch} installed; it is registered at the next start");
@@ -1093,6 +1108,31 @@ mod tests {
         .unwrap();
         assert!(manifest.is_module_for("60644e11"));
         assert!(!manifest.is_module_for("a0729fa5"));
+    }
+
+    #[test]
+    fn a_staging_folder_is_never_a_package() {
+        let root = std::env::temp_dir().join(format!("cuda-addon-staging-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&root);
+        let staging = root.join(format!("cuda-runtime-13.3.1{PARTIAL}"));
+        std::fs::create_dir_all(&staging).unwrap();
+        for name in runtime_dlls(13) {
+            std::fs::write(staging.join(name), b"").unwrap();
+        }
+        std::fs::write(
+            staging.join(MANIFEST),
+            r#"{"backend": "cuda-runtime", "cudaVersion": "13.3.1", "files": {}}"#,
+        )
+        .unwrap();
+        assert!(installed(&root).is_empty());
+        assert_ne!(
+            runtime_for(&root, "13.3.1").map(|(dir, _)| dir),
+            Some(staging.clone())
+        );
+        // An interrupted install's leftovers go at the next start.
+        remove_marked(&root);
+        assert!(!staging.exists());
+        let _ = std::fs::remove_dir_all(&root);
     }
 
     #[test]
