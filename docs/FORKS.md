@@ -109,6 +109,14 @@ The same script tracks the `tauri-apps/plugins-workspace` `v3` branch (not a
 fork, but the same moving-branch mechanism). It never fails and never blocks a
 build.
 
+Agents may change this fork directly: the maintainer has authorised every agent
+working on FreeSpeech (2026-11-26) to edit, build, test, commit and push
+`transcribe-fork` to `NairoDorian/transcribe.cpp` `main` whenever FreeSpeech
+needs an engine fix or improvement. The engine is where an engine problem gets
+fixed — not worked around in the app. The procedure below applies; mind the
+other sessions that work in that folder (`git status`, `git worktree list`
+first, never discard someone's uncommitted work).
+
 ## Changing one, end to end
 
 ```bash

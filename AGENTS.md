@@ -29,6 +29,19 @@ Two consequences for every change you make here:
 
 ## Paired development with transcribe.cpp
 
+**You may change the engine yourself.** The maintainer has given every agent
+working on FreeSpeech full authority (2026-11-26) to edit, build, test, commit
+and push the transcribe.cpp fork — the working copy at
+`C:/Users/Z/Downloads/PROJECTS/transcribe-fork`, remote `NairoDorian/transcribe.cpp`
+`main`, the exact engine FreeSpeech pulls — whenever FreeSpeech needs an engine
+fix, an improvement or an adjustment. Do not work around an engine problem in
+the app when the right fix is in the engine: fix it there, push it, and the next
+FreeSpeech build picks the new `main` up (`check-transcribe-deps.ts` moves the
+pin; see `docs/FORKS.md`). Before editing, check `git status` and
+`git worktree list` there (another session may have uncommitted work — never
+discard it), read its `AGENTS.md`, keep each commit focused, run its own tests,
+push, then verify in FreeSpeech (`bun run dev:cpu`).
+
 FreeSpeech and `C:/Users/Z/Downloads/PROJECTS/transcribe-fork` are complementary
 projects. Before changing capture preprocessing, VAD/RNNoise, stream defaults,
 model capabilities, bindings or the engine integration, read
