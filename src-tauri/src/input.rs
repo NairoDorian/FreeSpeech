@@ -352,9 +352,15 @@ fn parse_key_token(token: &str) -> Option<Key> {
         "f18" => Some(Key::F18),
         "f19" => Some(Key::F19),
         "f20" => Some(Key::F20),
+        // enigo has no F21–F24 on macOS (Apple keyboards stop at F20), so
+        // there those names fall through to "not a key".
+        #[cfg(not(target_os = "macos"))]
         "f21" => Some(Key::F21),
+        #[cfg(not(target_os = "macos"))]
         "f22" => Some(Key::F22),
+        #[cfg(not(target_os = "macos"))]
         "f23" => Some(Key::F23),
+        #[cfg(not(target_os = "macos"))]
         "f24" => Some(Key::F24),
         _ if token.len() == 1 => token.chars().next().map(Key::Unicode),
         _ => None,
