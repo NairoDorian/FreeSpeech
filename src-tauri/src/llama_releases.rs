@@ -1026,15 +1026,26 @@ pub fn remove_installed(app: &AppHandle, dir: &str) -> Result<(), String> {
 mod tests {
     use super::*;
 
+    /// A path from its folder names, joined with this platform's separator.
+    /// The version is read from folder names, and a `C:\…` literal is one
+    /// single folder name on Linux and macOS.
+    fn folders(names: &[&str]) -> PathBuf {
+        names.iter().collect()
+    }
+
     #[test]
     fn cuda_version_is_read_from_the_toolkit_folder_name() {
-        let p = Path::new(r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4\bin\x64");
-        assert_eq!(cuda_version_from_dir(p).as_deref(), Some("13.4"));
-        let p = Path::new(r"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin");
-        assert_eq!(cuda_version_from_dir(p).as_deref(), Some("12.8"));
-        assert_eq!(cuda_version_from_dir(Path::new(r"C:\tools\cuda\bin")), None);
+        let toolkit = ["Program Files", "NVIDIA GPU Computing Toolkit", "CUDA"];
+        let p = folders(&[&toolkit[..], &["v13.4", "bin", "x64"]].concat());
+        assert_eq!(cuda_version_from_dir(&p).as_deref(), Some("13.4"));
+        let p = folders(&[&toolkit[..], &["v12.8", "bin"]].concat());
+        assert_eq!(cuda_version_from_dir(&p).as_deref(), Some("12.8"));
+        assert_eq!(
+            cuda_version_from_dir(&folders(&["tools", "cuda", "bin"])),
+            None
+        );
         // "vulkan" must not parse as a version
-        assert_eq!(cuda_version_from_dir(Path::new(r"C:\vulkan\bin")), None);
+        assert_eq!(cuda_version_from_dir(&folders(&["vulkan", "bin"])), None);
     }
 
     #[test]
