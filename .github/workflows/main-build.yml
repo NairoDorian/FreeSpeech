@@ -7,6 +7,11 @@ name: "Main Branch Build"
 on:
   push:
     branches: [main]
+    # A push that only touches documentation builds nothing new, and with
+    # cancel-in-progress it would cancel the build of the code before it.
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
