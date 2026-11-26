@@ -16,6 +16,15 @@ concurrency:
 jobs:
   rust-tests:
     runs-on: ubuntu-24.04
+    env:
+      # The CPU lane, as `bun run dev:cpu` and `scripts/cargo-cpu.ts` build
+      # locally: the Linux target asks for transcribe-cpp's `cuda` feature, and
+      # these runners have no CUDA toolkit, so configuring ggml-cuda fails
+      # ("CUDA Toolkit not found", the first run on 2026-11-26). Clippy and the
+      # tests need no GPU backend; Vulkan still builds. The full family set
+      # matches what every local lane compiles (scripts/lib/cpu-lane.ts).
+      TRANSCRIBE_CMAKE_ARGS: -DTRANSCRIBE_CUDA=OFF
+      TRANSCRIBE_MODEL_SET: full
     steps:
       - uses: actions/checkout@v5
 
