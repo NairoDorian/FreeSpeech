@@ -474,7 +474,15 @@ jobs:
           releaseName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
           releaseId: ${{ inputs.release-id }}
           assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
-          args: ${{ inputs.build-args }}
+          # The tauri runner's lane. With none it is `--fast`, the maintainer's
+          # local lane: Vulkan forced on everywhere (the Intel Mac has no Vulkan
+          # SDK) and GGML_NATIVE=ON (an engine tuned to the runner's CPU, not
+          # portable). `--cpu` leaves the GPU backends to each target's Cargo
+          # features (Metal on Apple Silicon, Vulkan + runtime-picked CPU
+          # variants on Windows and Linux) and turns off CUDA, which these
+          # runners have no toolkit for. CUDA releases need a toolkit install
+          # step and a lane that does not force Vulkan onto macOS.
+          args: --cpu ${{ inputs.build-args }}
 
       # tauri-action uploads release assets before returning. All AppImage
       # filtering therefore happens inside linuxdeploy above; this verifies the
