@@ -25,24 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- **ZER0 is now FreeSpeech (2026-11-26).** A new name, bundle identifier
-  (`com.nairodorian.freespeech`), binary (`freespeech`), environment prefix
-  (`FREESPEECH_`) and repository: github.com/NairoDorian/FreeSpeech, which
-  carries the full history; S2B2S is archived. The first start moves a ZER0
-  or Handy install's data into place: the newest former profile is moved and
-  older ones stay as backups, a local folder that holds only the new logs takes
-  the former entries (the webview profile with the UI preferences), and
-  settings that stored a path inside the old folder (a llama.cpp install, a
-  vault folder) follow it. `ZER0_…` and `HANDY_…` variables and both former
-  portable markers keep working, and the Recall vault format is unchanged.
-  The installer's portable-upgrade check now recognises every marker; it had
-  only ever recognised Handy's.
-- **Dependencies only move forward (2026-11-26).** The commit gate refuses a
-  `Cargo.lock` or `bun.lock` with anything older than at HEAD, dependency
-  edges included, and the engine's pin refresh moves only the pin.
-
 ### Added
 
 - **Thai, Hungarian and Armenian (2026-11-25).** Three new interface
@@ -605,6 +587,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **ZER0 is now FreeSpeech (2026-11-26).** A new name, bundle identifier
+  (`com.nairodorian.freespeech`), binary (`freespeech`), environment prefix
+  (`FREESPEECH_`) and repository: github.com/NairoDorian/FreeSpeech, which
+  carries the full history; S2B2S is archived. The first start moves a ZER0
+  or Handy install's data into place: the newest former profile is moved and
+  older ones stay as backups, a local folder that holds only the new logs takes
+  the former entries (the webview profile with the UI preferences), and
+  settings that stored a path inside the old folder (a llama.cpp install, a
+  vault folder) follow it. `ZER0_…` and `HANDY_…` variables and both former
+  portable markers keep working, and the Recall vault format is unchanged.
+  The installer's portable-upgrade check now recognises every marker; it had
+  only ever recognised Handy's.
+- **Dependencies only move forward (2026-11-26).** The commit gate refuses a
+  `Cargo.lock` or `bun.lock` with anything older than at HEAD, dependency
+  edges included, and the engine's pin refresh moves only the pin.
+- **macOS 11 or later (2026-11-26).** The engine's SIMD voice-activity
+  detector (transcribe.cpp `c4463aec`) uses `std::barrier`, which Apple ships
+  from macOS 11; the bundle still declared 10.15, so Intel-Mac builds stopped
+  compiling. Every Apple Silicon Mac runs 11 or later.
 - **Settings and every page react to exactly what changed (2026-11-27).**
   Changing one setting used to rebuild the whole settings object in the
   interface, so every settings control re-checked itself; now only the
@@ -940,6 +941,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Linux builds compile, and release builds are portable (2026-11-26).**
+  The first CI runs on FreeSpeech built this code on Linux and macOS for the
+  first time. Linux did not compile (an import gated off Linux; a Windows-only
+  log import), one test used Windows paths, and every CI build used the
+  maintainer's local settings: `target-cpu=native` and `GGML_NATIVE=ON`
+  (binaries tied to the build machine's CPU), Vulkan forced onto macOS, and
+  a Perl ccache wrapping rustc on Windows. CI now builds on the portable lane
+  (Metal, Vulkan and CPU per platform, no CUDA) for each platform's
+  baseline CPU, and macOS builds sign ad-hoc without an Apple certificate.
 - **A settings page that fails no longer blanks the window (2026-11-27).**
   An error while rendering one page used to unmount the whole settings
   window. Now that page shows what failed with a "Try again" button, and the
