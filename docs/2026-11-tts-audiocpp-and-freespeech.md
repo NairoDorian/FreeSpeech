@@ -88,10 +88,10 @@ let audio = result.audio().unwrap();    // &[f32] + sample_rate + channels → r
 
 - **The fork, Windows build bug.** ggml's `GGML_CCACHE` hook wraps the resource compiler in sccache, which cannot run it, so the fork's version resource fails to build whenever sccache is on `PATH`. The fix is to set C/C++ compiler launchers instead (`audiocpp-sys/build.rs` shows how).
 - **The fork, upstream commits.** _Corrected 2026-11-25:_ the fork already contains the official ggml 1.0.0 (#262), Parakeet phrase boosting (#221) and the Windows DLL lookup fix (#264). The handoff to the fork's agent is `transcribe-fork/docs/plans/2026-11-25-speechcpp-archive-handoff.md`.
-- **audio.cpp fixes prepared** on `NairoDorian/audio.cpp` (working copy `../audiocpp-fork`; notes in its untracked `pr-notes/`). None is opened upstream yet. The first two are the section 3 VAD rules:
-  - `framework-bundled-asset-path`: the default VAD is found beside `audiocpp.dll`, so default SenseVoice requests stop failing inside an app;
-  - `silero-vad-offline-resample`: VAD chunking accepts 24, 44.1 and 48 kHz input;
-  - `ggml-cpu-msvc-barrier`: `pause` and a bounded yield in ggml's thread-pool barrier with MSVC (benchmark pending).
+- **audio.cpp fixes prepared** on `NairoDorian/audio.cpp` (working copy `../audiocpp-fork`; notes in its untracked `pr-notes/`). The first two are the section 3 VAD rules, and they are open upstream:
+  - `framework-bundled-asset-path`, [0xShug0/audio.cpp#1403](https://github.com/0xShug0/audio.cpp/pull/1403): the default VAD is found beside `audiocpp.dll`, so default SenseVoice requests stop failing inside an app;
+  - `silero-vad-offline-resample`, [#1404](https://github.com/0xShug0/audio.cpp/pull/1404), **merged 2026-11-26**: VAD chunking accepts 24, 44.1 and 48 kHz input;
+  - `ggml-cpu-msvc-pause`, [#1407](https://github.com/0xShug0/audio.cpp/pull/1407): `pause` in ggml's thread-pool spin with MSVC. **This one matters for ZER0's STT.** The full transcribe.cpp patch (pause + yield) made runs 3.7× slower or stall when other processes loaded the CPU, and the transcribe fork ships that yield in its native pool. See item 4 of `transcribe-fork/docs/plans/2026-11-25-speechcpp-archive-handoff.md`.
 - **audio.cpp pull-request candidates** (`audiocpp-rs/docs/upstream.md`):
   - install rules and a link manifest for its C API;
   - the Rust bindings;
