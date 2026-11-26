@@ -24,7 +24,7 @@
         "@solidjs/vite-plugin": "3.0.1",
         "@tauri-apps/cli": "3.0.0-alpha.6",
         "@types/bun": "1.4.5",
-        "@types/node": "26.6.10",
+        "@types/node": "26.6.11",
         "bun-types": "1.4.5-canary.20261125T141208",
         "cheerio": "^1.2.0",
         "eslint-plugin-i18next": "^6.1.5",
@@ -228,7 +228,7 @@
 
     "@types/bun": ["@types/bun@1.4.5", "", { "dependencies": { "bun-types": "1.4.5" } }, "sha512-DpgwNI9z0L1S0gtb45QLCWgwCUcMLnsHYMJHQvpNj7erGiCGBvpggltAIeARrtobNMKMuy0UP7i56tKKgwFs/Q=="],
 
-    "@types/node": ["@types/node@26.6.10", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-WJuPHoGB8WNQuTksNF7SOQpnH02PXeDYz4iueWbBT6/hTWnShY5F3T/hoJA3fY9+uYReDZ7pyTKKx83jQa7aGg=="],
+    "@types/node": ["@types/node@26.6.11", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-uUyQ2XLEz+EXh34lmS3GhKrkqn/8FU7KUiKRpk347At2bmnMVWss45yz8b4FG/tUtmV1tV/+TVkITItPROyeeQ=="],
 
     "@typescript/typescript-darwin-arm64": ["@typescript/typescript-darwin-arm64@7.1.0-dev.20261125.1", "", { "os": "darwin", "cpu": "arm64" }, "sha512-895zXUDueXWh+mQiPS8qvIzh/k+4SPM+6eA6oOc66v4bqTksOHg4n2zsh7FneIWhFBQ7CFfASNDBd9BrhReqqQ=="],
 

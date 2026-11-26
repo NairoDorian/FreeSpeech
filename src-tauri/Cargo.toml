@@ -132,7 +132,7 @@ whatlang = "^0.18.0"
 isolang = "^2.4.0"
 chrono = "0.4.45"
 rusqlite = { version = "^0.43.0", features = ["bundled"] }
-sha2 = "^0.11.1"
+sha2 = "^0.11.2"
 # Every model (Whisper family, Parakeet, Moonshine, Canary, … as GGUF) runs
 # through transcribe-cpp (ggml, native backends). Per-platform backend features
 # are added in the target tables below.
