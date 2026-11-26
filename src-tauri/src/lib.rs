@@ -1244,11 +1244,6 @@ pub fn run(cli_args: CliArgs) {
             .build(),
     );
 
-    #[cfg(target_os = "macos")]
-    {
-        builder = builder.plugin(tauri_nspanel::init());
-    }
-
     #[allow(unused_mut)]
     let mut app = builder
         .plugin(tauri_plugin_fs::init())

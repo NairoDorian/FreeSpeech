@@ -58,18 +58,21 @@ items live here, self-contained.
   compile before (see "No Linux/macOS build here" in the maintainer notes).
   `build.yml` (`workflow_call` plus dispatch), `build-test.yml`,
   `pr-test-build.yml` and `release.yml` still run only when dispatched.
-- **macOS does not compile: the overlay panel has no Tauri 3 crate (found
-  2026-11-26).** `overlay.rs` (and `lib.rs`'s plugin init) build the recording
-  overlay as a non-activating `NSPanel` through `tauri-nspanel`, which was
-  dropped from `Cargo.toml` in the Tauri 3 upgrade (`a94aff42`) because it has
-  no Tauri 3 branch (v1, v2, v2.1 only); nothing here builds macOS, so the
-  unresolved import (`E0432 tauri_nspanel`) surfaced only on FreeSpeech's CI.
-  The panel matters: it is what keeps showing the overlay from stealing focus
-  from the app the transcript is pasted into. The fix is to build it on AppKit
-  through `objc2` / `objc2-app-kit` (already macOS dependencies): an `NSPanel`
-  subclass that cannot become key, the non-activating style mask, status
-  level, `canJoinAllSpaces | fullScreenAuxiliary`, shown with
-  `orderFrontRegardless`. It needs a Mac to verify.
+- **The macOS overlay is a window, not a panel, and is unverified on a Mac
+  (2026-11-26).** It was a non-activating `NSPanel` from `tauri-nspanel`, which
+  has no Tauri 3 branch (v1, v2, v2.1 only), so macOS stopped compiling
+  (`E0432 tauri_nspanel`, seen first on FreeSpeech's CI). The overlay is now
+  built like the other platforms' (`WebviewWindowBuilder`, `focusable(false)`:
+  tao never makes it the key window, so showing it leaves the paste target
+  focused), and `float_overlay_window` sets the status level,
+  `canJoinAllSpaces | fullScreenAuxiliary` and `hidesOnDeactivate = NO`
+  through `objc2`. Two things the panel did are gone: a **click** on the
+  overlay activates FreeSpeech (a non-activating panel's does not), and the
+  `overlay_window_corner_radius` setting is not applied on macOS. Restoring
+  both means an `NSPanel` subclass that cannot become key with the
+  non-activating style mask (`define_class!` plus `object_setClass`, what
+  `tauri-nspanel` did), which needs a Mac to verify; CI only proves it
+  compiles.
 - **The Nix check cannot parse `bun.lock` (found 2026-11-26).** `nix-check.yml`
   regenerates `.nix/bun.nix` with `bunx bun2nix`, and bun2nix 2.1.2 stops with
   "Missing @ for package name and version declaration" on the lockfile the

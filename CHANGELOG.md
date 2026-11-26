@@ -964,6 +964,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already ships, so the package still installs on a stock system. BUILD.md
   names the requirement, and its clone and Nix instructions point at
   FreeSpeech instead of the archived S2B2S repository.
+- **macOS compiles again (2026-11-26).** The recording overlay was an
+  `NSPanel` from `tauri-nspanel`, which has no Tauri 3 release. It is now the
+  same window the other platforms use, built `focusable(false)` so showing it
+  never takes focus from the app being dictated into, and pinned at the status
+  level on every Space (full-screen apps included) through `objc2`. A click on
+  it now activates FreeSpeech, and its corner-radius setting is not applied
+  on macOS ([docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)).
 - **Linux builds compile, and release builds are portable (2026-11-26).**
   The first CI runs on FreeSpeech built this code on Linux and macOS for the
   first time. Linux did not compile (an import gated off Linux; a Windows-only

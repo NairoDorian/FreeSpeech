@@ -9,17 +9,8 @@ use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize};
 use tauri_specta::Event;
 
-#[cfg(not(target_os = "macos"))]
 use log::debug;
-
-#[cfg(not(target_os = "macos"))]
 use tauri::WebviewWindowBuilder;
-
-#[cfg(target_os = "macos")]
-use tauri::WebviewUrl;
-
-#[cfg(target_os = "macos")]
-use tauri_nspanel::{CollectionBehavior, PanelBuilder, PanelLevel, StyleMask, tauri_panel};
 
 #[cfg(target_os = "linux")]
 use crate::utils;
@@ -29,16 +20,6 @@ use crate::app_identity;
 
 #[cfg(target_os = "linux")]
 use gtk_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
-
-#[cfg(target_os = "macos")]
-tauri_panel! {
-    panel!(RecordingOverlayPanel {
-        config: {
-            can_become_key_window: false,
-            is_floating_panel: true
-        }
-    })
-}
 
 // Native overlay window sizes (logical points). One window is reused for every
 // state and resized in `show_overlay_state`; each size need only be at least as
@@ -774,7 +755,6 @@ fn force_overlay_topmost(overlay_window: &tauri::webview::WebviewWindow) {
 }
 
 /// Creates the recording overlay window and keeps it hidden by default
-#[cfg(not(target_os = "macos"))]
 pub fn create_recording_overlay(app_handle: &AppHandle) {
     // On Linux (Wayland), monitor detection often fails, but we don't need exact coordinates
     // for Layer Shell as we use anchors. On other platforms, we require a monitor.
@@ -818,6 +798,8 @@ pub fn create_recording_overlay(app_handle: &AppHandle) {
     match builder.build() {
         Ok(window) => {
             crate::webview_hardening::disable_browser_accelerator_keys(&window);
+            #[cfg(target_os = "macos")]
+            float_overlay_window(&window);
             #[cfg(target_os = "linux")]
             {
                 // Try to initialize GTK layer shell, ignore errors if compositor doesn't support it
@@ -836,42 +818,38 @@ pub fn create_recording_overlay(app_handle: &AppHandle) {
     }
 }
 
-/// Creates the recording overlay panel and keeps it hidden by default (macOS)
+/// macOS: keep the overlay above every app and on every Space, never taking
+/// focus. This used to be a non-activating `NSPanel` from `tauri-nspanel`,
+/// which has no Tauri 3 release. The window is built `focusable(false)`, so
+/// tao refuses to make it the key window and showing it leaves the app the
+/// transcript is pasted into focused; AppKit is told the rest directly.
+///
+/// What the panel did that this does not: a click on the overlay activates
+/// the app (a non-activating panel's does not) — see docs/KNOWN_ISSUES.md.
 #[cfg(target_os = "macos")]
-pub fn create_recording_overlay(app_handle: &AppHandle) {
-    if let Some((x, y)) = calculate_overlay_position(app_handle, OVERLAY_WIDTH, OVERLAY_HEIGHT) {
-        // PanelBuilder creates a Tauri window then converts it to NSPanel.
-        // The window remains registered, so get_webview_window() still works.
-        match PanelBuilder::<_, RecordingOverlayPanel>::new(app_handle, "recording_overlay")
-            .url(WebviewUrl::App("src/overlay/index.html".into()))
-            .title("Recording")
-            .position(tauri::Position::Logical(tauri::LogicalPosition { x, y }))
-            .level(PanelLevel::Status)
-            .size(tauri::Size::Logical(tauri::LogicalSize {
-                width: OVERLAY_WIDTH,
-                height: OVERLAY_HEIGHT,
-            }))
-            .has_shadow(false)
-            .transparent(true)
-            .no_activate(true)
-            .corner_radius(settings::get_settings(app_handle).overlay_window_corner_radius)
-            .style_mask(StyleMask::empty().borderless().nonactivating_panel())
-            .with_window(|w| w.decorations(false).transparent(true).focusable(false))
-            .collection_behavior(
-                CollectionBehavior::new()
-                    .can_join_all_spaces()
-                    .full_screen_auxiliary(),
-            )
-            .build()
-        {
-            Ok(panel) => {
-                crate::webview_hardening::disable_browser_accelerator_keys(&panel);
-                panel.hide();
-            }
-            Err(e) => {
-                log::error!("Failed to create recording overlay panel: {}", e);
-            }
-        }
+fn float_overlay_window(window: &tauri::WebviewWindow) {
+    use objc2::msg_send;
+    use objc2::runtime::AnyObject;
+
+    /// `NSStatusWindowLevel` (`kCGStatusWindowLevel`), the level the panel used.
+    const STATUS_WINDOW_LEVEL: isize = 25;
+    /// `NSWindowCollectionBehaviorCanJoinAllSpaces | …FullScreenAuxiliary`:
+    /// on every Space, and over a full-screen app.
+    const ALL_SPACES_AND_FULL_SCREEN: usize = (1 << 0) | (1 << 8);
+
+    let Ok(ns_window) = window.ns_window() else {
+        log::warn!("Recording overlay: no NSWindow to configure");
+        return;
+    };
+    let ns_window = ns_window.cast::<AnyObject>();
+    // SAFETY: `ns_window` is the live NSWindow tao created for this window and
+    // outlives these calls, which run on the main thread (the overlay is
+    // created during setup). Selectors and argument types are AppKit's
+    // (NSInteger, NSUInteger, BOOL).
+    unsafe {
+        let _: () = msg_send![ns_window, setLevel: STATUS_WINDOW_LEVEL];
+        let _: () = msg_send![ns_window, setCollectionBehavior: ALL_SPACES_AND_FULL_SCREEN];
+        let _: () = msg_send![ns_window, setHidesOnDeactivate: false];
     }
 }
 
