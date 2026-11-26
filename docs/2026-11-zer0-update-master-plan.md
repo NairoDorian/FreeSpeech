@@ -357,7 +357,7 @@ src-tauri/Cargo.lock` must print nothing.
    `Feature::Vocabulary`), the Cargo 1.100 build-dir DLL staging fix, ggml
    1.0.0, system BLAS off by default. See TRANSCRIBE_CPP_INTEGRATION.md's
    2026-11-25 update; the Linux `libopenblas` bundle dependency was dropped
-   on 2026-11-27 with upstream `1f2e9ea9` (row 9 of the v0.10.2 ledger).
+   on 2026-11-25 with upstream `1f2e9ea9` (row 9 of the v0.10.2 ledger).
 
 ---
 
@@ -944,12 +944,12 @@ reason), **Defer** (Phase 12). Fill the last column with the ZER0 commit.
 | 101 | `4a096e3` | #2504 | Linux Shift+Insert paste                                 | Adapt, P10                                                                       | — deferred (P12: needs a Linux/macOS build)             |
 | 102 | `aca8985` |       | release v0.10.1                                          | Skip                                                                             | —                                                       |
 
-## Ledger — the v0.10.2 intake `aca89851..1f2e9ea9` (2026-11-25, 2026-11-27)
+## Ledger — the v0.10.2 intake `aca89851..f236901e` (2026-11-25, 2026-11-26)
 
 The commits upstream landed after the close-out, read one by one and
 checked against ZER0's code before porting. Recorded with `git merge -s ours
-bdb68c85` (`f19a09e3`) for rows 1-8 and `git merge -s ours 1f2e9ea9` for
-row 9, like `a659ec6b`.
+bdb68c85` (`f19a09e3`) for rows 1-8, `git merge -s ours 1f2e9ea9` for row 9
+and `git merge -s ours f236901e` for row 10, like `a659ec6b`.
 
 | #   | Upstream  | PR    | Title                                       | Disposition                                                                                   | ZER0       |
 | --- | --------- | ----- | ------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------- |
@@ -962,3 +962,4 @@ row 9, like `a659ec6b`.
 | 7   | `ca2334c` | #2557 | remote-control flags on a cold start        | Port: same place, the end of `setup()`; AGENTS.md / README / cli.rs wording                   | `a384b306` |
 | 8   | `bdb68c8` | #2563 | a stable tray icon ID                       | Adapt: the ID is `app_identity::SLUG`, not a hand-written name                                | `a384b306` |
 | 9   | `1f2e9ea` | #2565 | Linux: drop the OpenBLAS dependency         | Adapt: bundles, CI and BUILD.md; not the `.cargo/config.toml` env (the fork defaults it off)  | `2074559a` |
+| 10  | `f236901` | #2567 | macOS needs CMake too                       | Port: BUILD.md lists CMake under every platform, with each install command                    | `7ac38c6f` |
