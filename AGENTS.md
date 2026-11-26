@@ -98,6 +98,33 @@ field is compatibility data only. The in-app console reads the durable log
 file regardless of debug mode, and its chips only hide records in the view.
 Do not add capture-level UI or a per-record webview event stream.
 
+## Working as an agent here
+
+Habits taken from NodeVibeCode, the maintainer's other project, where they
+keep several agents and one owner in step:
+
+- **Start with `bun run brief`.** Where the branch stands against `origin`,
+  what is uncommitted here and in the engine's working copy, what CI made of
+  `origin/main`, and the handoff the last session left: read the state rather
+  than re-deriving it (`-- --quick` skips the network).
+- **Finish the piece in hand.** The owner's messages queue while you work: a
+  new one is the next piece, not an interruption, unless it says to stop.
+  When a step has run long, say in one line what you are doing.
+- **Decide what is small and reversible, and say what you decided.** Stop
+  for what is not: secrets, publishing (a release, an issue or PR upstream),
+  deleting anything you did not create, and another session's uncommitted
+  work, which is never discarded. A dependency is never downgraded.
+- **Push when the gate is green, then read CI in the background** with
+  `bun run ci:status -- --wait`. A red run is fixed forward in a new commit;
+  the tool prints each failed job's cause (a missing signing secret is named
+  as such, not reported as a failed build).
+- **Before posting upstream** (Tauri, tauri-specta, Handy, transcribe.cpp's
+  upstream), read that project's contribution rules, its AI policy and its
+  templates, and follow them.
+- **End by rewriting [`docs/HANDOFF.md`](docs/HANDOFF.md):** what is in
+  flight, what waits on the owner, what was verified and how, and the traps
+  found. It replaces the previous one; the history is in git.
+
 ## The pre-commit routine
 
 **Run `bun run precommit` before every commit.** It is the gate, and it is one
@@ -260,6 +287,8 @@ cd src-tauri && cargo clippy --all-targets && cargo test --all-targets
 | `update-rtk.ts`                    | `bun run update:rtk`                                                                                               | Updates the RTK CLI used by the maintainer's Claude Code hook — tooling, not part of the app. Rebuilt only when the newest tag differs from the installed one (`--force` reinstalls, `--check` reports both)                                                                                                                                                                                                               |
 | `track-aivorelay.ts`               | `bun run track:aivorelay`                                                                                          | Regenerates `docs/COUSIN_AIVORELAY_TRACKER.md` by diffing the sibling AIVORelay checkout against upstream Handy `main`. Maintainer tooling, and the sibling path is hardcoded, so it only runs on the maintainer's machine                                                                                                                                                                                                 |
 | `upstream-status.ts`               | `bun run upstream:status [-- --markdown \| --reviewed aivorelay]`, `.github/workflows/upstream-watch.yml` (weekly) | Replaces the fork banner: Handy commits HEAD lacks (the intakes end in `git merge -s ours`), AIVORelay's own commits since the review recorded in `docs/upstream-watch.json`, and the upstream changes the forks wait for (pull requests, a release, a commit reaching a branch). The workflow keeps one `upstream-watch` issue and comments when the summary changes                                                      |
+| `ci-status.ts`                     | `bun run ci:status [-- <sha> \| --wait]`                                                                           | Every workflow run GitHub made of a commit (HEAD by default), each failed job and the log line that names its cause, skipping the step scripts GitHub echoes before running them. `--wait` follows the runs to the end; exit 1 when one failed. Push when green and run it in the background                                                                                                                               |
+| `brief.ts`                         | `bun run brief [-- --quick]`                                                                                       | Session start: branch against `origin`, uncommitted paths and stashes here and in `../transcribe-fork` (another session's work there is never discarded), the last commits, `ci:status` of `origin/main`, and `docs/HANDOFF.md`. `--quick` skips the fetch and CI. Never fails                                                                                                                                             |
 | `gen_catalog.py`                   | manual                                                                                                             | Regenerates `src-tauri/src/catalog/catalog.json` (upstream tooling)                                                                                                                                                                                                                                                                                                                                                        |
 | `app-meta.ts`                      | `meta:sync` / `meta:check` (gate, CI) / `meta:set <x.y.z>` / `meta:bump <major\|minor\|patch>`                     | The single source of identity and version. Rewrites the mirrors in `package.json`, `Cargo.toml` `[package]`, `Cargo.lock`'s root block, `tauri.conf.json`, `index.html`, `flake.nix` and `installer.nsi`, and generates `app_identity.rs`, `appIdentity.ts`, `nix/module.nix` and `nix/hm-module.nix`; `--check` fails on drift                                                                                            |
 | `check-identity.ts`                | `check:identity` (gate)                                                                                            | Scans tracked files for the legacy name / identifier and, in `src/` + `src-tauri/src/` code, a hand-written current name; per-file exemptions with reasons                                                                                                                                                                                                                                                                 |
@@ -317,7 +346,11 @@ replacing it. macOS is `metal` and Windows aarch64 is CPU-only. `dev:cpu` turns
 CUDA off at configure time on top of that (`-DTRANSCRIBE_CUDA=OFF` — the `cuda`
 cargo feature cannot be dropped, it lives in the target table; Vulkan stays in
 the build). Every lane packs the full family set: `TRANSCRIBE_MODEL_SET=full` is
-set by the runner, not by a config file.
+set by the runner, not by a config file. Release installers are built on the
+`--cpu` lane, so they carry CPU + Vulkan (Metal on macOS): CUDA reaches users
+as a per-architecture add-on that `gpu-backends.yml` publishes with each
+release and the app installs from the Advanced page
+([docs/GPU_BACKENDS.md](docs/GPU_BACKENDS.md)).
 
 **Third-party notices:** the engine compiles Earshot (MIT), RNNoise through
 nnnoiseless (BSD-3-Clause), Silero VAD, cJSON and audio.cpp ports into
@@ -593,6 +626,19 @@ download_language_detector`) when a plan wants it or when the list is
   folder is on PATH; `LlamaServerManager::start` prepends it to the child's
   PATH when it is not. `remove_bundled_cuda_runtime` trims the DLLs from an
   existing install
+- `gpu_addons.rs` - The CUDA add-on (docs/GPU_BACKENDS.md): NVML reads the
+  GPUs' compute capability, the release of the running version publishes an
+  index of per-architecture `ggml-cuda` modules and one CUDA runtime package,
+  and the Advanced page (`CudaAddon.tsx`) installs the right ones into
+  `<app data>/gpu-backends/` after checking every SHA-256 and that the module
+  was built from this build's engine commit (a ggml module only works with
+  its own ggml core). `register_installed` runs right after
+  `init_transcribe_backend`: it preloads the runtime DLLs by full path
+  (`LoadLibraryExW`, since ggml's `LoadLibraryW` never searches a module's
+  own folder for its imports) and registers the module folder with
+  `transcribe_cpp::init_backends`. A no-op when CUDA is compiled in. A
+  loaded package cannot be deleted on Windows: removal marks it and the next
+  start deletes it before registering anything
 - `system_monitor.rs` - One sampler thread, 1 Hz, CPU + RAM (sysinfo) and
   GPU / VRAM / temperature (NVML when present) as `SystemStatsEvent`; while
   the main window is hidden it only wakes every 3 s to keep the CPU baseline

@@ -12,6 +12,7 @@ mod clipboard;
 mod commands;
 pub mod direct_stream_writer;
 mod file_transcription;
+mod gpu_addons;
 mod helpers;
 mod input;
 mod job_object;
@@ -262,8 +263,10 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     ));
 
     // Initialize the transcribe-cpp native backend (logging + backend module
-    // registration) once, before any model is loaded.
+    // registration) once, before any model is loaded, then the CUDA add-on
+    // when one fits this build (registration is only possible this early).
     managers::transcription::init_transcribe_backend();
+    gpu_addons::register_installed(app_handle);
     managers::arch_plugins::init_arch_plugin_dirs(app_handle);
 
     // Apply accelerator preferences before any model loads
@@ -975,6 +978,9 @@ pub fn run(cli_args: CliArgs) {
             commands::llama::remove_installed_llama_server,
             commands::llama::detect_cuda_toolkit,
             commands::llama::remove_bundled_cuda_runtime,
+            commands::gpu_addons::get_cuda_addon_status,
+            commands::gpu_addons::install_cuda_addon,
+            commands::gpu_addons::remove_cuda_addon,
             commands::system::get_system_stats,
             commands::is_update_checks_locked,
             commands::get_app_dir_path,
@@ -1133,6 +1139,7 @@ pub fn run(cli_args: CliArgs) {
             managers::audio::VadTestEvent,
             llama_server::LlamaServerStateEvent,
             llama_releases::LlamaDownloadEvent,
+            gpu_addons::CudaAddonEvent,
             system_monitor::SystemStatsEvent,
             file_transcription::FileTranscriptionEvent,
             live_mode::LiveModeStateEvent,
@@ -1289,6 +1296,7 @@ pub fn run(cli_args: CliArgs) {
                 app_handle.manage(model_manager);
                 app_handle.manage(transcription_manager);
                 managers::transcription::init_transcribe_backend();
+                gpu_addons::register_installed(&app_handle);
                 managers::transcription::report_compute_devices();
                 managers::arch_plugins::init_arch_plugin_dirs(&app_handle);
                 managers::transcription::apply_accelerator_settings(&app_handle);

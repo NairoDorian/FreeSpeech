@@ -103,7 +103,7 @@ static CACHE: Mutex<Option<(Instant, Vec<LlamaRelease>)>> = Mutex::new(None);
 /// The GitHub client. No local user agent string: `app_identity::USER_AGENT` is
 /// the one this app sends everywhere, so the API sees the same identity here as
 /// it does for the model downloads.
-fn client() -> Result<reqwest::Client, String> {
+pub(crate) fn client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
         .user_agent(crate::app_identity::USER_AGENT)
         .connect_timeout(Duration::from_secs(15))
@@ -558,7 +558,8 @@ pub async fn install(
     result
 }
 
-type ProgressEmitter<'a> = &'a (dyn Fn(&str, f64, f64, Option<String>, Option<String>) + Sync);
+pub(crate) type ProgressEmitter<'a> =
+    &'a (dyn Fn(&str, f64, f64, Option<String>, Option<String>) + Sync);
 
 async fn install_inner(
     app: &AppHandle,
@@ -689,7 +690,7 @@ async fn install_inner(
     })
 }
 
-async fn download_with_progress(
+pub(crate) async fn download_with_progress(
     url: &str,
     dest: &Path,
     expected_total: f64,
@@ -741,7 +742,7 @@ async fn download_with_progress(
 
 /// Unpack `zip_path` into `dest`, flattening a single top-level folder so
 /// `llama-server.exe` always lands directly in `dest`.
-fn unzip_flat(zip_path: &Path, dest: &Path) -> Result<(), String> {
+pub(crate) fn unzip_flat(zip_path: &Path, dest: &Path) -> Result<(), String> {
     let file = std::fs::File::open(zip_path).map_err(|e| e.to_string())?;
     let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("Bad archive: {e}"))?;
     // Detect a common top-level directory.

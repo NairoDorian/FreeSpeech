@@ -22,6 +22,7 @@ import { VoiceActivityDetection } from "../VoiceActivityDetection";
 import { NoiseSuppression } from "../NoiseSuppression";
 import { NoiseSuppressionParams } from "../NoiseSuppressionParams";
 import { AccelerationSelector } from "../AccelerationSelector";
+import { CudaAddon } from "../CudaAddon";
 import { LazyStreamClose } from "../LazyStreamClose";
 import { MicIdleTimeout } from "../MicIdleTimeout";
 import { FillerWordRemoval } from "../FillerWordRemoval";
@@ -51,6 +52,7 @@ export const AdvancedSettings = () => {
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.transcription")}>
+        <CudaAddon descriptionMode="tooltip" grouped={true} />
         <NoiseSuppression descriptionMode="tooltip" grouped={true} />
         <NoiseSuppressionParams descriptionMode="tooltip" grouped={true} />
         <VoiceActivityDetection descriptionMode="tooltip" grouped={true} />

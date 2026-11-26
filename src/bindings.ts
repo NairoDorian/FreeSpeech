@@ -264,6 +264,22 @@ export const commands = {
 	/** Delete the bundled cudart/cuBLAS DLLs from an install; returns MB freed. */
 	removeBundledCudaRuntime: (dir: string, options?: InvokeOptions) => typedError<number, string>(__TAURI_INVOKE("remove_bundled_cuda_runtime", { dir }, options)),
 	/**
+	 * The GPU, the installed add-on and what an install would download.
+	 * `force` skips the ten-minute cache of the release's add-on index.
+	 */
+	getCudaAddonStatus: (force: boolean, options?: InvokeOptions) => __TAURI_INVOKE<CudaAddonStatus_Serialize>("get_cuda_addon_status", { force }, options),
+	/**
+	 * Download, check and unpack the add-on for compute capability `arch` (and
+	 * the CUDA runtime when none is here). Progress arrives as `CudaAddonEvent`;
+	 * it runs to completion in the background, so the page can be left.
+	 */
+	installCudaAddon: (arch: string, options?: InvokeOptions) => typedError<null, string>(__TAURI_INVOKE("install_cuda_addon", { arch }, options)),
+	/**
+	 * Remove every add-on. Returns whether some of it was loaded and is only
+	 * deleted at the next start.
+	 */
+	removeCudaAddon: (options?: InvokeOptions) => typedError<boolean, string>(__TAURI_INVOKE("remove_cuda_addon", undefined, options)),
+	/**
 	 * The most recent sample, so a footer that mounts between ticks does not
 	 * show empty meters for up to a second.
 	 */
@@ -629,6 +645,7 @@ export const commands = {
 export const events = {
 	benchmarkProgress: makeEvent<BenchmarkProgressEvent_Serialize, BenchmarkProgressEvent_Deserialize>("benchmark-progress"),
 	checkForUpdates: makeEvent<CheckForUpdates, CheckForUpdates>("check-for-updates"),
+	cudaAddonEvent: makeEvent<CudaAddonEvent_Serialize, CudaAddonEvent_Deserialize>("cuda-addon-event"),
 	fileTranscriptionEvent: makeEvent<FileTranscriptionEvent_Serialize, FileTranscriptionEvent_Deserialize>("file-transcription-event"),
 	hideOverlay: makeEvent<HideOverlay, HideOverlay>("hide-overlay"),
 	historyUpdatePayload: makeEvent<HistoryUpdatePayload_Serialize, HistoryUpdatePayload_Deserialize>("history-update-payload"),
@@ -1685,6 +1702,153 @@ export type ChineseScript_Serialize =
 "traditional_hk";
 
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard";
+
+/**  Progress of one install, from the first download to done or error. */
+export type CudaAddonEvent = CudaAddonEvent_Serialize | CudaAddonEvent_Deserialize;
+
+/**  Progress of one install, from the first download to done or error. */
+export type CudaAddonEvent_Deserialize = {
+	/**  `downloading`, `verifying`, `done`, `error` */
+	phase: string,
+	/**  `runtime` or `module` */
+	part: string,
+	downloaded_bytes: number | null,
+	total_bytes: number | null,
+	message?: string | null,
+};
+
+/**  Progress of one install, from the first download to done or error. */
+export type CudaAddonEvent_Serialize = {
+	/**  `downloading`, `verifying`, `done`, `error` */
+	phase: string,
+	/**  `runtime` or `module` */
+	part: string,
+	downloaded_bytes: number | null,
+	total_bytes: number | null,
+	message: string | null,
+};
+
+/**  What installing the add-on would download. */
+export type CudaAddonOffer = CudaAddonOffer_Serialize | CudaAddonOffer_Deserialize;
+
+/**  What installing the add-on would download. */
+export type CudaAddonOffer_Deserialize = {
+	/**  Compute capability the module is built for (`86`). */
+	arch: string,
+	/**  The GPU it was picked for. */
+	gpu: string,
+	module_mb: number,
+	/**  The runtime download that comes with it; 0 when one is already here. */
+	runtime_mb: number,
+	/**
+	 *  The installed CUDA toolkit whose runtime is used instead of a download
+	 *  (its version), when there is one.
+	 */
+	toolkit_runtime?: string | null,
+	cuda_version: string,
+};
+
+/**  What installing the add-on would download. */
+export type CudaAddonOffer_Serialize = {
+	/**  Compute capability the module is built for (`86`). */
+	arch: string,
+	/**  The GPU it was picked for. */
+	gpu: string,
+	module_mb: number,
+	/**  The runtime download that comes with it; 0 when one is already here. */
+	runtime_mb: number,
+	/**
+	 *  The installed CUDA toolkit whose runtime is used instead of a download
+	 *  (its version), when there is one.
+	 */
+	toolkit_runtime: string | null,
+	cuda_version: string,
+};
+
+/**  The Advanced page's view of the CUDA add-on. */
+export type CudaAddonStatus = CudaAddonStatus_Serialize | CudaAddonStatus_Deserialize;
+
+/**  The Advanced page's view of the CUDA add-on. */
+export type CudaAddonStatus_Deserialize = {
+	/**  Add-ons are published for this platform. */
+	supported: boolean,
+	gpus: NvidiaGpu[],
+	/**  The newest CUDA the driver supports (`13.5`). */
+	driver_cuda?: string | null,
+	/**  CUDA is registered in this process, and from where. */
+	active?: CudaSource | null,
+	/**  Compute capability of the installed module that fits this build. */
+	installed_arch?: string | null,
+	/**  That module is not registered in this process yet: it takes a restart. */
+	restart_required: boolean,
+	/**
+	 *  That module was loaded at startup and registered no CUDA device (an
+	 *  old driver, a missing runtime): the log says why.
+	 */
+	load_failed: boolean,
+	/**  Something was removed while loaded; the next start deletes it. */
+	removal_pending: boolean,
+	offer?: CudaAddonOffer_Deserialize | null,
+	unavailable?: CudaAddonUnavailable | null,
+	/**  An install is running; its progress arrives as `CudaAddonEvent`. */
+	installing: boolean,
+};
+
+/**  The Advanced page's view of the CUDA add-on. */
+export type CudaAddonStatus_Serialize = {
+	/**  Add-ons are published for this platform. */
+	supported: boolean,
+	gpus: NvidiaGpu[],
+	/**  The newest CUDA the driver supports (`13.5`). */
+	driver_cuda: string | null,
+	/**  CUDA is registered in this process, and from where. */
+	active: CudaSource | null,
+	/**  Compute capability of the installed module that fits this build. */
+	installed_arch: string | null,
+	/**  That module is not registered in this process yet: it takes a restart. */
+	restart_required: boolean,
+	/**
+	 *  That module was loaded at startup and registered no CUDA device (an
+	 *  old driver, a missing runtime): the log says why.
+	 */
+	load_failed: boolean,
+	/**  Something was removed while loaded; the next start deletes it. */
+	removal_pending: boolean,
+	offer: CudaAddonOffer_Serialize | null,
+	unavailable: CudaAddonUnavailable | null,
+	/**  An install is running; its progress arrives as `CudaAddonEvent`. */
+	installing: boolean,
+};
+
+/**  Why no add-on is offered. */
+export type CudaAddonUnavailable = 
+/**  No add-ons exist for this platform. */
+"platform" | 
+/**  NVML found no NVIDIA GPU. */
+"no_nvidia_gpu" | 
+/**
+ *  This version's release has no add-ons (not published yet, or a
+ *  development build).
+ */
+"not_published" | 
+/**
+ *  The published modules were built from another engine commit than
+ *  this build (a development build carrying a release's version).
+ */
+"other_build" | 
+/**  Every published module is newer than this GPU. */
+"no_package_for_gpu" | 
+/**  The driver supports an older CUDA than the add-ons need. */
+"driver_too_old" | 
+/**  The index could not be downloaded. */
+"lookup_failed";
+
+/**  Where the CUDA backend running in this process came from. */
+export type CudaSource = 
+/**  Compiled into this build (a local CUDA build). */
+"build" | 
+/**  An installed add-on. */
+"addon";
 
 /**
  *  A system CUDA toolkit whose runtime DLLs a CUDA build can load instead of
@@ -3482,6 +3646,13 @@ export type NoticesChanged_Serialize = {
 	notices: Notice_Serialize[],
 	/**  The notice just raised; `None` when one was cleared. */
 	raised: Notice_Serialize | null,
+};
+
+/**  An NVIDIA GPU as NVML reports it. */
+export type NvidiaGpu = {
+	name: string,
+	/**  `8.6` */
+	compute_capability: string,
 };
 
 /**  Open the footer's notice panel (`open-notices`), from the tray. */

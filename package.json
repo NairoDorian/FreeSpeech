@@ -33,6 +33,8 @@
     "check:identity": "bun scripts/check-identity.ts",
     "check:no-downgrade": "bun scripts/check-no-downgrade.ts",
     "upstream:status": "bun scripts/upstream-status.ts",
+    "ci:status": "bun scripts/ci-status.ts",
+    "brief": "bun scripts/brief.ts",
     "check:model-languages": "bun scripts/check-model-language-coverage.ts",
     "meta:sync": "bun scripts/app-meta.ts",
     "meta:check": "bun scripts/app-meta.ts --check",

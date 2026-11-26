@@ -387,6 +387,36 @@
         "label": "Pozostaw mikrofon otwarty między transkrypcjami",
         "description": "Utrzymuje strumień mikrofonu otwarty przez 30 sekund po zatrzymaniu nagrywania, zmniejszając opóźnienie przy kolejnych transkrypcjach. Może pogorszyć jakość dźwięku Bluetooth."
       },
+      "cudaAddon": {
+        "title": "CUDA acceleration",
+        "description": "An optional add-on that runs speech models on an NVIDIA GPU with CUDA, usually faster than Vulkan. It is downloaded from this version's release, checked, and used from the next start.",
+        "gpuFallback": "Your NVIDIA GPU",
+        "builtIn": "CUDA is built into this version.",
+        "active": "CUDA is active on {{gpu}} (sm_{{arch}}).",
+        "offer": "{{gpu}} can run speech models with CUDA.",
+        "size": "Download: {{module}} MB",
+        "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+        "toolkitRuntime": "Uses the runtime of your CUDA toolkit {{version}}.",
+        "download": "Download",
+        "preparing": "Preparing the download…",
+        "downloadingRuntime": "Downloading the CUDA runtime…",
+        "downloadingModule": "Downloading the CUDA module…",
+        "verifying": "Checking the download…",
+        "restartRequired": "Installed. Restart to use CUDA.",
+        "restart": "Restart now",
+        "remove": "Remove",
+        "removalPending": "Removed. The files are deleted at the next start.",
+        "loadFailed": "The CUDA add-on did not start. Update the NVIDIA driver and restart; the log has the details.",
+        "failed": "The CUDA add-on could not be installed: {{message}}",
+        "retry": "Retry",
+        "unavailable": {
+          "notPublished": "No CUDA add-on is published for this version yet.",
+          "otherBuild": "The published CUDA add-on belongs to another build of this version.",
+          "noPackageForGpu": "This GPU (compute capability {{capability}}) is older than the CUDA add-on supports. Vulkan still uses it.",
+          "driverTooOld": "Update the NVIDIA driver to use the CUDA add-on (this one supports CUDA {{driver}}).",
+          "lookupFailed": "Could not check for the CUDA add-on."
+        }
+      },
       "acceleration": {
         "transcribe": {
           "title": "Akceleracja Whisper",

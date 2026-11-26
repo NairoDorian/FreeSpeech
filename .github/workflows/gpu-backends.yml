@@ -1,0 +1,274 @@
+name: GPU backends
+
+# The engine's CUDA backend as add-on packages for the Windows x64 installer.
+#
+# The installers carry the CPU and Vulkan backends (Metal on Apple Silicon):
+# the engine is built with `dynamic-backends`, so every backend is a module
+# (ggml-*.dll) registered at startup, and Vulkan already runs on any recent
+# GPU. CUDA is faster on NVIDIA cards but heavy, so it is an add-on the app
+# offers on the Advanced page (src-tauri/src/gpu_addons.rs) and installs into
+# its data folder:
+#
+# - one MODULE package per NVIDIA compute capability: ggml-cuda.dll built for
+#   that one architecture (machine code plus PTX, so a newer card can still
+#   JIT it), tied to the engine commit it was built from;
+# - one RUNTIME package: cudart + cuBLAS, the same for every architecture and
+#   most of the weight (hundreds of MB), downloaded once and skipped when a
+#   CUDA toolkit of the same major is installed;
+# - an INDEX, <Name>-<version>-cuda-addons-windows-x64.json, naming each
+#   package's size and SHA-256, the CUDA version and the engine commit. The app
+#   reads it from the release of its own version and refuses a module built
+#   from another engine commit (a ggml module only works with the ggml core it
+#   was compiled against).
+#
+# docs/GPU_BACKENDS.md has the design. release.yml calls this workflow for
+# every release; run it by hand to (re)build the packages for an existing
+# release tag, or without one to get them as workflow artifacts.
+#
+# Cost: one Windows job per architecture (CUDA toolkit install, an app build,
+# one architecture's kernels) plus one for the runtime, all in parallel. It
+# never runs on a push, so the main build never waits on CUDA.
+
+on:
+  workflow_dispatch:
+    inputs:
+      architectures:
+        description: "CUDA compute capabilities, space-separated (CUDA 13: 75 and newer; 75 RTX 20/GTX 16, 86 RTX 30, 89 RTX 40, 120 RTX 50)"
+        type: string
+        required: false
+        default: "75 86 89 120"
+      release-tag:
+        description: "Upload the packages and the index to this existing release tag (empty: workflow artifacts only)"
+        type: string
+        required: false
+        default: ""
+  workflow_call:
+    inputs:
+      architectures:
+        type: string
+        required: false
+        default: "75 86 89 120"
+      release-tag:
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+env:
+  # One CUDA version for the modules and the runtime: the index records it and
+  # the app requires a runtime at least this new.
+  CUDA_VERSION: 13.3.1
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - id: matrix
+        env:
+          ARCHITECTURES: ${{ inputs.architectures }}
+        run: |
+          json=$(printf '%s\n' $ARCHITECTURES | grep -E '^[0-9]+$' | sort -un | jq -R . | jq -s -c .)
+          if [ "$json" = "[]" ]; then
+            echo "::error::no CUDA architecture given (e.g. 86)"
+            exit 1
+          fi
+          echo "matrix=$json" >> "$GITHUB_OUTPUT"
+
+  module:
+    name: CUDA module sm_${{ matrix.arch }}
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # As in build.yml: the shipped module runs on the users' CPUs.
+      - name: Build for the target's baseline CPU
+        shell: bash
+        run: rm -f .cargo/config.toml src-tauri/.cargo/config.toml
+
+      - uses: oven-sh/setup-bun@v2
+      - uses: dtolnay/rust-toolchain@stable
+
+      # The Windows x64 target enables the `vulkan` feature beside `cuda`, so
+      # the engine configures ggml-vulkan too (build.yml installs the same SDK).
+      - name: Install Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1.2
+        with:
+          version: 1.4.309.0
+          cache: true
+
+      - name: Install the CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.36
+        with:
+          cuda: ${{ env.CUDA_VERSION }}
+          method: network
+
+      # tauri-build embeds the frontend, so the crate needs dist/ to compile.
+      - name: Build the frontend
+        shell: bash
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+
+      # Plain cargo, not the tauri runner: its lanes either turn CUDA off
+      # (--cpu) or build a whole architecture matrix (--full). The engine's
+      # build script compiles ggml-cuda for exactly this architecture, and
+      # src-tauri/build.rs stages the modules into src-tauri/transcribe-libs/.
+      - name: Build with CUDA for sm_${{ matrix.arch }}
+        shell: bash
+        working-directory: src-tauri
+        env:
+          TRANSCRIBE_CUDA_ARCHITECTURES: ${{ matrix.arch }}
+          TRANSCRIBE_MODEL_SET: full
+        run: cargo build --release
+
+      - name: Package ggml-cuda
+        shell: bash
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          name_=$(jq -r .productName src-tauri/tauri.conf.json)
+          version=$(jq -r .version src-tauri/tauri.conf.json)
+          engine=$(grep -o 'transcribe.cpp?branch=main#[0-9a-f]*' src-tauri/Cargo.lock | head -1 | cut -d'#' -f2)
+          module=src-tauri/transcribe-libs/ggml-cuda.dll
+          if [ ! -f "$module" ]; then
+            echo "::error::the build staged no ggml-cuda.dll"
+            ls -la src-tauri/transcribe-libs || true
+            exit 1
+          fi
+          name="${name_}-${version}-cuda${CUDA_VERSION%%.*}-sm${ARCH}-windows-x64"
+          mkdir -p "pkg/$name"
+          cp "$module" "pkg/$name/"
+          jq -n \
+            --arg cc "$ARCH" --arg cuda "$CUDA_VERSION" --arg version "$version" \
+            --arg commit "$GITHUB_SHA" --arg engine "$engine" \
+            --arg sha "$(sha256sum "pkg/$name/ggml-cuda.dll" | cut -d' ' -f1)" \
+            '{backend: "cuda", module: "ggml-cuda.dll", computeCapability: $cc,
+              cudaVersion: $cuda, appVersion: $version, appCommit: $commit,
+              engineCommit: $engine, files: {"ggml-cuda.dll": $sha}}' \
+            > "pkg/$name/manifest.json"
+          cat "pkg/$name/manifest.json"
+          (cd pkg && 7z a -tzip "$name.zip" "$name" > /dev/null)
+          ls -la pkg
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cuda-module-sm${{ matrix.arch }}
+          path: pkg/*.zip
+          if-no-files-found: error
+
+  runtime:
+    name: CUDA runtime
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install the CUDA toolkit
+        uses: Jimver/cuda-toolkit@v0.2.36
+        with:
+          cuda: ${{ env.CUDA_VERSION }}
+          method: network
+
+      # NVIDIA's CUDA EULA lists cudart and cuBLAS among the redistributable
+      # runtime files.
+      - name: Package cudart and cuBLAS
+        shell: bash
+        run: |
+          set -euo pipefail
+          name_=$(jq -r .productName src-tauri/tauri.conf.json)
+          version=$(jq -r .version src-tauri/tauri.conf.json)
+          major=${CUDA_VERSION%%.*}
+          # CUDA 13 keeps its x64 DLLs in bin/x64; earlier toolkits in bin.
+          cuda_root="$(cygpath -u "$CUDA_PATH")"
+          cuda_bin="$cuda_root/bin/x64"
+          [ -d "$cuda_bin" ] || cuda_bin="$cuda_root/bin"
+          name="${name_}-${version}-cuda${major}-runtime-windows-x64"
+          mkdir -p "pkg/$name"
+          files='{}'
+          for lib in cudart64 cublasLt64 cublas64; do
+            file="$cuda_bin/${lib}_${major}.dll"
+            if [ ! -f "$file" ]; then
+              echo "::error::no ${lib}_${major}.dll in $cuda_bin"
+              ls "$cuda_bin" || true
+              exit 1
+            fi
+            cp "$file" "pkg/$name/"
+            files=$(jq --arg f "${lib}_${major}.dll" --arg s "$(sha256sum "$file" | cut -d' ' -f1)" '. + {($f): $s}' <<< "$files")
+          done
+          jq -n --arg cuda "$CUDA_VERSION" --argjson files "$files" \
+            '{backend: "cuda-runtime", cudaVersion: $cuda, files: $files}' \
+            > "pkg/$name/manifest.json"
+          cat "pkg/$name/manifest.json"
+          (cd pkg && 7z a -tzip "$name.zip" "$name" > /dev/null)
+          ls -la pkg
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cuda-runtime
+          path: pkg/*.zip
+          if-no-files-found: error
+
+  index:
+    name: Index and publish
+    needs: [module, runtime]
+    # Publish what was built even when one architecture failed: the index
+    # lists only the packages that exist.
+    if: ${{ !cancelled() && needs.runtime.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v7
+        with:
+          path: dl
+          merge-multiple: true
+
+      - name: Write the index
+        run: |
+          set -euo pipefail
+          name_=$(jq -r .productName src-tauri/tauri.conf.json)
+          version=$(jq -r .version src-tauri/tauri.conf.json)
+          engine=$(grep -o 'transcribe.cpp?branch=main#[0-9a-f]*' src-tauri/Cargo.lock | head -1 | cut -d'#' -f2)
+          entry() {
+            jq -n --arg asset "$(basename "$1")" --argjson size "$(stat -c %s "$1")" \
+              --arg sha "$(sha256sum "$1" | cut -d' ' -f1)" \
+              '{asset: $asset, size: $size, sha256: $sha}'
+          }
+          runtime=$(entry dl/*-runtime-windows-x64.zip)
+          modules=$(for zip in dl/*-sm*-windows-x64.zip; do
+            cc=$(basename "$zip" | sed -E 's/.*-sm([0-9]+)-windows-x64\.zip$/\1/')
+            entry "$zip" | jq --arg cc "$cc" '. + {computeCapability: $cc}'
+          done | jq -s 'sort_by(.computeCapability | tonumber)')
+          if [ "$(jq length <<< "$modules")" = 0 ]; then
+            echo "::error::no module package was built"
+            exit 1
+          fi
+          index="dl/${name_}-${version}-cuda-addons-windows-x64.json"
+          jq -n --arg version "$version" --arg engine "$engine" --arg cuda "$CUDA_VERSION" \
+            --argjson runtime "$runtime" --argjson modules "$modules" \
+            '{appVersion: $version, engineCommit: $engine, platform: "windows-x64",
+              cudaVersion: $cuda, runtime: $runtime, modules: $modules}' > "$index"
+          cat "$index"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cuda-addons-windows-x64
+          path: dl/*
+          if-no-files-found: error
+
+      - name: Attach to the release
+        if: inputs.release-tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.release-tag }}
+        run: gh release upload "$TAG" dl/*.zip dl/*.json --clobber

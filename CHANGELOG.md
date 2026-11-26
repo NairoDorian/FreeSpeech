@@ -27,6 +27,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **CUDA as a download, not a build (2026-11-26).** The installers carry the
+  CPU and Vulkan backends; on Windows x64 with an NVIDIA GPU, Advanced →
+  Transcription now offers a **CUDA acceleration** add-on: the engine's
+  `ggml-cuda` module built for the card's architecture (RTX 20 through RTX
+  50), and the NVIDIA CUDA runtime once (skipped when a CUDA 13 toolkit is
+  installed). It is downloaded from the release of the running version,
+  checked against the SHA-256 published there, refused when it was built from
+  another engine commit, and registered at the next start
+  (`src-tauri/src/gpu_addons.rs`). Each release builds the packages and their
+  index in parallel with the installers (`.github/workflows/gpu-backends.yml`),
+  so no installer carries every CUDA architecture. Design and limits:
+  [docs/GPU_BACKENDS.md](docs/GPU_BACKENDS.md).
+- **`bun run ci:status` (2026-11-26).** Every workflow run GitHub made of a
+  commit, each failed job, and the log line that says why (a missing signing
+  secret is named as such, not as a failed build); `-- --wait` follows the runs
+  until they finish. Learned from NodeVibeCode's `cargo pipeline --wait`: push
+  when green, read the result in the background, fix a red run forward.
 - **Thai, Hungarian and Armenian (2026-11-25).** Three new interface
   languages from upstream. Strings for ZER0's own features are in English
   until someone translates them, as in every other language.
@@ -941,6 +958,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The Ubuntu 22.04 `.deb` builds (2026-11-26).** The engine is C++23 and
+  includes `<expected>`, which 22.04's default GCC 11 lacks; that job now
+  builds with GCC 12 from 22.04's own archive, whose libstdc++ is the one 22.04
+  already ships, so the package still installs on a stock system. BUILD.md
+  names the requirement, and its clone and Nix instructions point at
+  FreeSpeech instead of the archived S2B2S repository.
 - **Linux builds compile, and release builds are portable (2026-11-26).**
   The first CI runs on FreeSpeech built this code on Linux and macOS for the
   first time. Linux did not compile (an import gated off Linux; a Windows-only

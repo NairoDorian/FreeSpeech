@@ -110,6 +110,7 @@ const IPC_PAYLOADS: Record<string, string> = {
   get_extra_loaded_models: "string[]",
   get_available_typing_tools: "string[]",
   get_available_accelerators: "AvailableAccelerators",
+  get_cuda_addon_status: "CudaAddonStatus_Serialize",
   get_secure_input_status: "SecureInputStatus",
   get_windows_microphone_permission_status: "WindowsMicrophonePermissionStatus",
   check_custom_sounds: "CustomSounds",

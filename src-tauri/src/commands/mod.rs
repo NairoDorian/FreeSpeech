@@ -1,5 +1,6 @@
 pub mod audio;
 pub mod file_transcription;
+pub mod gpu_addons;
 pub mod history;
 pub mod live_fft;
 pub mod live_mode;

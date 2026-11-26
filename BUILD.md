@@ -121,7 +121,11 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 
 #### Linux
 
-- Build essentials
+- Build essentials, with **GCC 12 or newer** (or Clang 16+): the engine is
+  C++23 and includes `<expected>`, which GCC 11's library lacks. Ubuntu 22.04
+  ships GCC 11 by default; `sudo apt install g++-12` and build with
+  `CC=gcc-12 CXX=g++-12` (what release CI does). The binary still runs on stock
+  22.04, whose libstdc++ is already GCC 12's.
 - ALSA development libraries
 - X11 development libraries (`libx11-dev`, `libxtst-dev`, `libxrandr-dev` and
   `libxkbcommon-dev`) for enigo's keyboard-simulation backend
@@ -165,8 +169,8 @@ exactly like Apple Silicon (transcribe.cpp with Metal).
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:NairoDorian/S2B2S.git
-cd S2B2S
+git clone git@github.com:NairoDorian/FreeSpeech.git
+cd FreeSpeech
 ```
 
 ### 2. Install Dependencies
@@ -345,7 +349,7 @@ Two deliberate differences from a source build:
   app with `graphical-session.target`:
 
   ```nix
-  inputs.freespeech.url = "github:NairoDorian/S2B2S";
+  inputs.freespeech.url = "github:NairoDorian/FreeSpeech";
 
   # NixOS — system package + the udev rule
   nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {

@@ -157,6 +157,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libasound2-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev
 
+      # The engine includes C++23's <expected> (transcribe-earshot.h), which
+      # 22.04's default GCC 11 lacks ("fatal error: expected: No such file",
+      # 2026-11-26). GCC 12 comes from 22.04's own archive, and its libstdc++
+      # is the 12.x that 22.04 already ships, so the .deb still runs on stock
+      # 22.04; a PPA GCC would need a newer libstdc++ than the system has.
+      - name: Use GCC 12 (ubuntu 22.04)
+        if: contains(inputs.platform, 'ubuntu-22.04') && !contains(inputs.platform, 'arm')
+        run: |
+          sudo apt-get install -y gcc-12 g++-12
+          echo "CC=gcc-12" >> "$GITHUB_ENV"
+          echo "CXX=g++-12" >> "$GITHUB_ENV"
+
       - name: Verify gtk-layer-shell runtime dependency (Ubuntu)
         if: contains(inputs.platform, 'ubuntu')
         run: |

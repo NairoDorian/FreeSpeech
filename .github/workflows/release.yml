@@ -81,3 +81,14 @@ jobs:
       # stale cached native lib can never be linked into a shipped artifact.
       no-cache: true
     secrets: inherit
+
+  # The CUDA add-on packages and their index (docs/GPU_BACKENDS.md), attached
+  # to the same draft release. The installers carry CPU + Vulkan; an NVIDIA
+  # owner downloads the module for their card from the Advanced page.
+  cuda-addons:
+    permissions:
+      contents: write
+    needs: create-release
+    uses: ./.github/workflows/gpu-backends.yml
+    with:
+      release-tag: v${{ needs.create-release.outputs.version }}

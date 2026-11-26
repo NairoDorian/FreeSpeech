@@ -42,15 +42,15 @@ Before you begin, ensure you have the following installed:
 2. **Clone your fork**:
 
    ```bash
-   git clone git@github.com:YOUR_USERNAME/S2B2S.git
-   cd S2B2S
+   git clone git@github.com:YOUR_USERNAME/FreeSpeech.git
+   cd FreeSpeech
    ```
 
 3. **Point your clone at the canonical repository** (your fork is `origin` by
    default; add this as `upstream` so you can rebase onto it):
 
    ```bash
-   git remote add upstream git@github.com:NairoDorian/S2B2S.git
+   git remote add upstream git@github.com:NairoDorian/FreeSpeech.git
    ```
 
 4. **Install dependencies**:
