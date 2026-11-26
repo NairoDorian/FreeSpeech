@@ -33,6 +33,12 @@ const nixFile = join(nixDir, "bun.nix");
 // Skip on Windows — bun2nix is Nix-only and hangs on Windows CI
 if (process.platform === "win32") process.exit(0);
 
+// Skip in CI: nix-check.yml runs bun2nix itself and judges the result. Here,
+// as every build job's `bun install` postinstall, a bun2nix that cannot read
+// the lockfile only printed `error:` lines that a problem matcher turned into
+// a red annotation on each macOS and Linux build (KNOWN_ISSUES has the cause).
+if (process.env.CI) process.exit(0);
+
 // No bun.lock — nothing to do
 if (!existsSync(lockFile)) process.exit(0);
 
