@@ -3,7 +3,7 @@
 Rewritten at the end of every session (AGENTS.md, "Working as an agent
 here"); `bun run brief` prints it. The history is in git.
 
-## State on 2026-11-26, `main` at `9789d3217`
+## State on 2026-11-26, `main` at `cf9321be3`
 
 ### Done in this session
 
@@ -25,9 +25,12 @@ here"); `bun run brief` prints it. The history is in git.
   in `113ead482`); BUILD.md and CONTRIBUTING.md clone FreeSpeech, not S2B2S.
 - **macOS**: `enigo::Key::F21`–`F24` gated off macOS (`699216f59`), the
   second compile error the panel fix uncovered.
-- **CI on `33a739c3`**: Windows x64 and ARM64, Ubuntu 24.04 x64 and ARM64
-  built and uploaded installers (the first green app builds on FreeSpeech's
-  CI); macOS and Ubuntu 22.04 failed on the two errors fixed above.
+- **CI on `0d9effd53`: six of seven builds green**, Apple Silicon macOS and
+  Ubuntu 22.04 included, each uploading its installers. The macOS bundle step
+  needed empty `APPLE_*` variables dropped by the tauri runner (Tauri imported
+  an empty certificate). Intel macOS built and bundled too, then failed
+  `build.yml`'s own `@rpath` audit, whose `grep` exits 1 on a static binary
+  with no `@rpath` dependency; fixed in `cf9321be3` (awk instead).
 
 ### Waiting on the owner
 
@@ -50,9 +53,10 @@ here"); `bun run brief` prints it. The history is in git.
 
 ### Next, in order
 
-- Read the CI result of `9789d3217` (`bun run ci:status 9789d3217`): it is
-  the first run with both macOS fixes and the engine fix; a macOS failure now
-  would be the next layer (link or bundling), not type checking.
+- Read the CI result of `cf9321be3` (`bun run ci:status cf9321be3`): all
+  seven builds should be green; only Intel macOS changed.
+- The macOS builds are ad-hoc signed and not notarized: first launch needs
+  right-click → Open (README, "First launch"), until Apple secrets exist.
 - CUDA add-on: Linux packages; sign the index with the updater key
   (`minisign-verify` is already in the graph).
 - From NodeVibeCode, not taken yet: a rolling Dev pre-release from every green
