@@ -31,6 +31,10 @@ here"); `bun run brief` prints it. The history is in git.
   an empty certificate). Intel macOS built and bundled too, then failed
   `build.yml`'s own `@rpath` audit, whose `grep` exits 1 on a static binary
   with no `@rpath` dependency; fixed in `cf9321be3` (awk instead).
+- **CI on `cf9321be3`: all seven builds green** (run 45867130170), the first
+  fully green main build: Windows x64 and ARM64, Ubuntu 22.04 and 24.04 (x64
+  and ARM64), macOS Apple Silicon and Intel, each with its installers as
+  workflow artifacts (30 days).
 
 ### Waiting on the owner
 
@@ -53,8 +57,6 @@ here"); `bun run brief` prints it. The history is in git.
 
 ### Next, in order
 
-- Read the CI result of `cf9321be3` (`bun run ci:status cf9321be3`): all
-  seven builds should be green; only Intel macOS changed.
 - The macOS builds are ad-hoc signed and not notarized: first launch needs
   right-click → Open (README, "First launch"), until Apple secrets exist.
 - CUDA add-on: Linux packages; sign the index with the updater key
