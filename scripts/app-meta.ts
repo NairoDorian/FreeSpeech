@@ -555,9 +555,10 @@ export const GENERATED_PATHS: ReadonlySet<string> = new Set([
  * Every file `meta:sync` can write: the mirror files, the lockfile root block
  * and the generated modules.
  *
- * The pre-commit gate stages exactly these after its `meta:sync` step — never
- * `git add -u` over the whole tree, which would sweep every other dirty
- * tracked file into a commit the user staged selectively.
+ * The pre-commit gate stages those of these that its `meta:sync` step
+ * rewrote — never one that was already in sync, and never `git add -u` over
+ * the whole tree, either of which would sweep the committer's other edits into
+ * a commit they staged selectively.
  */
 export function identityPaths(): string[] {
   return [

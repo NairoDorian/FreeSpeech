@@ -72,6 +72,7 @@
 // cost of a change; the same standard applies to the gate that measures them.
 
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { identityPaths } from "./app-meta";
 
@@ -189,6 +190,8 @@ const ROUTINE_PATHS = [
  * at this point is a decision for the committer, so it is reported instead.
  */
 function stagePaths(paths: readonly string[]): void {
+  // `git add -u --` with no pathspec stages every modified tracked file.
+  if (paths.length === 0) return;
   const staged = spawnSync("git", ["add", "-u", "--", ...paths], {
     cwd: REPO_ROOT,
   });
@@ -213,6 +216,28 @@ function stagePaths(paths: readonly string[]): void {
           .join("\n"),
     );
   }
+}
+
+/** Each path's bytes, or `null` for a file that does not exist. */
+function snapshot(paths: readonly string[]): Map<string, Buffer | null> {
+  const read = (path: string): Buffer | null => {
+    try {
+      return readFileSync(resolve(REPO_ROOT, path));
+    } catch {
+      return null;
+    }
+  };
+  return new Map(paths.map((path) => [path, read(path)]));
+}
+
+/** The paths whose bytes differ from `before` (created or deleted included). */
+function rewrittenSince(before: Map<string, Buffer | null>): string[] {
+  return [...before].flatMap(([path, then]) => {
+    const now = snapshot([path]).get(path) ?? null;
+    const same =
+      then === null ? now === null : now !== null && then.equals(now);
+    return same ? [] : [path];
+  });
 }
 
 /**
@@ -259,11 +284,18 @@ if (routine) {
   // same rule holds — a selective staging is never widened behind the user.
   stagePaths(ROUTINE_PATHS);
 }
+// `meta:sync` is the gate's only writing step, and it stages what it rewrote:
+// the identity files whose bytes it changed, not every identity file. Three
+// of them (package.json and the two Cargo files) are also where a dependency
+// bump lands, and staging one that was already in sync would move the
+// committer's unstaged edits into a commit that staged something else.
+const identityBefore = selected.some((s) => s.writes)
+  ? snapshot(identityPaths())
+  : undefined;
 for (const step of selected.filter((s) => !s.last)) {
   if (!runScript(step)) process.exit(1);
 }
-// `meta:sync` is the gate's only writing step, so its files are the list.
-if (selected.some((s) => s.writes)) stagePaths(identityPaths());
+if (identityBefore) stagePaths(rewrittenSince(identityBefore));
 for (const step of selected.filter((s) => s.last)) {
   if (!runScript(step)) process.exit(1);
 }
