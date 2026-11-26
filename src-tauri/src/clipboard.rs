@@ -3,7 +3,7 @@ use crate::input::{self, EnigoState};
 use crate::settings::TypingTool;
 use crate::settings::{AutoSubmitKey, ClipboardHandling, PasteMethod, get_settings};
 use enigo::{Direction, Enigo, Key, Keyboard};
-use log::{debug, info, warn};
+use log::{info, warn};
 use std::process::Command;
 #[cfg(target_os = "linux")]
 use std::sync::OnceLock;
@@ -919,7 +919,7 @@ pub(crate) fn foreground_window_is_elevated() -> bool {
         // needs no closing.
         let ours = unsafe { process_integrity_level(GetCurrentProcess()) }.ok();
         let foreground = foreground_integrity();
-        debug!("Integrity levels: foreground {foreground:?}, ours {ours:?}");
+        log::debug!("Integrity levels: foreground {foreground:?}, ours {ours:?}");
         integrity_blocks_input(foreground, ours)
     }
 
@@ -957,7 +957,7 @@ fn foreground_integrity() -> ForegroundIntegrity {
         Ok(level) => ForegroundIntegrity::Level(level),
         Err(e) if e.code() == E_ACCESSDENIED => ForegroundIntegrity::Denied,
         Err(e) => {
-            debug!("Couldn't read the focused window's integrity level: {e}");
+            log::debug!("Couldn't read the focused window's integrity level: {e}");
             ForegroundIntegrity::Unknown
         }
     }
