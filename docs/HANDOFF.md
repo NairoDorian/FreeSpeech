@@ -10,8 +10,8 @@ here"); `bun run brief` prints it. The history is in git.
 - **CUDA as an add-on** (`14000bb7d`): installers stay CPU + Vulkan;
   `gpu-backends.yml` (called by `release.yml`) builds one `ggml-cuda` module
   per architecture (75 86 89 120), the cudart + cuBLAS runtime and an index;
-  the Advanced page offers and installs the right ones and the next start
-  registers them (`gpu_addons.rs`, `CudaAddon.tsx`,
+  the Advanced page and a first-run onboarding step offer and install the
+  right ones, and the next start registers them (`gpu_addons.rs`, `CudaAddon.tsx`,
   [GPU_BACKENDS.md](GPU_BACKENDS.md)).
 - **NodeVibeCode habits**: `bun run ci:status [-- --wait]`, `bun run brief`,
   this file, and the "Working as an agent here" rules in AGENTS.md.
@@ -46,7 +46,7 @@ here"); `bun run brief` prints it. The history is in git.
 - Read the CI result of `a671ea5ce` (`bun run ci:status a671ea5ce`): macOS
   compile, Ubuntu 22.04 with GCC 12, installers without signing.
 - CUDA add-on: Linux packages; sign the index with the updater key
-  (`minisign-verify` is already in the graph); offer it during onboarding.
+  (`minisign-verify` is already in the graph).
 - From NodeVibeCode, not taken yet: a rolling Dev pre-release from every green
   `main` (its `publish-lane.yml` pattern), and `cargo-deny`.
 - tauri-specta PRs #293 and #294: when both merge, retire the fork

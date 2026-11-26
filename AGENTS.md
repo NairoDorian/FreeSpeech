@@ -759,8 +759,10 @@ download_language_detector`) when a plan wants it or when the list is
     beside the quant list it compares.
   - `onboarding/` - First-run experience: accessibility, then the model, then
     the spoken languages (`LanguagesOnboarding.tsx`: the system's languages
-    start ticked, Continue saves them, Skip saves nothing). The Debug page can
-    preview each step
+    start ticked, Continue saves them, Skip saves nothing), then on a machine
+    with an NVIDIA GPU the CUDA add-on (`GpuOnboarding.tsx`, which completes
+    itself anywhere else; docs/GPU_BACKENDS.md). The Debug page can preview
+    each step
   - `live-canvas/` - The "Live Canvas" the Sidebar's button opens over Live Mode
     (`LiveCanvas.tsx`), replacing the whole settings window: the overlay scope,
     the session controls and the live transcript, read from

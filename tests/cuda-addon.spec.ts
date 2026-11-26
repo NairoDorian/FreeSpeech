@@ -110,3 +110,19 @@ test("says when the driver is too old", async ({ page }) => {
     ),
   ).toBeVisible();
 });
+
+test("the onboarding step offers the add-on (Debug preview)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("navigation")
+    .getByRole("button", { name: "Debug", exact: true })
+    .click();
+  await page.getByRole("button", { name: "GPU", exact: true }).click();
+  await expect(page.getByText("Faster on your NVIDIA GPU")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Download CUDA", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({ path: "test-results/cuda-addon-onboarding.png" });
+});

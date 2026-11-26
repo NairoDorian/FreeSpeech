@@ -25,6 +25,7 @@ import SecureInputWarning from "./components/SecureInputWarning";
 import Footer from "./components/footer";
 import Onboarding, {
   AccessibilityOnboarding,
+  GpuOnboarding,
   LanguagesOnboarding,
 } from "./components/onboarding";
 import {
@@ -48,7 +49,7 @@ import { getLanguageDirection } from "@/lib/utils/rtl";
 import { applyUiScale } from "@/lib/utils/theme";
 import { applyTypography, normalizeTypography } from "@/lib/typography";
 
-type OnboardingStep = "accessibility" | "model" | "languages" | "done";
+type OnboardingStep = "accessibility" | "model" | "languages" | "gpu" | "done";
 
 const NOOP = () => {};
 
@@ -129,7 +130,8 @@ function App() {
     onboardingPreview() !== null ||
     onboardingStep() === "accessibility" ||
     onboardingStep() === "model" ||
-    onboardingStep() === "languages";
+    onboardingStep() === "languages" ||
+    onboardingStep() === "gpu";
 
   let settingsScrollRef: HTMLDivElement | undefined;
 
@@ -310,7 +312,13 @@ function App() {
     setOnboardingStep("languages");
   };
 
+  // Then the CUDA add-on, which the step skips by itself on a machine
+  // without an NVIDIA GPU (docs/GPU_BACKENDS.md).
   const handleLanguagesDone = () => {
+    setOnboardingStep("gpu");
+  };
+
+  const handleGpuDone = () => {
     setOnboardingStep("done");
   };
 
@@ -333,6 +341,9 @@ function App() {
             <Match when={onboardingPreview() === "languages"}>
               <LanguagesOnboarding onComplete={NOOP} preview />
             </Match>
+            <Match when={onboardingPreview() === "gpu"}>
+              <GpuOnboarding onComplete={NOOP} preview />
+            </Match>
           </Switch>
           <button
             type="button"
@@ -350,6 +361,9 @@ function App() {
         </Match>
         <Match when={onboardingStep() === "languages"}>
           <LanguagesOnboarding onComplete={handleLanguagesDone} />
+        </Match>
+        <Match when={onboardingStep() === "gpu"}>
+          <GpuOnboarding onComplete={handleGpuDone} />
         </Match>
         <Match when={onboardingStep() === "done"}>
           <Show

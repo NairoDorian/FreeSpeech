@@ -36,6 +36,20 @@
     "openLiveCanvas": "Open Live Canvas"
   },
   "onboarding": {
+    "gpu": {
+      "checking": "Checking your graphics card…",
+      "title": "Faster on your NVIDIA GPU",
+      "description": "FreeSpeech already uses your graphics card through Vulkan. {{gpu}} can run speech models faster with CUDA, NVIDIA's own platform.",
+      "size": "Download: {{module}} MB",
+      "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+      "download": "Download CUDA",
+      "skip": "Not now",
+      "continue": "Continue",
+      "downloading": "Downloading. It goes on in the background if you continue.",
+      "done": "Installed. FreeSpeech uses it from the next start.",
+      "failed": "The download did not finish. You can try again under Advanced → CUDA acceleration.",
+      "later": "You can add or remove it anytime under Advanced → CUDA acceleration."
+    },
     "subtitle": "Per començar, trieu un model de transcripció",
     "existingModelsTitle": "Models compatibles",
     "downloadModelsTitle": "Disponibles per baixar",
@@ -890,6 +904,7 @@
         "error": "No s'han pogut previsualitzar les notes de la versió"
       },
       "onboardingPreview": {
+        "gpuButton": "GPU",
         "title": "Previsualització de la configuració inicial",
         "description": "Previsualitza les pantalles de configuració inicial sense canviar els permisos, os models ni l'estat de compleció",
         "permissionsButton": "Permisos",

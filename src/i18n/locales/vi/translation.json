@@ -36,6 +36,20 @@
     "openLiveCanvas": "Open Live Canvas"
   },
   "onboarding": {
+    "gpu": {
+      "checking": "Checking your graphics card…",
+      "title": "Faster on your NVIDIA GPU",
+      "description": "FreeSpeech already uses your graphics card through Vulkan. {{gpu}} can run speech models faster with CUDA, NVIDIA's own platform.",
+      "size": "Download: {{module}} MB",
+      "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+      "download": "Download CUDA",
+      "skip": "Not now",
+      "continue": "Continue",
+      "downloading": "Downloading. It goes on in the background if you continue.",
+      "done": "Installed. FreeSpeech uses it from the next start.",
+      "failed": "The download did not finish. You can try again under Advanced → CUDA acceleration.",
+      "later": "You can add or remove it anytime under Advanced → CUDA acceleration."
+    },
     "subtitle": "Để bắt đầu, hãy chọn một mô hình chuyển đổi giọng nói",
     "existingModelsTitle": "Mô hình tương thích",
     "downloadModelsTitle": "Có sẵn để tải xuống",
@@ -888,6 +902,7 @@
         "error": "Không thể xem trước ghi chú phát hành"
       },
       "onboardingPreview": {
+        "gpuButton": "GPU",
         "title": "Xem trước thiết lập ban đầu",
         "description": "Xem trước các màn hình thiết lập mà không thay đổi quyền, mô hình hoặc trạng thái hoàn tất",
         "permissionsButton": "Quyền",

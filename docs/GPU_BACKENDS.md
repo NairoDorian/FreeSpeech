@@ -57,7 +57,11 @@ workflow artifacts when no tag is given.
 ## The app side: `src-tauri/src/gpu_addons.rs`
 
 The Advanced page shows a **CUDA acceleration** row (`CudaAddon.tsx`) only on a
-machine with an NVIDIA GPU or an installed add-on:
+machine with an NVIDIA GPU or an installed add-on, and first-run onboarding
+ends with the same offer (`GpuOnboarding.tsx`), a step that completes itself
+when there is nothing to offer. That step is the "light installer that
+detects the GPU" this design started from: the installer stays offline-capable,
+and the detection and the download live in the app, where updates reach them:
 
 1. **Detect** (`get_cuda_addon_status`, when the page opens): NVML lists the
    GPUs with their compute capability and the driver's CUDA version.
@@ -109,8 +113,6 @@ loaded.
   (`minisign-verify` is already in the dependency graph through the updater
   plugin) would make it authentic, not just intact.
 - **ROCm/HIP** for AMD would be one more matrix of the same workflow.
-- **An onboarding step**: the offer could also appear in first-run onboarding
-  for an NVIDIA machine; today it is on the Advanced page.
 
 ## Costs
 

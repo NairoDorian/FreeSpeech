@@ -36,6 +36,20 @@
     "openLiveCanvas": "Open Live Canvas"
   },
   "onboarding": {
+    "gpu": {
+      "checking": "Checking your graphics card…",
+      "title": "Faster on your NVIDIA GPU",
+      "description": "FreeSpeech already uses your graphics card through Vulkan. {{gpu}} can run speech models faster with CUDA, NVIDIA's own platform.",
+      "size": "Download: {{module}} MB",
+      "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+      "download": "Download CUDA",
+      "skip": "Not now",
+      "continue": "Continue",
+      "downloading": "Downloading. It goes on in the background if you continue.",
+      "done": "Installed. FreeSpeech uses it from the next start.",
+      "failed": "The download did not finish. You can try again under Advanced → CUDA acceleration.",
+      "later": "You can add or remove it anytime under Advanced → CUDA acceleration."
+    },
     "subtitle": "시작하려면 음성 인식 모델을 선택하세요",
     "existingModelsTitle": "호환 가능한 모델",
     "downloadModelsTitle": "다운로드 가능",
@@ -888,6 +902,7 @@
         "error": "릴리스 노트를 미리 볼 수 없습니다"
       },
       "onboardingPreview": {
+        "gpuButton": "GPU",
         "title": "온보딩 미리보기",
         "description": "권한, 모델 또는 완료 상태를 변경하지 않고 온보딩 화면을 미리 봅니다",
         "permissionsButton": "권한",

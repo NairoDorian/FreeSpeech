@@ -35,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   installed). It is downloaded from the release of the running version,
   checked against the SHA-256 published there, refused when it was built from
   another engine commit, and registered at the next start
-  (`src-tauri/src/gpu_addons.rs`). Each release builds the packages and their
+  (`src-tauri/src/gpu_addons.rs`). First-run onboarding ends with the same
+  offer on an NVIDIA machine and skips itself anywhere else. Each release builds the packages and their
   index in parallel with the installers (`.github/workflows/gpu-backends.yml`),
   so no installer carries every CUDA architecture. Design and limits:
   [docs/GPU_BACKENDS.md](docs/GPU_BACKENDS.md).

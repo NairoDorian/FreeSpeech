@@ -36,6 +36,20 @@
     "openLiveCanvas": "Open Live Canvas"
   },
   "onboarding": {
+    "gpu": {
+      "checking": "Checking your graphics card…",
+      "title": "Faster on your NVIDIA GPU",
+      "description": "FreeSpeech already uses your graphics card through Vulkan. {{gpu}} can run speech models faster with CUDA, NVIDIA's own platform.",
+      "size": "Download: {{module}} MB",
+      "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+      "download": "Download CUDA",
+      "skip": "Not now",
+      "continue": "Continue",
+      "downloading": "Downloading. It goes on in the background if you continue.",
+      "done": "Installed. FreeSpeech uses it from the next start.",
+      "failed": "The download did not finish. You can try again under Advanced → CUDA acceleration.",
+      "later": "You can add or remove it anytime under Advanced → CUDA acceleration."
+    },
     "subtitle": "首先，請選擇一種模型",
     "existingModelsTitle": "相容的模型",
     "downloadModelsTitle": "可供下載",
@@ -888,6 +902,7 @@
         "error": "無法預覽版本資訊"
       },
       "onboardingPreview": {
+        "gpuButton": "GPU",
         "title": "預覽新手引導",
         "description": "預覽新手引導畫面，而不變更權限、模型或完成狀態",
         "permissionsButton": "權限",

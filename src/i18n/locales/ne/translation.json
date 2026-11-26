@@ -36,6 +36,20 @@
     "openLiveCanvas": "Open Live Canvas"
   },
   "onboarding": {
+    "gpu": {
+      "checking": "Checking your graphics card…",
+      "title": "Faster on your NVIDIA GPU",
+      "description": "FreeSpeech already uses your graphics card through Vulkan. {{gpu}} can run speech models faster with CUDA, NVIDIA's own platform.",
+      "size": "Download: {{module}} MB",
+      "sizeWithRuntime": "Download: {{module}} MB, plus {{runtime}} MB for the NVIDIA CUDA runtime (once)",
+      "download": "Download CUDA",
+      "skip": "Not now",
+      "continue": "Continue",
+      "downloading": "Downloading. It goes on in the background if you continue.",
+      "done": "Installed. FreeSpeech uses it from the next start.",
+      "failed": "The download did not finish. You can try again under Advanced → CUDA acceleration.",
+      "later": "You can add or remove it anytime under Advanced → CUDA acceleration."
+    },
     "subtitle": "सुरु गर्न, एउटा ट्रान्सक्रिप्सन मोडेल छान्नुहोस्",
     "existingModelsTitle": "मिल्दा मोडेलहरू",
     "downloadModelsTitle": "डाउनलोड गर्न उपलब्ध",
@@ -794,6 +808,7 @@
         "error": "रिलिज नोट पूर्वावलोकन गर्न सकिएन"
       },
       "onboardingPreview": {
+        "gpuButton": "GPU",
         "title": "प्रारम्भिक सेटअप पूर्वावलोकन",
         "description": "अनुमति, मोडेल वा सम्पन्न स्थिति परिवर्तन नगरी प्रारम्भिक सेटअप स्क्रिनहरू पूर्वावलोकन गर्नुहोस्",
         "permissionsButton": "अनुमतिहरू",
