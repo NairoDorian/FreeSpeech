@@ -18,9 +18,10 @@ bun run precommit:full  # the gate plus clippy and the Rust test suite
 ```
 
 `bun run precommit` runs, in order: identity mirrors (`meta:sync`), identity in
-sync (`meta:check`), no stale product name (`check:identity`), translations
-complete, `lint`, `typecheck`, the unit checks (`test:unit`), `format:check`,
-and the repomix pack. The
+sync (`meta:check`), no stale product name (`check:identity`), lockfile in sync,
+no dependency older than at HEAD (`check:no-downgrade`: dependencies only move
+forward), translations complete, `lint`, `typecheck`, the unit checks
+(`test:unit`), `format:check`, and the repomix pack. The
 `--full` variant adds `lint:backend` (clippy) and `test:backend` (the Rust test
 suite), which is what `pre-commit` itself deliberately omits — see the header of
 `scripts/pre-commit.ts` for why.

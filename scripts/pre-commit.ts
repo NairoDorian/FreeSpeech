@@ -134,6 +134,12 @@ const STEPS: Step[] = [
     label: "lockfile in sync",
     argv: ["install", "--frozen-lockfile", "--dry-run"],
   },
+  // Dependencies only move forward: nothing in Cargo.lock or bun.lock may be
+  // older than at HEAD, a dependency edge included (~0.2 s, reads two files).
+  {
+    label: "no dependency went backwards",
+    argv: ["run", "check:no-downgrade"],
+  },
   { label: "translations complete", argv: ["run", "check:translations"] },
   { label: "lint", argv: ["run", "lint"] },
   { label: "typecheck", argv: ["run", "typecheck"] },

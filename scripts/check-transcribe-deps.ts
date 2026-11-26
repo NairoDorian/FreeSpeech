@@ -18,7 +18,11 @@
 // How it works:
 //   1. Reads the commit hashes pinned in src-tauri/Cargo.lock
 //   2. Fetches the remote HEAD for the tracking branches via `git ls-remote`
-//   3. If any differs, runs `cargo update -p <package>` for that dependency
+//   3. If any differs, moves only the pin: rewrites the commit in that
+//      dependency's `source` lines and lets `cargo metadata --locked` confirm
+//      the lock is still complete. When it is not (the new commit changed its
+//      own dependencies), runs `cargo update -p <package>` instead, and refuses
+//      a result that moves any dependency backwards (lib/lock-downgrades.ts)
 //   4. If they match, reports up to date
 //
 // When it runs:
@@ -44,9 +48,17 @@
 // comes from the tracked git source counts. Otherwise the update is retried
 // with `--recursive` (which unlocks the package's own dependencies), and when
 // that also fails the original lock is restored and the failure is reported.
+//
+// Dependencies only move forward, and `cargo update -p` does not guarantee
+// that: on 2026-11-26, run to move a git pin, it also moved 21 unrelated
+// Cargo.lock edges back to older versions. Moving the pin's commit by hand is
+// therefore tried first, since then nothing else in the lock can change, and
+// a `cargo update` result is compared with the lock it replaces: one that
+// moves any dependency backwards is restored, and the pin stays where it was.
 
 import { readFileSync, writeFileSync } from "fs";
 import { resolve, join } from "path";
+import { cargoLockDowngrades, formatDowngrades } from "./lib/lock-downgrades";
 
 const root = resolve(import.meta.dirname, "..");
 const cargoLockPath = join(root, "src-tauri", "Cargo.lock");
@@ -172,6 +184,19 @@ function runCargoUpdate(args: string[]): boolean {
   return result.exitCode === 0;
 }
 
+/**
+ * Whether the lock on disk is complete and consistent as written: `cargo
+ * metadata --locked` resolves the graph (fetching a new git commit if needed)
+ * and fails instead of changing the lock.
+ */
+function lockResolvesAsWritten(): boolean {
+  const result = Bun.spawnSync(
+    ["cargo", "metadata", "--locked", "--format-version", "1"],
+    { cwd: join(root, "src-tauri"), stdio: ["ignore", "ignore", "pipe"] },
+  );
+  return result.exitCode === 0;
+}
+
 function checkSingleDep(dep: GitDep): CheckOutcome {
   let lockContent: string;
   try {
@@ -240,12 +265,38 @@ function checkSingleDep(dep: GitDep): CheckOutcome {
       `is ahead of local lock (${localCommit.slice(0, 12) || "none"}). Updating Cargo.lock...`,
   );
 
+  // Move only the pin first. When the new commit did not change its own
+  // dependencies, the commit in the `source` lines is the whole update.
+  if (lockedCommit !== null) {
+    const prefix = gitSourcePrefix(dep);
+    writeFileSync(
+      cargoLockPath,
+      lockContent
+        .split(`${prefix}${lockedCommit}`)
+        .join(`${prefix}${remoteCommit}`),
+    );
+    if (lockResolvesAsWritten()) {
+      console.log(
+        `${TAG} ${dep.name}: Cargo.lock now pins ${remoteCommit.slice(0, 12)}; ` +
+          "nothing else in the lock moved. The build will compile the new commit.",
+      );
+      return "updated";
+    }
+    writeFileSync(cargoLockPath, lockContent);
+    console.log(
+      `${TAG} ${dep.name}: the lock is incomplete with only the pin moved ` +
+        "(the new commit changes its dependencies, or cargo could not fetch it); " +
+        "resolving with cargo update.",
+    );
+  }
+
   const specs = updateSpecs(tracked);
   const attempts: string[][] = [
     ["cargo", "update", ...specs],
     ["cargo", "update", ...specs, "--recursive"],
   ];
 
+  let refusedDowngrade = false;
   for (const args of attempts) {
     if (!runCargoUpdate(args)) {
       console.warn(`${TAG} '${args.join(" ")}' failed.`);
@@ -258,6 +309,17 @@ function checkSingleDep(dep: GitDep): CheckOutcome {
       break;
     }
     const pinned = lockedGitCommit(updated, dep);
+    const backwards = cargoLockDowngrades(lockContent, updated);
+    if (pinned === remoteCommit && backwards.length > 0) {
+      console.warn(
+        `${TAG} '${args.join(" ")}' pinned ${dep.name} but moved ` +
+          `${backwards.length} other ${backwards.length === 1 ? "dependency" : "dependencies"} ` +
+          `backwards; refused:\n${formatDowngrades(backwards)}`,
+      );
+      refusedDowngrade = true;
+      writeFileSync(cargoLockPath, lockContent);
+      continue;
+    }
     if (pinned === remoteCommit) {
       console.log(
         `${TAG} ${dep.name}: Cargo.lock now pins ${remoteCommit.slice(0, 12)} ` +
@@ -273,6 +335,15 @@ function checkSingleDep(dep: GitDep): CheckOutcome {
   }
 
   writeFileSync(cargoLockPath, lockContent);
+  if (refusedDowngrade) {
+    console.warn(
+      `${TAG} ${dep.name}: the pin stays at ${localCommit.slice(0, 12)}, because ` +
+        "every way cargo found to move it also moved other dependencies " +
+        "backwards, and dependencies only move forward here. Cargo.lock was " +
+        "restored. Move it by hand: docs/FORKS.md, 'Changing one, end to end'.",
+    );
+    return "update-failed";
+  }
   console.warn(
     `${TAG} ${dep.name}: could not move the pin to ${remoteCommit.slice(0, 12)}; ` +
       "Cargo.lock was restored. Either cargo could not resolve the new commit " +
