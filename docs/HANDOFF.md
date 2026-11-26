@@ -3,7 +3,7 @@
 Rewritten at the end of every session (AGENTS.md, "Working as an agent
 here"); `bun run brief` prints it. The history is in git.
 
-## State on 2026-11-26, `main` at `a671ea5ce`
+## State on 2026-11-26, `main` at `9789d3217`
 
 ### Done in this session
 
@@ -19,8 +19,15 @@ here"); `bun run brief` prints it. The history is in git.
   `tauri-nspanel` (no Tauri 3 release); `objc2` sets level and Spaces.
 - **Builds without the updater key ship installers** (`a671ea5ce`); releases
   still require the key (`FREESPEECH_REQUIRE_UPDATER_SIGNATURE`).
-- **Ubuntu 22.04** builds with GCC 12 (the engine is C++23, `<expected>`);
-  BUILD.md and CONTRIBUTING.md clone FreeSpeech, not S2B2S.
+- **Ubuntu 22.04** builds with GCC 12 (the engine is C++23, `<expected>`),
+  and the engine's Earshot AVX operators moved out of their classes so GCC 12
+  compiles them (engine `9294084e`, pushed under the engine authority, pinned
+  in `113ead482`); BUILD.md and CONTRIBUTING.md clone FreeSpeech, not S2B2S.
+- **macOS**: `enigo::Key::F21`–`F24` gated off macOS (`699216f59`), the
+  second compile error the panel fix uncovered.
+- **CI on `33a739c3`**: Windows x64 and ARM64, Ubuntu 24.04 x64 and ARM64
+  built and uploaded installers (the first green app builds on FreeSpeech's
+  CI); macOS and Ubuntu 22.04 failed on the two errors fixed above.
 
 ### Waiting on the owner
 
@@ -43,8 +50,9 @@ here"); `bun run brief` prints it. The history is in git.
 
 ### Next, in order
 
-- Read the CI result of `a671ea5ce` (`bun run ci:status a671ea5ce`): macOS
-  compile, Ubuntu 22.04 with GCC 12, installers without signing.
+- Read the CI result of `9789d3217` (`bun run ci:status 9789d3217`): it is
+  the first run with both macOS fixes and the engine fix; a macOS failure now
+  would be the next layer (link or bundling), not type checking.
 - CUDA add-on: Linux packages; sign the index with the updater key
   (`minisign-verify` is already in the graph).
 - From NodeVibeCode, not taken yet: a rolling Dev pre-release from every green
