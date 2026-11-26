@@ -155,7 +155,7 @@
     "plugin:os|platform": "windows",
     "plugin:os|locale": "en-US",
     "plugin:app|version": "0.0.0-test",
-    "plugin:app|name": "zer0",
+    "plugin:app|name": "freespeech",
     // Resolved from the environment by the fixture at inject time (see
     // `fixtures.ts`) — this file carries no machine-specific path.
     "plugin:path|resolve_directory":

@@ -28,18 +28,18 @@ transcript**; every result above ~27× was undecoded audio.
 
 ## Method
 
-- **Build:** ZER0 debug binary on the local CUDA lane (`dev:fast` environment),
+- **Build:** FreeSpeech debug binary on the local CUDA lane (`dev:fast` environment),
   RTX 4070 Laptop (CUDA0). The native library is optimised C++ in every Rust
   profile. transcribe.cpp before: `145c96a6`; after: `ba949120`.
 - **Model:** `davidxifeng/Confucius4-R2T2-gguf/r2t2-q4_k_m.gguf`, language auto.
-- **Audio:** the latest history recording, `zer0-multi-1790296592.wav`
+- **Audio:** the latest history recording, `freespeech-multi-1790296592.wav`
   (48 kHz mono float, 10.93 s; "So I have twelve dollars, no, ten."). Speech is
   at 1.75–4.25 s ("So I have 12 dollars, no") and 9.5–9.9 s ("ten", very quiet:
   −64 to −78 dBFS); the rest is silence.
 - **Path:** the app's own headless streaming replay:
 
   ```
-  zer0 --transcribe-file <wav> --model <id> --device-index 0 \
+  freespeech --transcribe-file <wav> --model <id> --device-index 0 \
        --stream-chunk-ms 16 --stream-r2t2-chunk-ms <N> --repeat 3 --json
   ```
 
@@ -109,7 +109,7 @@ transcribe. Skipping silence is safe for families whose state advances
 incrementally; it is not for R2T2.
 
 - **R2T2 now opts out of the silence fast path** (a per-stream flag its begin
-  hook sets). It receives every sample the caller feeds; in ZER0 that is already
+  hook sets). It receives every sample the caller feeds; in FreeSpeech that is already
   filtered by the app's own VAD. Every other family keeps the fast path.
 - **Finalize always runs one final pass.** It used to be skipped when the chunk
   buffer was empty at the end, i.e. whenever the audio was a whole number of

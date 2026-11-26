@@ -16,7 +16,7 @@ model — and errors out rather than score a run whose model was unloaded. Setti
 are not changed.
 
 ```powershell
-bun scripts/bench-stt.ts --exe src-tauri/target/debug/zer0.exe `
+bun scripts/bench-stt.ts --exe src-tauri/target/debug/freespeech.exe `
   --wav ../transcribe-fork/samples/jfk.wav --output reports/bench/current
 ```
 
@@ -35,7 +35,7 @@ comparison. Device indices are discovered on each run, never hardcoded.
 For one model use the executable directly:
 
 ```powershell
-src-tauri/target/debug/zer0.exe --transcribe-file ../transcribe-fork/samples/jfk.wav `
+src-tauri/target/debug/freespeech.exe --transcribe-file ../transcribe-fork/samples/jfk.wav `
   --model <installed-model-id> --device-index <index-from-list-devices> --repeat 3 --json
 # For Nemotron, append --stream-chunk-ms 16 --stream-att-right 6
 # For R2T2, append --stream-chunk-ms 320

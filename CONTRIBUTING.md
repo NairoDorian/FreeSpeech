@@ -1,24 +1,24 @@
-# Contributing to ZER0
+# Contributing to FreeSpeech
 
-> **NOTE:** This is the `Handy_Multi_STT` fork. In addition to upstream Handy
-> features, this branch adds **Multi-STT** mode — running the primary model plus
+> **NOTE:** FreeSpeech began as a fork of Handy. In addition to upstream Handy
+> features, it adds **Multi-STT** mode — running the primary model plus
 > 1 to 8 extra speech-to-text models in parallel, with optional LLM-based merge,
 > and an experimental streaming-first mode that merges at every pause. See
 > [AGENTS.md](AGENTS.md) for the full architecture. Contributions that harden or
 > extend what is already here are welcome; see the feature freeze below.
 
-Thank you for your interest in contributing to ZER0! This guide will help you get started with contributing to this open source speech-to-text application.
+Thank you for your interest in contributing to FreeSpeech! This guide will help you get started with contributing to this open source speech-to-text application.
 
 ## ⚠️ Feature Freeze
 
-**ZER0 is a fork with a small maintainer team.** A PR that adds a whole feature the maintainer has not asked for is likely to be declined as it lands; a PR that fixes something, hardens something, or adds a small well-argued capability is welcome. Open an issue or a discussion first if you are unsure which side of that line your change falls on.
+**FreeSpeech is a fork with a small maintainer team.** A PR that adds a whole feature the maintainer has not asked for is likely to be declined as it lands; a PR that fixes something, hardens something, or adds a small well-argued capability is welcome. Open an issue or a discussion first if you are unsure which side of that line your change falls on.
 
 **Bug fixes are the top priority.** A working behaviour that broke, a crash, a
 stale path or a wrong default is always worth fixing and always welcome.
 
 ## 📖 Philosophy
 
-ZER0 aims to be the most forkable speech-to-text app. The goal is to create both a useful tool and a foundation for others to build upon—a well-patterned, simple codebase that serves the community. We prioritize:
+FreeSpeech aims to be the most forkable speech-to-text app. The goal is to create both a useful tool and a foundation for others to build upon—a well-patterned, simple codebase that serves the community. We prioritize:
 
 - **Simplicity**: Clear, maintainable code over clever solutions
 - **Extensibility**: Make it easy for others to fork and customize
@@ -110,7 +110,7 @@ name survives. `bun run meta:sync` after editing `app-meta.ts`.
 
 ### Understanding the Codebase
 
-ZER0 follows a clean architecture pattern:
+FreeSpeech follows a clean architecture pattern:
 
 **Backend (Rust - `src-tauri/src/`):**
 
@@ -145,8 +145,8 @@ For more details, see the Architecture section in [README.md](README.md) or [AGE
 
 ### Before Submitting a Bug Report
 
-1. **Search existing issues** at [github.com/NairoDorian/S2B2S/issues](https://github.com/NairoDorian/S2B2S/issues)
-2. **Check discussions** at [github.com/NairoDorian/S2B2S/discussions](https://github.com/NairoDorian/S2B2S/discussions)
+1. **Search existing issues** at [github.com/NairoDorian/FreeSpeech/issues](https://github.com/NairoDorian/FreeSpeech/issues)
+2. **Check discussions** at [github.com/NairoDorian/FreeSpeech/discussions](https://github.com/NairoDorian/FreeSpeech/discussions)
 3. **Try the latest release** to see if the issue has been fixed
 4. **Enable debug mode** (`Cmd/Ctrl+Shift+D`) to gather diagnostic information
 
@@ -178,20 +178,20 @@ We use GitHub Discussions for feature requests rather than issues. This keeps is
 
 ### Before Suggesting a Feature
 
-1. **Search existing discussions** at [github.com/NairoDorian/S2B2S/discussions](https://github.com/NairoDorian/S2B2S/discussions)
+1. **Search existing discussions** at [github.com/NairoDorian/FreeSpeech/discussions](https://github.com/NairoDorian/FreeSpeech/discussions)
 2. **Check common feature requests**:
    - Browse the open discussions for the topic you have in mind; the upstream project's threads on post-processing and hotkeys are worth reading for background but are not mirrored here.
 
 ### Submitting a Feature Request
 
-1. Go to [Discussions](https://github.com/NairoDorian/S2B2S/discussions)
+1. Go to [Discussions](https://github.com/NairoDorian/FreeSpeech/discussions)
 2. Click "New discussion"
 3. Choose the appropriate category (Ideas, Feature Requests, etc.)
 4. Describe your feature idea including:
    - The problem you're trying to solve
    - Your proposed solution
    - Any alternatives you've considered
-   - How it fits with ZER0's philosophy
+   - How it fits with FreeSpeech's philosophy
 
 ## 🔧 Making Code Contributions
 
@@ -200,19 +200,19 @@ We use GitHub Discussions for feature requests rather than issues. This keeps is
 **This is critical:** Before writing any code, please do the following:
 
 1. **Search existing issues and PRs** - Check both open AND closed issues and pull requests. Someone may have already addressed this, or there may be a reason it was closed.
-   - [Open issues](https://github.com/NairoDorian/S2B2S/issues)
-   - [Closed issues](https://github.com/NairoDorian/S2B2S/issues?q=is%3Aissue+is%3Aclosed)
-   - [Open PRs](https://github.com/NairoDorian/S2B2S/pulls)
-   - [Closed PRs](https://github.com/NairoDorian/S2B2S/pulls?q=is%3Apr+is%3Aclosed)
+   - [Open issues](https://github.com/NairoDorian/FreeSpeech/issues)
+   - [Closed issues](https://github.com/NairoDorian/FreeSpeech/issues?q=is%3Aissue+is%3Aclosed)
+   - [Open PRs](https://github.com/NairoDorian/FreeSpeech/pulls)
+   - [Closed PRs](https://github.com/NairoDorian/FreeSpeech/pulls?q=is%3Apr+is%3Aclosed)
 
 2. **If something was previously closed** - If you want to revisit a closed issue or PR, you need to:
    - Provide a strong argument for why it should be reconsidered
-   - Gather community feedback first via [Discussions](https://github.com/NairoDorian/S2B2S/discussions)
+   - Gather community feedback first via [Discussions](https://github.com/NairoDorian/FreeSpeech/discussions)
    - Link to that discussion in your PR
 
-3. **Get community feedback for features** - PRs with demonstrated community interest are **much more likely to be merged**. Start a discussion, get feedback, and link to it in your PR. This helps ensure ZER0 stays focused and useful for the most people without becoming bloated.
+3. **Get community feedback for features** - PRs with demonstrated community interest are **much more likely to be merged**. Start a discussion, get feedback, and link to it in your PR. This helps ensure FreeSpeech stays focused and useful for the most people without becoming bloated.
 
-Community feedback is essential to keeping ZER0 the best it can be for everyone. It helps prioritize what matters most and prevents feature creep.
+Community feedback is essential to keeping FreeSpeech the best it can be for everyone. It helps prioritize what matters most and prevents feature creep.
 
 ### Development Workflow
 
@@ -267,7 +267,7 @@ Community feedback is essential to keeping ZER0 the best it can be for everyone.
    ```
 
 7. **Create a Pull Request**:
-   - Go to the [ZER0 repository](https://github.com/NairoDorian/S2B2S)
+   - Go to the [FreeSpeech repository](https://github.com/NairoDorian/FreeSpeech)
    - Click "New Pull Request"
    - Select your fork and branch
    - Fill out the PR template completely, including:
@@ -278,7 +278,7 @@ Community feedback is essential to keeping ZER0 the best it can be for everyone.
      - Screenshots/videos if applicable
      - Breaking changes (if any)
 
-   **Remember:** PRs with community support are prioritized. If you haven't already, start a [discussion](https://github.com/NairoDorian/S2B2S/discussions) to gather feedback before or alongside your PR. It is not explicitly required to gather feedback, but it certainly helps your PR get merged faster.
+   **Remember:** PRs with community support are prioritized. If you haven't already, start a [discussion](https://github.com/NairoDorian/FreeSpeech/discussions) to gather feedback before or alongside your PR. It is not explicitly required to gather feedback, but it certainly helps your PR get merged faster.
 
 ### AI Assistance Disclosure
 
@@ -380,13 +380,13 @@ Look for issues labeled `good first issue` or `help wanted` if you're new to the
 
 ## 📞 Getting Help
 
-- **Discussions**: Ask questions in [GitHub Discussions](https://github.com/NairoDorian/S2B2S/discussions)
-- **Issues**: File a bug or a question at [github.com/NairoDorian/S2B2S/issues](https://github.com/NairoDorian/S2B2S/issues)
+- **Discussions**: Ask questions in [GitHub Discussions](https://github.com/NairoDorian/FreeSpeech/discussions)
+- **Issues**: File a bug or a question at [github.com/NairoDorian/FreeSpeech/issues](https://github.com/NairoDorian/FreeSpeech/issues)
 
 ## 📜 License
 
-By contributing to ZER0, you agree that your contributions will be licensed under the MIT License. See [LICENSE](LICENSE) for details.
+By contributing to FreeSpeech, you agree that your contributions will be licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Thank you for contributing to ZER0!** Your efforts help make speech-to-text technology more accessible, private, and extensible for everyone.
+**Thank you for contributing to FreeSpeech!** Your efforts help make speech-to-text technology more accessible, private, and extensible for everyone.

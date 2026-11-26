@@ -49,15 +49,15 @@ items live here, self-contained.
   here builds the Vulkan backend" — true when written, false now. (A separate set
   of workflow problems is fixed: frozen-lockfile installs, the clippy step,
   `test:unit` in code-quality, Playwright `--with-deps`.)
-- **Push-triggered CI never runs on the branch the work happens on.**
-  `code-quality.yml`, `main-build.yml`, `nix-check.yml`, `playwright.yml` and
-  `test.yml` trigger on `push` to `main` only, and the fork develops and
-  releases from `Handy_Multi_STT`. Two of them also run on `pull_request` —
-  `playwright.yml` (all paths) and `test.yml` (paths `src-tauri/**` only) — which
-  covers the Rust tests and the browser suite while a PR is open and nothing
-  else: `build.yml` (`workflow_call` plus dispatch), `build-test.yml`,
-  `pr-test-build.yml` and `release.yml` never fire on a push at all. Either add
-  the branch to the `push` triggers or work through PRs and dispatch.
+- **Resolved 2026-11-26: push-triggered CI never ran on the branch the work
+  happened on.** `code-quality.yml`, `main-build.yml`, `nix-check.yml`,
+  `playwright.yml` and `test.yml` trigger on `push` to `main`, and the project
+  was developed on the S2B2S fork's `Handy_Multi_STT` branch. Since the move to
+  NairoDorian/FreeSpeech the work happens on `main`, so every push runs them,
+  the Linux and macOS builds included, which nothing in this repository could
+  compile before (see "No Linux/macOS build here" in the maintainer notes).
+  `build.yml` (`workflow_call` plus dispatch), `build-test.yml`,
+  `pr-test-build.yml` and `release.yml` still run only when dispatched.
 - **Windows binaries are not code-signed.** `signCommand` (Azure Trusted
   Signing, Authenticode) was removed from `tauri.conf.json`, and the CI steps
   and `AZURE_*` secrets that fed it are gone with it. The updater signing

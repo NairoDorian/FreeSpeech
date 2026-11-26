@@ -39,6 +39,10 @@ use crate::recall::notes_dir;
 
 /// Magic + format version of the `.rcl` envelope. The suite is identified
 /// in every file, so a future `ZV2` can re-wrap in place.
+///
+/// Frozen bytes, not the product's name: every encrypted note on disk starts
+/// with them, so they did not follow the product's rename and never will.
+/// Changing them makes every existing vault unreadable.
 const NOTE_MAGIC: &[u8; 8] = b"ZER0RCL1";
 const KEY_FILE: &str = "vault.json";
 const SALT_LEN: usize = 32;
@@ -46,6 +50,7 @@ const KEY_LEN: usize = 32;
 const NONCE_LEN: usize = 24;
 /// Fixed plaintext sealed under the master key: proving it decrypts is
 /// proving the passphrase, without storing either the key or its hash.
+/// Frozen like `NOTE_MAGIC`: every vault's `vault.json` seals these bytes.
 const VERIFIER_PLAINTEXT: &[u8] = b"zer0-recall-vault-verifier-v1";
 
 /// The passphrase has to clear this bar; there is no recovery beyond it.
@@ -640,8 +645,7 @@ mod tests {
     use std::path::PathBuf;
 
     fn temp_root(name: &str) -> PathBuf {
-        let root =
-            std::env::temp_dir().join(format!("zer0-recall-enc-{}-{name}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("recall-enc-{}-{name}", std::process::id()));
         let _ = fs::remove_dir_all(&root);
         root
     }

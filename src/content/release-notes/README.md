@@ -1,6 +1,6 @@
 # Release Notes
 
-> **NOTE:** This project is **ZER0**, a fork of Handy by CJ Pais that has grown
+> **NOTE:** This project is **FreeSpeech**, a fork of Handy by CJ Pais that has grown
 > into its own application. Beyond the upstream feature set it adds **Multi-STT**
 > mode — running a primary model plus one to eight extra STT models in parallel
 > with optional LLM-based output merging — alongside Recall, Live Mode, Transcribe

@@ -1,6 +1,6 @@
 // scripts/app-meta.ts
 //
-// THE single source of truth for ZER0's identity and version.
+// THE single source of truth for the application's identity and version.
 //
 // This file is the only place in the repository where the project's name,
 // bundle identifier, author, repository slug or version is written by hand.
@@ -29,7 +29,7 @@
 // bundle identifier, the app-data folder, the env-flag prefix or the portable
 // marker — and mixing two mechanisms means two places to look. One generated
 // module holds all of them, so a call site always reads `app_identity::NAME`
-// and never spells "ZER0" itself.
+// and never spells the name itself.
 //
 // When it runs:
 //   bun run meta:sync          write the mirrors and regenerate the modules
@@ -88,22 +88,29 @@ function spellingsOf(name: string) {
 }
 
 /** The product name — the one hand-edited word of the current identity. */
-const NAME = "ZER0";
+const NAME = "FreeSpeech";
 
 /**
- * The name this project carried before the rename.
+ * The identities this project carried before, newest first: each name with
+ * the bundle identifier it shipped under.
  *
- * A rename cannot derive the old name from the new one, so this word is the
- * one hand-edited value of the legacy record; every other spelling of it is
- * derived below, exactly as for the current name.
+ * A rename cannot derive an old name from the new one, so each entry is the
+ * hand-edited record of one former identity; every other spelling of it (the
+ * slug, the folder leaf, the env prefix, the portable marker, the storage
+ * prefix) is derived by `spellingsOf`, exactly as for the current name. The
+ * order is the order an install is looked for in: whoever ran the newer
+ * identity has their newest data under it.
+ *
+ * Renaming again: put the current name and identifier at the front of this
+ * list, then change `NAME` and `identifier` below, then run `meta:sync`.
+ * `installer.nsi`'s portable-upgrade check lists the markers by hand.
  */
-const LEGACY_NAME = "Handy";
-
-/** Reverse-domain prefix of the pre-rename bundle identifier. */
-const LEGACY_PUBLISHER = "com.pais";
-
-/** The pre-rename spellings, derived once so the `legacy` block can spread. */
-const LEGACY = spellingsOf(LEGACY_NAME);
+const FORMER_IDENTITIES = [
+  // 0.9.7 to 0.10.0, renamed 2026-11-26.
+  { name: "ZER0", identifier: "com.nairodorian.zer0" },
+  // The upstream identity this project forked, up to 0.9.6.
+  { name: "Handy", identifier: "com.pais.handy" },
+] as const;
 
 /**
  * EVERY hand-written identity value. Change a value here and run
@@ -114,23 +121,23 @@ export const APP = {
   name: NAME,
   ...spellingsOf(NAME),
   /** Bundle identifier — the OS-level application identity. See above. */
-  identifier: "com.nairodorian.zer0",
+  identifier: "com.nairodorian.freespeech",
   author: "NairoDorian",
   description: `${NAME} — real-time speech to text`,
   repoOwner: "NairoDorian",
-  repoName: "S2B2S",
+  repoName: "FreeSpeech",
   version: "0.10.0",
   /**
-   * The 0.9.x identity, kept as a record of what was rather than as a setting.
-   * Never written anywhere — only READ, so an install made before the rename
-   * keeps its models, history, settings, env flags and portable layout. See
-   * `app_identity::LEGACY_*`.
+   * The former identities, newest first, kept as a record of what was rather
+   * than as a setting. Never written anywhere — only READ, so an install made
+   * under any of them keeps its models, history, settings, env flags and
+   * portable layout. See `app_identity::LEGACY_*`.
    */
-  legacy: {
-    name: LEGACY_NAME,
-    ...LEGACY,
-    identifier: `${LEGACY_PUBLISHER}.${LEGACY.slug}`,
-  },
+  legacy: FORMER_IDENTITIES.map((former) => ({
+    name: former.name,
+    ...spellingsOf(former.name),
+    identifier: former.identifier,
+  })),
 } as const;
 
 /** The repository URL, from the slug above. */
@@ -165,10 +172,11 @@ const GENERATED_BANNER = "GENERATED FILE — DO NOT EDIT.";
  *
  * `NAME` and `SLUG` duplicate `Cargo.toml` on purpose: the generator owns both
  * sides and `--check` proves they agree, so the duplication cannot drift.
- * `LEGACY_*` are read-only compatibility values.
+ * `LEGACY_*` are read-only compatibility values, newest identity first.
  */
 function rustModule(): string {
-  const l = APP.legacy;
+  const former = <K extends keyof (typeof APP.legacy)[number]>(key: K) =>
+    APP.legacy.map((identity) => String(identity[key]));
   return `//! ${GENERATED_BANNER}
 //!
 //! Source: \`${META_TS}\` — run \`bun run meta:sync\` to regenerate.
@@ -203,27 +211,29 @@ pub const USER_AGENT: &str = "${APP.name}/${APP.version}";
 /// named after \`IDENTIFIER\`, not this.
 pub const DATA_DIR_NAME: &str = "${APP.dataDirName}";
 
-/// The folder name a pre-rename install used. Read at startup by the one-shot
-/// app-data migration; never written.
-pub const LEGACY_DATA_DIR_NAME: &str = "${l.dataDirName}";
+/// The bundle identifiers former releases used, newest first. The one-shot
+/// app-data migration looks for an install under each, in this order; never
+/// written.
+${rsStrSlice("LEGACY_IDENTIFIERS", former("identifier"))}
 
-/// The bundle identifier a pre-rename install used, named in the migration log
-/// and in the portable-install notes.
-pub const LEGACY_IDENTIFIER: &str = "${l.identifier}";
+/// The product-name folder leaves former releases may have used, newest first
+/// (the migration's other spelling of each identity); never written.
+${rsStrSlice("LEGACY_DATA_DIR_NAMES", former("dataDirName"))}
 
 /// Prefix of every environment flag this application reads.
 pub const ENV_PREFIX: &str = "${APP.envPrefix}";
 
-/// The previous environment-flag prefix. Every flag lookup falls back to it and
-/// warns, so an existing shell profile or Nix wrapper keeps working.
-pub const LEGACY_ENV_PREFIX: &str = "${l.envPrefix}";
+/// Former environment-flag prefixes, newest first. Every flag lookup falls back
+/// to them in order and warns, so an existing shell profile or Nix wrapper
+/// keeps working.
+${rsStrSlice("LEGACY_ENV_PREFIXES", former("envPrefix"))}
 
 /// Magic string written into the \`portable\` marker beside the executable.
 pub const PORTABLE_MARKER: &str = "${APP.portableMarker}";
 
-/// The marker a pre-rename release wrote. Accepted on read, never written
-/// unless an older empty marker is being upgraded.
-pub const LEGACY_PORTABLE_MARKER: &str = "${l.portableMarker}";
+/// The markers former releases wrote, newest first. Accepted on read, never
+/// written unless an older empty marker is being upgraded.
+${rsStrSlice("LEGACY_PORTABLE_MARKERS", former("portableMarker"))}
 
 /// Base name of the WAV files a recording is written to before transcription.
 pub const RECORDING_BASENAME: &str = "${APP.slug}";
@@ -247,8 +257,37 @@ pub fn multi_recording_file_name(timestamp: i64) -> String {
 `;
 }
 
+/** rustfmt's `max_width` — the generated Rust must pass `cargo fmt --check`. */
+const RS_MAX_WIDTH = 100;
+
+/**
+ * One `pub const NAME: &[&str] = &[…];` item, laid out the way rustfmt does:
+ * on one line when it fits, otherwise one element per line (every element here
+ * is longer than rustfmt's short-element threshold, so it never packs them).
+ */
+function rsStrSlice(name: string, values: readonly string[]): string {
+  const items = values.map((value) => `"${value}"`);
+  const oneLine = `pub const ${name}: &[&str] = &[${items.join(", ")}];`;
+  if (oneLine.length <= RS_MAX_WIDTH) return oneLine;
+  const lines = items.map((item) => `    ${item},`).join("\n");
+  return `pub const ${name}: &[&str] = &[\n${lines}\n];`;
+}
+
 /** Prettier's `printWidth` — the generated TypeScript must satisfy it. */
 const TS_PRINT_WIDTH = 80;
+
+/**
+ * One `export const NAME = [...] as const;` line, wrapped the way Prettier
+ * would: one line when it fits, otherwise one element per line with a
+ * trailing comma.
+ */
+function tsList(name: string, values: readonly string[]): string {
+  const items = values.map((value) => `"${value}"`);
+  const oneLine = `export const ${name} = [${items.join(", ")}] as const;`;
+  if (oneLine.length <= TS_PRINT_WIDTH) return oneLine;
+  const lines = items.map((item) => `  ${item},`).join("\n");
+  return `export const ${name} = [\n${lines}\n] as const;`;
+}
 
 /**
  * One `export const NAME = "value";` line, wrapped the way Prettier would.
@@ -274,11 +313,12 @@ function tsConst(name: string, value: string): string {
  * `src/lib/appIdentity.ts` — what every frontend call site reads.
  *
  * The storage helpers live here rather than in a separate module so the legacy
- * prefix is used in exactly one place: a preference written by 0.9.6 is read
- * once and re-written under the new prefix.
+ * prefixes are used in exactly one place: a preference written under a former
+ * name is read once and re-written under the current prefix.
  */
 function tsModule(): string {
-  const l = APP.legacy;
+  const former = <K extends keyof (typeof APP.legacy)[number]>(key: K) =>
+    APP.legacy.map((identity) => String(identity[key]));
   return `// ${GENERATED_BANNER}
 //
 // Source: \`${META_TS}\` — run \`bun run meta:sync\` to regenerate.
@@ -295,8 +335,8 @@ ${tsConst("APP_SLUG", APP.slug)}
 /** \`localStorage\` key prefix for view-only UI preferences. */
 ${tsConst("STORAGE_PREFIX", APP.storagePrefix)}
 
-/** Machine slug of the pre-rename identity: the basename 0.9.x wrote. */
-${tsConst("LEGACY_SLUG", l.slug)}
+/** Former identities' machine slugs, newest first: basenames they wrote. */
+${tsList("LEGACY_SLUGS", former("slug"))}
 
 /** Bundle identifier — the OS-level application identity. */
 ${tsConst("APP_IDENTIFIER", APP.identifier)}
@@ -313,26 +353,26 @@ ${tsConst("RELEASES_URL", RELEASES_URL)}
  */
 ${tsConst("DATA_DIR_NAME", APP.dataDirName)}
 
-/** The folder name a pre-rename install used; read by the migration only. */
-${tsConst("LEGACY_DATA_DIR_NAME", l.dataDirName)}
+/** Folder names former installs used, newest first; read by the migration. */
+${tsList("LEGACY_DATA_DIR_NAMES", former("dataDirName"))}
 
-/** The bundle identifier a pre-rename install used. */
-${tsConst("LEGACY_IDENTIFIER", l.identifier)}
+/** Bundle identifiers former releases used, newest first. */
+${tsList("LEGACY_IDENTIFIERS", former("identifier"))}
 
 /** Prefix of every environment flag the backend reads. Shown in Settings. */
 ${tsConst("ENV_PREFIX", APP.envPrefix)}
 
-/** The previous environment-flag prefix, still honoured by the backend. */
-${tsConst("LEGACY_ENV_PREFIX", l.envPrefix)}
+/** Former environment-flag prefixes, still honoured by the backend. */
+${tsList("LEGACY_ENV_PREFIXES", former("envPrefix"))}
 
 /** Magic string in the \`portable\` marker beside the executable. */
 ${tsConst("PORTABLE_MARKER", APP.portableMarker)}
 
-/** The marker a pre-rename release wrote. */
-${tsConst("LEGACY_PORTABLE_MARKER", l.portableMarker)}
+/** The markers former releases wrote, newest first. */
+${tsList("LEGACY_PORTABLE_MARKERS", former("portableMarker"))}
 
-/** The previous \`localStorage\` prefix, migrated on first read. */
-${tsConst("LEGACY_STORAGE_PREFIX", l.storagePrefix)}
+/** Former \`localStorage\` prefixes, newest first, migrated on first read. */
+${tsList("LEGACY_STORAGE_PREFIXES", former("storagePrefix"))}
 
 /**
  * File-name infix that marks a recording as a Multi-STT one.
@@ -346,23 +386,22 @@ export const MULTI_RECORDING_INFIX = "-multi-";
 /**
  * Whether a history row's WAV belongs to a Multi-STT recording.
  *
- * Both basenames are accepted. History is a database of recordings the user
- * still has on disk, and rows written before the rename point at
- * \`\${LEGACY_SLUG}-multi-…\` files that were never moved — judging them by the
- * current basename alone would silently reclassify every one of them as a
- * plain transcription.
+ * Every basename the app has written is accepted. History is a database of
+ * recordings the user still has on disk, and rows written under a former name
+ * point at \`<former slug>-multi-…\` files that were never moved — judging them
+ * by the current basename alone would silently reclassify every one of them as
+ * a plain transcription.
  */
 export function isMultiRecordingFileName(fileName: string): boolean {
-  return (
-    fileName.startsWith(APP_SLUG + MULTI_RECORDING_INFIX) ||
-    fileName.startsWith(LEGACY_SLUG + MULTI_RECORDING_INFIX)
+  return [APP_SLUG, ...LEGACY_SLUGS].some((slug) =>
+    fileName.startsWith(slug + MULTI_RECORDING_INFIX),
   );
 }
 
 /**
- * Read a UI preference, falling back to the key a pre-rename release wrote.
+ * Read a UI preference, falling back to the keys former releases wrote.
  *
- * The legacy value is re-written under the current prefix and the old key
+ * A former value is re-written under the current prefix and every former key
  * removed, so the migration happens once per key per browser profile and never
  * runs again. Both the read and every write are guarded: \`localStorage\` throws
  * outright in a locked-down webview, and a preference is never worth a crash.
@@ -373,11 +412,16 @@ export function readPref(key: string): string | null {
   try {
     const current = localStorage.getItem(STORAGE_PREFIX + key);
     if (current !== null) return current;
-    const legacy = localStorage.getItem(LEGACY_STORAGE_PREFIX + key);
-    if (legacy === null) return null;
-    localStorage.setItem(STORAGE_PREFIX + key, legacy);
-    localStorage.removeItem(LEGACY_STORAGE_PREFIX + key);
-    return legacy;
+    for (const prefix of LEGACY_STORAGE_PREFIXES) {
+      const former = localStorage.getItem(prefix + key);
+      if (former === null) continue;
+      localStorage.setItem(STORAGE_PREFIX + key, former);
+      for (const old of LEGACY_STORAGE_PREFIXES) {
+        localStorage.removeItem(old + key);
+      }
+      return former;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -392,11 +436,13 @@ export function writePref(key: string, value: string): void {
   }
 }
 
-/** Remove a UI preference, under both the current and the legacy prefix. */
+/** Remove a UI preference, under the current and every former prefix. */
 export function removePref(key: string): void {
   try {
     localStorage.removeItem(STORAGE_PREFIX + key);
-    localStorage.removeItem(LEGACY_STORAGE_PREFIX + key);
+    for (const prefix of LEGACY_STORAGE_PREFIXES) {
+      localStorage.removeItem(prefix + key);
+    }
   } catch {
     // See writePref.
   }

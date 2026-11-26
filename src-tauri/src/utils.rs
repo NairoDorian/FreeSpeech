@@ -249,13 +249,14 @@ pub fn env_flag_enabled(name: &str) -> bool {
 /// Read an application variable by its suffix alone — the prefix comes from
 /// [`app_identity::ENV_PREFIX`], so no call site spells it.
 ///
-/// The legacy `HANDY_`-prefixed spelling is tried second. These variables are
-/// set by build scripts, CI, the Nix package and users' own launch
-/// configurations, so dropping the old spelling outright would silently change
-/// behaviour for anyone who set one — a Nix user's `HANDY_DISABLE_UPDATER`
-/// would stop disabling the updater, with nothing in the log to say why. The new
-/// name wins when both are set; the old one still works and says so, which is a
-/// handful of one-shot reads on the startup and overlay-init paths.
+/// The former spellings ([`app_identity::LEGACY_ENV_PREFIXES`], newest first)
+/// are tried next. These variables are set by build scripts, CI, the Nix
+/// package and users' own launch configurations, so dropping an old spelling
+/// outright would silently change behaviour for anyone who set one — a Nix
+/// user's `HANDY_DISABLE_UPDATER` would stop disabling the updater, with nothing
+/// in the log to say why. The current name wins when several are set; a former
+/// one still works and says so, which is a handful of one-shot reads on the
+/// startup and overlay-init paths.
 ///
 /// This is the value-typed form, for variables that carry a number or a path
 /// ([`app_env_flag`] is the boolean form built on it).
@@ -279,12 +280,14 @@ pub fn app_env_var(suffix: &str) -> Option<String> {
         return Some(value);
     }
 
-    let legacy = format!("{}{suffix}", app_identity::LEGACY_ENV_PREFIX);
-    if legacy != name
-        && let Ok(value) = std::env::var(&legacy)
-    {
-        warn!("{legacy} is set — that is the pre-0.9.7 name, please rename it to {name}");
-        return Some(value);
+    for prefix in app_identity::LEGACY_ENV_PREFIXES {
+        let legacy = format!("{prefix}{suffix}");
+        if legacy != name
+            && let Ok(value) = std::env::var(&legacy)
+        {
+            warn!("{legacy} is set — that is a former name, please rename it to {name}");
+            return Some(value);
+        }
     }
     None
 }
@@ -401,9 +404,9 @@ mod tests {
         format!("{}{suffix}", app_identity::ENV_PREFIX)
     }
 
-    /// The same for the pre-rename prefix.
-    fn legacy(suffix: &str) -> String {
-        format!("{}{suffix}", app_identity::LEGACY_ENV_PREFIX)
+    /// The same for the former prefix at `index` (0 is the newest).
+    fn legacy(index: usize, suffix: &str) -> String {
+        format!("{}{suffix}", app_identity::LEGACY_ENV_PREFIXES[index])
     }
 
     #[test]
@@ -414,19 +417,34 @@ mod tests {
     }
 
     #[test]
-    fn app_env_var_falls_back_to_the_legacy_prefix() {
-        unsafe { std::env::set_var(legacy("TEST_VALUE_LEGACY"), "42") };
-        assert_eq!(app_env_var("TEST_VALUE_LEGACY").as_deref(), Some("42"));
-        unsafe { std::env::remove_var(legacy("TEST_VALUE_LEGACY")) };
+    fn app_env_var_falls_back_to_every_former_prefix() {
+        // One variable per prefix: they would race on a shared name.
+        for index in 0..app_identity::LEGACY_ENV_PREFIXES.len() {
+            let suffix = format!("TEST_VALUE_LEGACY_{index}");
+            unsafe { std::env::set_var(legacy(index, &suffix), "42") };
+            assert_eq!(app_env_var(&suffix).as_deref(), Some("42"), "{index}");
+            unsafe { std::env::remove_var(legacy(index, &suffix)) };
+        }
     }
 
     #[test]
-    fn the_current_prefix_wins_over_the_legacy_one() {
+    fn the_current_prefix_wins_over_a_former_one() {
         unsafe { std::env::set_var(current("TEST_VALUE_BOTH"), "current") };
-        unsafe { std::env::set_var(legacy("TEST_VALUE_BOTH"), "legacy") };
+        unsafe { std::env::set_var(legacy(0, "TEST_VALUE_BOTH"), "legacy") };
         assert_eq!(app_env_var("TEST_VALUE_BOTH").as_deref(), Some("current"));
         unsafe { std::env::remove_var(current("TEST_VALUE_BOTH")) };
-        unsafe { std::env::remove_var(legacy("TEST_VALUE_BOTH")) };
+        unsafe { std::env::remove_var(legacy(0, "TEST_VALUE_BOTH")) };
+    }
+
+    #[test]
+    fn a_newer_former_prefix_wins_over_an_older_one() {
+        let last = app_identity::LEGACY_ENV_PREFIXES.len() - 1;
+        assert!(last > 0, "this test needs two former prefixes");
+        unsafe { std::env::set_var(legacy(0, "TEST_VALUE_ORDER"), "newer") };
+        unsafe { std::env::set_var(legacy(last, "TEST_VALUE_ORDER"), "older") };
+        assert_eq!(app_env_var("TEST_VALUE_ORDER").as_deref(), Some("newer"));
+        unsafe { std::env::remove_var(legacy(0, "TEST_VALUE_ORDER")) };
+        unsafe { std::env::remove_var(legacy(last, "TEST_VALUE_ORDER")) };
     }
 
     #[test]

@@ -58,6 +58,7 @@
 import { existsSync, readFileSync } from "fs";
 import { resolve, join } from "path";
 import { homedir } from "os";
+import { APP } from "./app-meta";
 import { checkTranscribeDeps } from "./check-transcribe-deps";
 import { applyCpuLane, FULL_MODEL_SET, withCmakeArg } from "./lib/cpu-lane";
 import { appEnvFlag } from "./lib/env-flag";
@@ -267,14 +268,18 @@ if (!appEnvFlag("NO_PRUNE")) {
 // Bundle builds sign the updater artifacts (`createUpdaterArtifacts` is on),
 // and the Tauri bundler refuses to produce them without the private key. CI
 // gets it from the TAURI_SIGNING_PRIVATE_KEY secret; locally, fall back to the
-// key the maintainer generated at `~/.tauri/zer0.key` so `build:fast` /
+// key the maintainer generated at `~/.tauri/<slug>.key` so `build:fast` /
 // `build:full` sign without extra setup. Never logged, never copied anywhere.
+// The key was generated under a former name and the file is the maintainer's,
+// not this repository's, so every former slug's file is looked for too.
 if (
   process.env.TAURI_SIGNING_PRIVATE_KEY === undefined &&
   process.env.TAURI_SIGNING_PRIVATE_KEY_PATH === undefined
 ) {
-  const localKey = join(homedir(), ".tauri", "zer0.key");
-  if (existsSync(localKey)) {
+  const localKey = [APP.slug, ...APP.legacy.map((former) => former.slug)]
+    .map((slug) => join(homedir(), ".tauri", `${slug}.key`))
+    .find((path) => existsSync(path));
+  if (localKey !== undefined) {
     process.env.TAURI_SIGNING_PRIVATE_KEY = readFileSync(localKey, "utf-8");
     // `tauri signer generate` always writes an encrypted key, so with no
     // password in the environment the bundler stops on "Decrypting updater

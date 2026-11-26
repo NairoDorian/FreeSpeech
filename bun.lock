@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "zer0",
+      "name": "freespeech",
       "dependencies": {
         "@solidjs/web": "2.0.4",
         "@tailwindcss/vite": "4.3.5",

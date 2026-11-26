@@ -4,9 +4,9 @@
 // rule, so a flag means the same thing whether the app or a script reads it:
 //
 //   - the prefix comes from `app-meta.ts`, so no call site spells it;
-//   - the pre-rename prefix is tried second, with a warning, because these flags
-//     live in shell profiles, CI jobs and Nix wrappers that were written before
-//     the rename and would otherwise silently stop working;
+//   - the former prefixes are tried next, newest first, with a warning, because
+//     these flags live in shell profiles, CI jobs and Nix wrappers written
+//     under an earlier name and would otherwise silently stop working;
 //   - "1", "true", "yes" and "on" are true; "0", "false", "no", "off" and the
 //     empty string are false, case-insensitively.
 //
@@ -24,23 +24,24 @@ export function envFlagTruthy(value: string): boolean {
 /**
  * Read an application variable by its suffix alone, e.g. `"NO_PRUNE"`.
  *
- * Returns `undefined` when neither spelling is set. The suffix is the part
- * *after* the prefix and includes its separator: `NO_PRUNE` reads
- * `<PREFIX>NO_PRUNE`.
+ * Returns `undefined` when no spelling is set. The suffix is the part *after*
+ * the prefix and includes its separator: `NO_PRUNE` reads `<PREFIX>NO_PRUNE`.
  */
 export function appEnvVar(suffix: string): string | undefined {
   const name = `${APP.envPrefix}${suffix}`;
   const value = process.env[name];
   if (value !== undefined) return value;
 
-  const legacy = `${APP.legacy.envPrefix}${suffix}`;
-  const legacyValue = process.env[legacy];
-  if (legacy === name || legacyValue === undefined) return undefined;
-
-  console.warn(
-    `[env] ${legacy} is set — that is the pre-0.9.7 name, please rename it to ${name}`,
-  );
-  return legacyValue;
+  for (const former of APP.legacy) {
+    const legacy = `${former.envPrefix}${suffix}`;
+    const legacyValue = process.env[legacy];
+    if (legacy === name || legacyValue === undefined) continue;
+    console.warn(
+      `[env] ${legacy} is set — that is a former name, please rename it to ${name}`,
+    );
+    return legacyValue;
+  }
+  return undefined;
 }
 
 /** Read an application flag by its suffix alone, as a boolean. */

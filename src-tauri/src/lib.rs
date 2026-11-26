@@ -98,7 +98,7 @@ pub struct CheckForUpdates;
 ///
 /// fd 1 is the terminal and fd 2 is a pipe — the exact opposite of the theory —
 /// so records written to stderr went into something nobody displays: the user
-/// saw `Running target\debug\zer0.exe` and then silence, while the same records
+/// saw `Running target\debug\<slug>.exe` and then silence, while the same records
 /// filled the file log and made the app look like it was logging fine. Something
 /// in the launch chain (bun → `scripts/tauri-runner.ts` → the Tauri CLI → cargo →
 /// this process) captures the child's stderr — the Tauri CLI interleaves the

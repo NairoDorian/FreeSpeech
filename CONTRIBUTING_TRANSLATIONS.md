@@ -1,10 +1,10 @@
-# Contributing Translations to ZER0
+# Contributing Translations to FreeSpeech
 
-> **NOTE:** This is the `Handy_Multi_STT` fork. This branch adds Multi-STT mode
+> **NOTE:** FreeSpeech adds Multi-STT mode
 > with dedicated translation keys under the `multi_stt` prefix in
 > `src/i18n/locales/en/translation.json`. See [AGENTS.md](AGENTS.md).
 
-Thank you for helping translate ZER0! This guide explains how to add or improve translations.
+Thank you for helping translate FreeSpeech! This guide explains how to add or improve translations.
 
 ## Quick Start
 
@@ -134,7 +134,7 @@ Found a typo or better translation?
 
 ### Don't:
 
-- Translate brand names (ZER0, transcribe.cpp, ggml, OpenAI)
+- Translate brand names (FreeSpeech, transcribe.cpp, ggml, OpenAI)
 - Change or remove `{{variables}}`
 - Modify JSON keys
 - Add extra spaces or formatting
@@ -193,4 +193,4 @@ keys are still waiting.
 
 ---
 
-Thank you for making ZER0 accessible to more people around the world!
+Thank you for making FreeSpeech accessible to more people around the world!

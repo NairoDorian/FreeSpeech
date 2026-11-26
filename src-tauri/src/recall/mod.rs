@@ -790,8 +790,7 @@ mod tests {
     use super::*;
 
     fn temp_root(name: &str) -> PathBuf {
-        let root =
-            std::env::temp_dir().join(format!("zer0-recall-test-{}-{name}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("recall-test-{}-{name}", std::process::id()));
         let _ = fs::remove_dir_all(&root);
         root
     }
@@ -859,7 +858,7 @@ mod tests {
 
         fs::write(
             note_path(&root, "2026-09-14-full"),
-            "---\ntitle: \"Quoted\"\ncreated: 1000\nupdated: 2000\ntags: a, b\nsource: whisper-large-turbo\naudio: zer0-1.wav\n---\n\nBody.\n",
+            "---\ntitle: \"Quoted\"\ncreated: 1000\nupdated: 2000\ntags: a, b\nsource: whisper-large-turbo\naudio: rec-1.wav\n---\n\nBody.\n",
         )
         .unwrap();
         let note = read_note(&root, "2026-09-14-full").unwrap();
@@ -867,7 +866,7 @@ mod tests {
         assert_eq!(note.meta.created_ms, 1000);
         assert_eq!(note.meta.tags, vec!["a".to_string(), "b".to_string()]);
         assert_eq!(note.meta.source.as_deref(), Some("whisper-large-turbo"));
-        assert_eq!(note.meta.audio_file.as_deref(), Some("zer0-1.wav"));
+        assert_eq!(note.meta.audio_file.as_deref(), Some("rec-1.wav"));
         let _ = fs::remove_dir_all(&root);
     }
 

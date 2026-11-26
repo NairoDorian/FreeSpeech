@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: 💡 Feature Request or Idea
-    url: https://github.com/NairoDorian/S2B2S/discussions
+    url: https://github.com/NairoDorian/FreeSpeech/discussions
     about: Please post feature requests and ideas in our Discussions tab
   - name: 💬 General Discussion
-    url: https://github.com/NairoDorian/S2B2S/discussions
-    about: Ask questions and discuss ZER0 with the community
+    url: https://github.com/NairoDorian/FreeSpeech/discussions
+    about: Ask questions and discuss FreeSpeech with the community

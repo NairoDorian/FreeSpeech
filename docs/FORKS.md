@@ -1,9 +1,9 @@
 # Forks — where their source lives, and how to change one
 
-Three dependencies in ZER0 are forks under the project's own GitHub account
+Three dependencies in FreeSpeech are forks under the project's own GitHub account
 (`NairoDorian`), not the upstream projects they came from. Each exists for the
 same reason: upstream stopped publishing the version this app runs on (a Tauri 3
-alpha, an unreleased rc), and ZER0 needed the bump to keep building.
+alpha, an unreleased rc), and FreeSpeech needed the bump to keep building.
 
 This document records **where each fork's source is read and edited**, so that a
 later change to one is made in the right place, from the right folder, and
@@ -18,7 +18,7 @@ To change a fork:
 1. open its working copy,
 2. edit, build and test it **there**,
 3. commit and push to `NairoDorian` **from there**,
-4. only then move the pin in ZER0 (`Cargo.lock` / `package.json`).
+4. only then move the pin in FreeSpeech (`Cargo.lock` / `package.json`).
 
 Never patch a fork's code from inside this repository, and never edit a copy
 under `src-tauri/target` or `~/.cargo/git/checkouts`. Those are build products of
@@ -28,15 +28,15 @@ invisible to everyone else — including CI and the next machine to build the ap
 any git source — see [STACK_WATCH.md](STACK_WATCH.md) — so it is not another
 place to look for a fork's code.)
 
-This is not a style preference. ZER0 consumes all three as **git sources**, so
+This is not a style preference. FreeSpeech consumes all three as **git sources**, so
 `Cargo.lock` pins a commit SHA, not a path. A change that is not committed and
 pushed in the fork's working copy does not exist as far as this app is
-concerned; a change made only in ZER0's tree would be a second source of truth
+concerned; a change made only in FreeSpeech's tree would be a second source of truth
 that drifts the moment the branch moves.
 
 ## The forks
 
-| Fork                                     | Working copy                                                   | Remote (branch)                                                                    | How ZER0 consumes it                                                                                                                                                                                 |
+| Fork                                     | Working copy                                                   | Remote (branch)                                                                    | How FreeSpeech consumes it                                                                                                                                                                           |
 | ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `tauri-specta` (typed bindings)          | `C:\Users\Z\Downloads\PROJECTS\tauri-specta-v3`                | `NairoDorian/tauri-specta-v3` (`main`)                                             | `[patch.crates-io] tauri-specta`; the manifest asks for `tauri-specta = "2.0.0-rc.29"` with `default-features = false`, and the patch replaces that crate with the fork. Generates `src/bindings.ts` |
 | `tauri-plugin-macos-permissions`         | `C:\Users\Z\Downloads\PROJECTS\tauri-plugin-macos-permissions` | `NairoDorian/tauri-plugin-macos-permissions` (`master`)                            | Rust: `[patch.crates-io]` plus `tauri-plugin-macos-permissions = "2.3.0"`. npm: `tauri-plugin-macos-permissions-api`, a `git+https://…/NairoDorian/tauri-plugin-macos-permissions.git` dependency    |
@@ -46,7 +46,7 @@ The first two are the Tauri-adjacent ones; the local copies above are the
 folders to edit when their dependencies need bumping or their code needs a
 change. `transcribe-fork` works the same way and is the fork this project
 spends most of its time in — it has its own `AGENTS.md` in that working copy,
-and ZER0 refreshes its commit pin automatically (see below).
+and FreeSpeech refreshes its commit pin automatically (see below).
 
 ### `tauri-specta-v3`
 
@@ -69,23 +69,25 @@ three changes its README lists under "This fork":
 3. **No Tauri 2 pin by default** (`default = []`): upstream's default `v2`
    feature adds a `tauri = "2"` edge that a Tauri 3 graph cannot resolve. Not
    proposed: upstream's own switch for a v3 application is
-   `default-features = false`, which ZER0's manifest sets, so ZER0 no longer
+   `default-features = false`, which FreeSpeech's manifest sets, so FreeSpeech no longer
    relies on this change. Sift does, until its manifest sets the same flag.
 
 The plan: keep the fork current, and close it once upstream has merged #293
-and #294 and published a release with them. ZER0 then takes `tauri-specta`
+and #294 and published a release with them. FreeSpeech then takes `tauri-specta`
 from crates.io and drops the `[patch]`. Once a Tauri 3 release carries the
-command metadata, change 1 is optional: ZER0 can enable `introspection` and
-drop its 254 `#[specta::specta]` attributes.
+command metadata, change 1 is optional: FreeSpeech can enable `introspection` and
+drop its 254 `#[specta::specta]` attributes. `bun run upstream:status` (weekly in
+CI, see `docs/upstream-watch.json`) reports both pull requests, the next
+tauri-specta release and whether Tauri's `v3` branch has the command metadata.
 
-Upstream rc.27 made `ErrorHandlingMode::Throw` the default; ZER0 sets
+Upstream rc.27 made `ErrorHandlingMode::Throw` the default; FreeSpeech sets
 `ErrorHandlingMode::Result` explicitly in `lib.rs`, because every caller in
 `src/` reads `{ status, data | error }`. To take a newer upstream, follow the
 fork's README: merge `upstream/main` in the fork, keep the three changes, run
 its two suites (`cargo test -p tauri-specta -p tauri-specta-query -p
 tauri-specta-macros --all-features` on Tauri 2 `dev`, `cargo test` in
 `tests/tauri-v3` on published Tauri 3), compare the two exports byte for byte,
-push, then move ZER0's pin as step 4 below says.
+push, then move FreeSpeech's pin as step 4 below says.
 
 ### `tauri-plugin-macos-permissions`
 
@@ -121,7 +123,7 @@ cargo check && cargo test
 git add -A && git commit        # conventional prefix; end with the Co-Authored-By trailer
 git push origin main            # `master` for tauri-plugin-macos-permissions
 
-# 4. only now move the pin in ZER0, and only the pin. In src-tauri/Cargo.lock,
+# 4. only now move the pin in FreeSpeech, and only the pin. In src-tauri/Cargo.lock,
 #    replace the old commit with the new one in the fork's
 #    `source = "git+https://github.com/NairoDorian/<fork>#<commit>"` lines,
 #    then let cargo confirm the lock without changing anything:
@@ -147,7 +149,7 @@ reports anything, restore the lock (`git show HEAD:src-tauri/Cargo.lock >
 src-tauri/Cargo.lock`) and resolve it by hand rather than commit a downgrade.
 
 For the npm half of `tauri-plugin-macos-permissions`, step 4 is
-`bun update tauri-plugin-macos-permissions-api` in ZER0 (the dependency is a git
+`bun update tauri-plugin-macos-permissions-api` in FreeSpeech (the dependency is a git
 spec, so it resolves the same way).
 
 `transcribe-cpp` is the exception to step 4: its pin is not moved by hand. The
@@ -171,7 +173,7 @@ resolving) shows up as a build or launch failure here, where a unit test would
 not see it. It skips CUDA entirely, so it is also the fastest way to get there.
 Use `bun run dev:fast` instead when the change touches the GPU path (CUDA
 kernels, device selection, VRAM, a timing). Close the app when done — while it
-runs it holds `transcribe.dll`, so `cargo build` and `cargo test` in ZER0 fail
+runs it holds `transcribe.dll`, so `cargo build` and `cargo test` in FreeSpeech fail
 to link until it exits.
 
 ## Constraints that bite when bumping
@@ -192,7 +194,7 @@ to link until it exits.
   2. **The core's own API.** `b9a77ebb`
      _`refactor(core)!: remove the macos-private-api feature flag`_ (alpha.4)
      removed the Cargo feature and the `app > macOSPrivateApi` config key;
-     transparency and `fullScreenEnabled` no longer need private APIs. ZER0
+     transparency and `fullScreenEnabled` no longer need private APIs. FreeSpeech
      dropped both on the bump.
      Two failures follow from a partial bump, and both are silent until compile
      time: `tauri-build` validates `tauri.conf.json` through `tauri-utils`, so a

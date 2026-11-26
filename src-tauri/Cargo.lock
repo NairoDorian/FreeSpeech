@@ -9233,7 +9233,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "zer0"
+name = "freespeech"
 version = "0.10.0"
 dependencies = [
  "anyhow",

@@ -1,8 +1,8 @@
-# ZER0 on Ubuntu 26.04 GNOME Wayland
+# FreeSpeech on Ubuntu 26.04 GNOME Wayland
 
 Adapted from the upstream project's notes (tested there on Ubuntu 26.04.1 LTS,
-GNOME Wayland). ZER0 has not been run on this setup by its maintainer: the
-steps are the same mechanisms, with ZER0's names and paths.
+GNOME Wayland). FreeSpeech has not been run on this setup by its maintainer: the
+steps are the same mechanisms, with FreeSpeech's names and paths.
 
 The fix is to use `ydotool` for typing and the native keyboard implementation
 for shortcuts.
@@ -40,7 +40,7 @@ ps -o pid,lstart -p "$(systemctl show --property=MainPID --value user@$(id -u))"
 sudo systemctl restart user@$(id -u)
 ```
 
-A reboot also works. Restart ZER0 afterwards.
+A reboot also works. Restart FreeSpeech afterwards.
 
 ## 2. Install and test ydotool
 
@@ -54,21 +54,21 @@ ydotool type "HELLO FROM YDOTOOL"
 The service should show `active (running)`, and the test should type into the
 focused application.
 
-## 3. Configure ZER0
+## 3. Configure FreeSpeech
 
 Set the typing tool to `ydotool` and the keyboard implementation to the native
 one (its stored value is `handy_keys`, the name of the library it uses). Quit
-ZER0 first, then edit its settings:
+FreeSpeech first, then edit its settings:
 
 ```bash
-sed -i 's/"typing_tool": "auto"/"typing_tool": "ydotool"/' ~/.local/share/com.nairodorian.zer0/settings_store.json
-sed -i 's/"keyboard_implementation": "tauri"/"keyboard_implementation": "handy_keys"/' ~/.local/share/com.nairodorian.zer0/settings_store.json
+sed -i 's/"typing_tool": "auto"/"typing_tool": "ydotool"/' ~/.local/share/com.nairodorian.freespeech/settings_store.json
+sed -i 's/"keyboard_implementation": "tauri"/"keyboard_implementation": "handy_keys"/' ~/.local/share/com.nairodorian.freespeech/settings_store.json
 ```
 
-Start ZER0 again:
+Start FreeSpeech again:
 
 ```bash
-zer0 --start-hidden &
+freespeech --start-hidden &
 ```
 
 Then press your transcription shortcut and test a dictation. If the shortcut
@@ -82,7 +82,7 @@ nothing is pasted. Set the overlay to **None** on the Overlay page.
 
 ## 5. Install wl-clipboard
 
-ZER0 uses `wl-copy` on Wayland when it is installed:
+FreeSpeech uses `wl-copy` on Wayland when it is installed:
 
 ```bash
 sudo apt install wl-clipboard
@@ -98,7 +98,7 @@ Use an external script instead: it presses Ctrl and the key that types `v` on
 your layout, `KEY_U` (22) on bépo or `KEY_DOT` (52) on Dvorak (codes in
 `/usr/include/linux/input-event-codes.h`).
 
-Create `~/.local/bin/zer0-paste`, here for bépo:
+Create `~/.local/bin/freespeech-paste`, here for bépo:
 
 ```sh
 #!/bin/sh
@@ -108,7 +108,7 @@ ydotool key 29:1 22:1 22:0 29:0
 ```
 
 ```bash
-chmod +x ~/.local/bin/zer0-paste
+chmod +x ~/.local/bin/freespeech-paste
 ```
 
 Then set **Paste Method** to **External Script** with this path.

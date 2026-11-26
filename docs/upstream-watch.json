@@ -1,0 +1,43 @@
+{
+  "handy": {
+    "remote": "upstream",
+    "url": "https://github.com/cjpais/Handy.git",
+    "branch": "main"
+  },
+  "aivorelay": {
+    "remote": "aivorelay",
+    "url": "https://github.com/MaxITService/AIVORelay.git",
+    "branch": "main",
+    "reviewed": "0778a78aa71ec954f0a9bd16c218b50d714115ba",
+    "reviewedOn": "2026-10-02"
+  },
+  "watch": {
+    "pulls": [
+      {
+        "repo": "specta-rs/tauri-specta",
+        "number": 293,
+        "why": "the fork's #[specta::specta] collector, proposed upstream"
+      },
+      {
+        "repo": "specta-rs/tauri-specta",
+        "number": 294,
+        "why": "every Tauri 3.0 alpha admitted, proposed upstream"
+      }
+    ],
+    "releasesAfter": [
+      {
+        "repo": "specta-rs/tauri-specta",
+        "tag": "v2.0.0-rc.29",
+        "why": "a release with both fixes lets the tauri-specta fork close"
+      }
+    ],
+    "commitsOnBranch": [
+      {
+        "repo": "tauri-apps/tauri",
+        "branch": "v3",
+        "commit": "2a7f592c2481fa72cbae4b55c58bf6ac51190a6b",
+        "why": "command metadata (tauri-apps/tauri#15326) reaching Tauri 3"
+      }
+    ]
+  }
+}

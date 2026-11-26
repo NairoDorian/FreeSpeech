@@ -1,11 +1,13 @@
 # Build Instructions
 
-This guide covers how to set up the development environment and build ZER0 from source across different platforms.
+This guide covers how to set up the development environment and build FreeSpeech from source across different platforms.
 
-> **NOTE:** ZER0 began as a fork of the MIT-licensed
+> **NOTE:** FreeSpeech began as a fork of the MIT-licensed
 > [Handy](https://github.com/cjpais/Handy) project by CJ Pais and is now its own
-> project. The `Handy_Multi_STT` branch it was developed on keeps that name; the
-> product, the binary and every path below are ZER0's own.
+> project. It was called ZER0 until 0.10.0 and was developed on the
+> `Handy_Multi_STT` branch of the (now archived) `NairoDorian/S2B2S` fork; it
+> lives on `main` of `NairoDorian/FreeSpeech`. The product, the binary and every
+> path below are FreeSpeech's own.
 
 ## Pre-commit routine
 
@@ -204,11 +206,11 @@ CPU one. The lanes are mutually exclusive (`build --fast --cpu` is refused rathe
 than silently resolved). Every lane still builds Vulkan — `--cpu` only turns CUDA
 off — so the Vulkan SDK is required either way. Pruning of stale
 `src-tauri/target` artifacts runs automatically before each one
-(`scripts/prune-target.ts`); set `ZER0_NO_PRUNE=1` to skip it for a shell.
+(`scripts/prune-target.ts`); set `FREESPEECH_NO_PRUNE=1` to skip it for a shell.
 
 ### 4. Build for Production
 
-ZER0 provides three release build commands:
+FreeSpeech provides three release build commands:
 
 ```bash
 # Fast local build (auto-detects and compiles CUDA kernels only for your local GPU):
@@ -274,37 +276,37 @@ the next build needs is removed. To see what would go, or to run it by hand:
 ```powershell
 bun run prune:target --dry-run   # list only
 bun run prune:target --verbose   # remove and print every path
-$env:ZER0_NO_PRUNE = "1"          # skip the automatic run for this shell
+$env:FREESPEECH_NO_PRUNE = "1"          # skip the automatic run for this shell
 ```
 
 ## Linux Install (from source)
 
-The raw binary (`src-tauri/target/release/zer0`) cannot run standalone — it needs Tauri resource files (tray icons, sounds) to be co-located at the expected path.
+The raw binary (`src-tauri/target/release/freespeech`) cannot run standalone — it needs Tauri resource files (tray icons, sounds) to be co-located at the expected path.
 
 **Install from the deb bundle** (works on any Linux distro):
 
 ```bash
 cd /tmp
-ar x /path/to/ZER0/src-tauri/target/release/bundle/deb/ZER0_*_amd64.deb data.tar.gz  # `_arm64.deb` on aarch64
+ar x /path/to/FreeSpeech/src-tauri/target/release/bundle/deb/FREESPEECH_*_amd64.deb data.tar.gz  # `_arm64.deb` on aarch64
 tar xzf data.tar.gz
-sudo cp usr/bin/zer0 /usr/bin/
+sudo cp usr/bin/freespeech /usr/bin/
 sudo cp -a usr/lib/. /usr/lib/
 sudo cp -r usr/share/icons/hicolor/* /usr/share/icons/hicolor/
-sudo cp usr/share/applications/ZER0.desktop /usr/share/applications/
+sudo cp usr/share/applications/FreeSpeech.desktop /usr/share/applications/
 ```
 
-The runtime libraries live in the app-private `/usr/lib/ZER0/` (on the binary's rpath), so no `ldconfig` step is needed.
+The runtime libraries live in the app-private `/usr/lib/FreeSpeech/` (on the binary's rpath), so no `ldconfig` step is needed.
 
 After subsequent rebuilds, copy the binary and any refreshed runtime libraries:
 
 ```bash
-sudo cp src-tauri/target/release/zer0 /usr/bin/
-sudo mkdir -p /usr/lib/ZER0
-sudo cp -a src-tauri/transcribe-libs/. /usr/lib/ZER0/
+sudo cp src-tauri/target/release/freespeech /usr/bin/
+sudo mkdir -p /usr/lib/FreeSpeech
+sudo cp -a src-tauri/transcribe-libs/. /usr/lib/FreeSpeech/
 ```
 
 `src-tauri/build.rs` stages those libraries during the cargo build, and
-`tauri.conf.json` bundles them into `/usr/lib/ZER0` for the deb and rpm and into
+`tauri.conf.json` bundles them into `/usr/lib/FreeSpeech` for the deb and rpm and into
 `/usr/lib` for the AppImage — so a bundled install needs neither step. CI's
 AppImage path runs the same copy as a checked script,
 `scripts/ci/stage-transcribe-libs.sh <install-lib-dir> <dest>`, which fails
@@ -314,14 +316,14 @@ Resources only need re-copying if they change upstream (new icons, sounds, model
 
 ## Nix / NixOS
 
-`flake.nix` packages ZER0 for Linux (`x86_64` and `aarch64`) and provides
+`flake.nix` packages FreeSpeech for Linux (`x86_64` and `aarch64`) and provides
 modules for NixOS and home-manager. On Nix the native dependency set is declared
 in the flake rather than installed from your distro, so nothing above is needed:
 
 ```bash
-nix build .#zer0            # build the package (~25 min cold; CI caches to Cachix)
+nix build .#freespeech            # build the package (~25 min cold; CI caches to Cachix)
 nix develop                 # dev shell: rustc, cargo, bun, cargo-tauri, cmake, Vulkan headers
-nix eval .#packages.x86_64-linux.zer0.drvPath   # fast syntax/eval check
+nix eval .#packages.x86_64-linux.freespeech.drvPath   # fast syntax/eval check
 ```
 
 `.nix/bun.nix` holds the per-package Bun fetch hashes generated from `bun.lock`
@@ -332,7 +334,7 @@ without running `bun install`.
 
 Two deliberate differences from a source build:
 
-- **The updater is force-disabled.** The package sets `ZER0_DISABLE_UPDATER=1`
+- **The updater is force-disabled.** The package sets `FREESPEECH_DISABLE_UPDATER=1`
   in its wrapper: self-update cannot work against an immutable `/nix/store` path.
   Updater artifacts are not signed from Nix either — the flake patches
   `bundle.createUpdaterArtifacts` off, since the signing key is not available
@@ -343,17 +345,17 @@ Two deliberate differences from a source build:
   app with `graphical-session.target`:
 
   ```nix
-  inputs.zer0.url = "github:NairoDorian/S2B2S";
+  inputs.freespeech.url = "github:NairoDorian/S2B2S";
 
   # NixOS — system package + the udev rule
   nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
-    modules = [ zer0.nixosModules.default { programs.zer0.enable = true; } ];
+    modules = [ freespeech.nixosModules.default { programs.freespeech.enable = true; } ];
   };
   users.users.you.extraGroups = [ "input" ];
 
   # home-manager — a systemd user service that autostarts it
-  imports = [ zer0.homeManagerModules.default ];
-  services.zer0.enable = true;
+  imports = [ freespeech.homeManagerModules.default ];
+  services.freespeech.enable = true;
   ```
 
 ## Troubleshooting
@@ -362,15 +364,15 @@ Two deliberate differences from a source build:
 
 Local builds use the ad-hoc `signingIdentity: "-"`. A rebuild can have a new macOS code
 identity while the old **System Settings > Privacy & Security > Accessibility** entry
-remains visibly enabled, leaving ZER0 on `Waiting...`.
+remains visibly enabled, leaving FreeSpeech on `Waiting...`.
 
-After installing the final bundle at `/Applications/ZER0.app`, quit ZER0, clear only its
+After installing the final bundle at `/Applications/FreeSpeech.app`, quit FreeSpeech, clear only its
 stale Accessibility record, then reopen it:
 
 ```bash
-osascript -e 'tell application id "com.nairodorian.zer0" to quit' || true
-tccutil reset Accessibility com.nairodorian.zer0
-open /Applications/ZER0.app
+osascript -e 'tell application id "com.nairodorian.freespeech" to quit' || true
+tccutil reset Accessibility com.nairodorian.freespeech
+open /Applications/FreeSpeech.app
 ```
 
 Grant Accessibility again when prompted. This does not reset Microphone or other TCC
@@ -380,8 +382,8 @@ For optional diagnosis, compare the designated requirements of the previous and 
 bundles:
 
 ```bash
-codesign -dr - /path/to/previous/ZER0.app 2>&1
-codesign -dr - /Applications/ZER0.app 2>&1
+codesign -dr - /path/to/previous/FreeSpeech.app 2>&1
+codesign -dr - /Applications/FreeSpeech.app 2>&1
 ```
 
 An ad-hoc requirement contains a `cdhash`; a changed requirement confirms the rebuild is
@@ -397,7 +399,7 @@ and stale-permission report.
 The error from Tauri:
 
 ```
-Bundling ZER0_*_amd64.AppImage
+Bundling FREESPEECH_*_amd64.AppImage
 failed to bundle project `failed to run linuxdeploy`
 ```
 
@@ -406,7 +408,7 @@ Tauri swallows the real linuxdeploy error. To see it, run linuxdeploy manually:
 ```bash
 cd src-tauri/target/release/bundle/appimage
 ~/.cache/tauri/linuxdeploy-x86_64.AppImage --appimage-extract-and-run \
-  --appdir ZER0.AppDir --plugin gtk --output appimage
+  --appdir FreeSpeech.AppDir --plugin gtk --output appimage
 ```
 
 **Workaround:** The binary, deb, and rpm bundles all build fine — only the AppImage step fails. To skip it:
@@ -482,7 +484,7 @@ around either case with a short Cargo target directory:
 $env:CARGO_TARGET_DIR = "C:\h"
 
 # Or persist it for all future terminals (note: redirects ALL your
-# Rust projects' build output, not just ZER0):
+# Rust projects' build output, not just FreeSpeech):
 [Environment]::SetEnvironmentVariable('CARGO_TARGET_DIR', 'C:\h', 'User')
 ```
 
@@ -493,11 +495,11 @@ and `bun run tauri build` work normally.
 
 ### Windows `tauri build` fails at bundling with `program not found`
 
-If the build compiles all the way to `Built application at: ...\zer0.exe` and
+If the build compiles all the way to `Built application at: ...\freespeech.exe` and
 then fails with:
 
 ```
-Signing C:\...\zer0.exe with a custom signing command
+Signing C:\...\freespeech.exe with a custom signing command
 failed to bundle project `program not found`
 ```
 

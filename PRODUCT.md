@@ -14,7 +14,7 @@ desktop (macOS, Windows, Linux — Tauri 3 shell, native window per platform)
 
 ## Product Purpose
 
-ZER0 is an ultra-low-latency, private, desktop speech-to-text platform built for real-time dictation, model orchestration, and audio intelligence. It serves as both an everyday voice interface and the architectural root foundation for a future unified all-in-one STT + TTS + local Brain platform.
+FreeSpeech is an ultra-low-latency, private, desktop speech-to-text platform built for real-time dictation, model orchestration, and audio intelligence. It serves as both an everyday voice interface and the architectural root foundation for a future unified all-in-one STT + TTS + local Brain platform.
 
 Success means speech converts into text instantaneously with zero perceived lag, running completely on-device without cloud telemetry, in a focused, distraction-free environment.
 
@@ -45,7 +45,7 @@ Unlike cloud transcription wrappers or heavy electron utilities:
 
 ## Brand Commitments
 
-- **Product Name**: Managed exclusively through `scripts/app-meta.ts` (currently ZER0); never hardcoded as static strings in source code.
+- **Product Name**: Managed exclusively through `scripts/app-meta.ts` (currently FreeSpeech); never hardcoded as static strings in source code.
 - **Visual Personality**: Sharp-edged, precision-engineered, dark, épuré, technical, and unobtrusive.
 - **Attribution & Provenance**: MIT-licensed upstream project lineage preserved in license notices; distinct identity and architecture maintained in all product surfaces.
 

@@ -3318,8 +3318,9 @@ pub fn normalize_binding(s: &str) -> String {
 /// Update checks are forced off (without touching the persisted setting) when
 /// the `DISABLE_UPDATER` flag is set — e.g. by the Nix package, since
 /// self-update can't work against an immutable /nix/store install. The full
-/// variable name is `{ENV_PREFIX}DISABLE_UPDATER`; the pre-0.9.7
-/// `HANDY_DISABLE_UPDATER` is still honoured.
+/// variable name is `{ENV_PREFIX}DISABLE_UPDATER`; the spellings of former
+/// releases (`LEGACY_ENV_PREFIXES`, `HANDY_DISABLE_UPDATER` among them) are
+/// still honoured.
 pub fn update_checks_forced_disabled() -> bool {
     use std::sync::OnceLock;
     static IS_UPDATER_DISABLED: OnceLock<bool> = OnceLock::new();

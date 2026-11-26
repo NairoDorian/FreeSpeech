@@ -1,8 +1,8 @@
-# ZER0 and transcribe.cpp: paired development contract
+# FreeSpeech and transcribe.cpp: paired development contract
 
-Last audited: 2026-10-16. ZER0 and the local transcribe.cpp fork are developed
+Last audited: 2026-10-16. FreeSpeech and the local transcribe.cpp fork are developed
 together. Inspect the engine's implementation when changing capture-to-inference
-behavior, and inspect ZER0's real use when changing the engine. Do not infer the
+behavior, and inspect FreeSpeech's real use when changing the engine. Do not infer the
 consumer contract from an upstream README or an old plan alone.
 
 ## Local peer discovery and branch safety
@@ -15,7 +15,7 @@ consumer contract from an upstream README or an old plan alone.
   canonical folder may still be on main with unrelated uncommitted work.
 - Read both `AGENTS.md` files, engine `CONTRIBUTING.md`, app
   [performance rules](PERFORMANCE.md), and the engine's
-  `docs/zer0-engine-integration.md`. That note is the reciprocal source map.
+  `docs/freespeech-engine-integration.md`. That note is the reciprocal source map.
 - The engine's `docs/fork/README.md` is the entry point to what the fork
   changes against upstream: defaults that differ (each with its off switch),
   the API it adds, and its document map. `docs/environment-variables.md`
@@ -118,7 +118,7 @@ The engine VAD worktree now carries revision 8 of the roadmap, plus
 preprocessing. The source-level review found different Rust/C++ hysteresis and
 hangover rounding, toggle resets that can discard pending audio, and unbounded
 per-model feed channels. A deterministic source probe separates buffer delay
-from compute time; it is not a ZER0 ASR performance claim.
+from compute time; it is not a FreeSpeech ASR performance claim.
 
 VoxLock is an optional enrolled-speaker waveform-isolation candidate. Its live
 auto-enrollment initially passes through audio, so short dictation needs an
@@ -144,7 +144,7 @@ and deleted, so Silero (`transcribe_cpp::vad`) and the engine Earshot
 and ggml 1.0, gained a language allowlist (`RunOptions::allowed_languages`,
 `allowlist_letters`) and a CPU Whisper fix, and is pushed at `63fd4906`. No app
 code changed. One measured VAD fact for the ownership decision above: the
-engine stream gate (enabled by default for ZER0's streams) drops a whole quiet
+engine stream gate (enabled by default for FreeSpeech's streams) drops a whole quiet
 utterance (−62 dBFS RMS) that streams correctly with the gate disabled —
 details and the recommended single owner are in the handoff, §3.
 
@@ -168,7 +168,7 @@ audit about Rust Earshot, `SmoothedVad` and the double gate are history.
   256-sample frame per call), its threshold moved in place by the slider and
   its hangover set per recording (450 / 1650 ms). Onset and pre-roll are
   passed explicitly; the exit edge is the engine's derived one (corrected
-  2026-11-18, below). ZER0's `SpeechClock` still counts the gate's raw
+  2026-11-18, below). FreeSpeech's `SpeechClock` still counts the gate's raw
   `voiced` verdict; the gate's own clock is not read.
 - Noise suppression: `transcribe_cpp::Denoiser` inside `DenoiseChain`; params
   cross the FFI only when a slider moved; `flush` replaces the silent frame.
@@ -284,10 +284,10 @@ Moved by `bun run update` (the git pin tracks the fork's `main`), from
 
 - **Parakeet takes `RunOptions::vocabulary`** (upstream #221, `35d86179`):
   the TDT and RNN-T greedy decoders use the terms as phrase boosting, and the
-  model advertises `Feature::Vocabulary` for every non-CTC head. ZER0 reads
+  model advertises `Feature::Vocabulary` for every non-CTC head. FreeSpeech reads
   the feature per model (`vocabulary_for_model`), so Parakeet batch runs now
   send the custom words and skip the fuzzy post-correction with no app change.
-  Streaming and CTC heads ignore the terms; ZER0's live streams never sent
+  Streaming and CTC heads ignore the terms; FreeSpeech's live streams never sent
   them, so they keep the fuzzy correction. Boosting only re-ranks a token the
   model already chose to emit, so it cannot produce the read-back
   `echoes_vocabulary` guards against.
@@ -299,7 +299,7 @@ out` folders. Needed by the stable 1.100 / nightly 1.102 toolchains the app
 - **ggml 1.0.0** (`cfa237c2`, then master `d9fe7bff`, examples only).
 - **System BLAS off by default** (`a0729fa5`): libtranscribe no longer links
   OpenBLAS on Linux (Apple keeps Accelerate); the engine measured no
-  significant difference. ZER0 dropped the OpenBLAS runtime dependency from
+  significant difference. FreeSpeech dropped the OpenBLAS runtime dependency from
   its deb / rpm bundles, BUILD.md and CI on 2026-11-27, porting upstream
   Handy `1f2e9ea9` (#2565), which made the same change after a Linux build.
   `-DTRANSCRIBE_USE_SYSTEM_BLAS=ON` in `TRANSCRIBE_CMAKE_ARGS` restores the
@@ -313,7 +313,7 @@ suite (see the dependency commit).
 ## Update: 2026-11-18 (app side, a contract the app now relies on)
 
 - **`ErrorKind::Backend` from run / feed / finalize is now load-bearing.**
-  ZER0's in-process recovery (upstream `2eab8fc`, adapted; `transcription.rs`
+  FreeSpeech's in-process recovery (upstream `2eab8fc`, adapted; `transcription.rs`
   `BackendRunError`, `transcribe_recovering`) drops an engine whose `run`
   returned it, reloads the model once on the same backend, then on CPU for
   the session; a stream whose `feed` returned it stops feeding and the batch
@@ -324,6 +324,6 @@ suite (see the dependency commit).
 - **A CUDA fault still ends the process.** ggml's CUDA backend reports errors
   through `GGML_ABORT`, so nothing comes back to recover from. Upstream
   survives it only by running the engine in a worker process (declined for
-  ZER0, D2). An engine-side option to return CUDA errors as
+  FreeSpeech, D2). An engine-side option to return CUDA errors as
   `TRANSCRIBE_ERR_BACKEND` instead of aborting would make CUDA, the first-
   choice backend, recoverable too; the app needs no change for it.

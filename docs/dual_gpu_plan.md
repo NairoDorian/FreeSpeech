@@ -1,6 +1,6 @@
-# ZER0 Dual-GPU & Vulkan Backend Architecture Plan (Rev 2.0)
+# FreeSpeech Dual-GPU & Vulkan Backend Architecture Plan (Rev 2.0)
 
-**Target Project**: ZER0 (`Handy_V2`)  
+**Target Project**: FreeSpeech (`Handy_V2`)  
 **Companion Core**: `transcribe.cpp` (`c:\Users\Z\Downloads\PROJECTS\transcribe-fork`)  
 **Detailed Technical Specification**: [`docs/2026-09-dual-gpu-vulkan-and-cuda-plan.md`](file:///C:/Users/Z/Downloads/PROJECTS/Handy_V2/docs/2026-09-dual-gpu-vulkan-and-cuda-plan.md)  
 **Status**: Ready for Execution
@@ -11,7 +11,7 @@
 
 ```mermaid
 flowchart TD
-    App["ZER0 Application (Handy_V2)"] --> Primary["Primary Model (e.g. Whisper Large v3 Turbo)"]
+    App["FreeSpeech Application (Handy_V2)"] --> Primary["Primary Model (e.g. Whisper Large v3 Turbo)"]
     App --> Secondary["Multi-STT Extra Model (e.g. Moonshine Base)"]
 
     subgraph NVIDIA_Subsystem["Discrete GPU: NVIDIA RTX 4070 Laptop (dGPU)"]

@@ -2,7 +2,7 @@
 #
 # Source: `scripts/app-meta.ts` — run `bun run meta:sync` to regenerate.
 #
-# NixOS module for ZER0 speech-to-text.
+# NixOS module for FreeSpeech speech-to-text.
 #
 # Handles system-level configuration that the package wrapper cannot:
 #   - udev rule for /dev/uinput (the handy-keys evdev grab re-injects
@@ -12,12 +12,12 @@
 #
 # Usage in your flake:
 #
-#   inputs.zer0.url = "https://github.com/NairoDorian/S2B2S";
+#   inputs.freespeech.url = "https://github.com/NairoDorian/FreeSpeech";
 #
 #   nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
 #     modules = [
-#       zer0.nixosModules.default
-#       { programs.zer0.enable = true; }
+#       freespeech.nixosModules.default
+#       { programs.freespeech.enable = true; }
 #     ];
 #   };
 {
@@ -27,16 +27,16 @@
   ...
 }:
 let
-  cfg = config.programs.zer0;
+  cfg = config.programs.freespeech;
 in
 {
-  options.programs.zer0 = {
-    enable = lib.mkEnableOption "ZER0 offline speech-to-text";
+  options.programs.freespeech = {
+    enable = lib.mkEnableOption "FreeSpeech offline speech-to-text";
 
     package = lib.mkOption {
       type = lib.types.package;
-      defaultText = lib.literalExpression "zer0.packages.\${system}.zer0";
-      description = "The ZER0 package to use.";
+      defaultText = lib.literalExpression "freespeech.packages.\${system}.freespeech";
+      description = "The FreeSpeech package to use.";
     };
   };
 

@@ -367,7 +367,7 @@ let md = `# Cousin Repository Tracker: AIVORelay (${totalCommits} Commits Ahead)
 
 ## 📌 Executive Overview
 
-**AIVORelay** is the sister/cousin fork of Handy created by Maxim Fomin (\`MaxITService\`). While our fork (**ZER0**) focuses deeply on **extreme real-time performance, pure-Rust DSP/VAD, multi-STT consensus inference, dual-GPU concurrency (CUDA + Vulkan), and minimal terminal design**, AIVORelay focused on **comprehensive feature expansion, cloud relays, text-to-speech (TTS), and deep Windows desktop utility integration**.
+**AIVORelay** is the sister/cousin fork of Handy created by Maxim Fomin (\`MaxITService\`). While our fork (**FreeSpeech**) focuses deeply on **extreme real-time performance, pure-Rust DSP/VAD, multi-STT consensus inference, dual-GPU concurrency (CUDA + Vulkan), and minimal terminal design**, AIVORelay focused on **comprehensive feature expansion, cloud relays, text-to-speech (TTS), and deep Windows desktop utility integration**.
 
 Both apps share the same upstream roots and solve real user problems in complementary ways. This document tracks all **${totalCommits} commits** ahead of upstream to preserve knowledge, draw architectural inspiration, and easily follow future updates.
 
@@ -388,9 +388,9 @@ for (const [key, meta] of Object.entries(CATEGORIES)) {
 md += `
 ---
 
-## 💡 Top Architectural Inspirations for ZER0
+## 💡 Top Architectural Inspirations for FreeSpeech
 
-Here are the highest-value capabilities implemented in AIVORelay that directly inform ZER0's roadmap:
+Here are the highest-value capabilities implemented in AIVORelay that directly inform FreeSpeech's roadmap:
 
 ### 1. Unified Text-to-Speech (TTS) Platform (Kokoro + Edge Read Aloud + WinRT)
 * **What AIVORelay built**:
@@ -399,24 +399,24 @@ Here are the highest-value capabilities implemented in AIVORelay that directly i
   - \`src-tauri/src/managers/windows_tts.rs\`: WinRT / SAPI installed system voices with apartment isolation.
   - Batch document converter (\`.txt\` / \`.md\` to audio files) with watch folders.
   - Interactive "Speak Selected Text" global hotkey + dedicated playback HUD overlay.
-* **ZER0 Opportunity**: Our \`PRODUCT.md\` explicitly specifies ZER0 as the base for a future **unified STT + TTS + local Brain platform**. AIVORelay provides an exact, working blueprint.
+* **FreeSpeech Opportunity**: Our \`PRODUCT.md\` explicitly specifies FreeSpeech as the base for a future **unified STT + TTS + local Brain platform**. AIVORelay provides an exact, working blueprint.
 
 ### 2. Application-Aware Transcription Profiles
 * **What AIVORelay built**:
   - \`src-tauri/src/active_app.rs\`: Fast Win32 API calls (\`GetForegroundWindow\`, \`GetWindowThreadProcessId\`, \`QueryFullProcessImageNameW\`) evaluated **strictly upon hotkey press** (zero idle polling).
   - Matches executable names (\`code.exe\`, \`slack.exe\`), window titles, or paths.
   - Dynamically routes transcription to custom LLM prompts, languages, or models.
-* **ZER0 Opportunity**: Dictating code into Cursor/VSCode versus dictating chat messages in Discord requires different prompts/formats. Bringing this into ZER0 adds immense power with zero latency penalty.
+* **FreeSpeech Opportunity**: Dictating code into Cursor/VSCode versus dictating chat messages in Discord requires different prompts/formats. Bringing this into FreeSpeech adds immense power with zero latency penalty.
 
 ### 3. Smart Decapitalize After Manual Edit (Backspace Monitor)
 * **What AIVORelay built**:
   - \`src-tauri/src/text_replacement_decapitalize.rs\`: Passive backspace listener. If a user dictates text, spots a typo, hits backspace to edit, and continues speaking within a timeout window, the next phrase automatically decapitalizes its first letter so the sentence flows naturally!
-* **ZER0 Opportunity**: Solves a universal frustration in continuous voice dictation without impacting performance.
+* **FreeSpeech Opportunity**: Solves a universal frustration in continuous voice dictation without impacting performance.
 
 ### 4. WebView2 Crash Resilience & Window Reconstruction
 * **What AIVORelay built**:
   - \`src-tauri/src/webview_recovery.rs\`: Listens to WebView2 \`ICoreWebView2ProcessFailedEventArgs\`. When gaming hooks (e.g. RivaTuner \`RTSSHooks64.dll\`) crash the webview process, AIVORelay catches it and reconstructs the windows instead of dying or showing a permanent black/white box.
-* **ZER0 Opportunity**: Makes Windows desktop stability rock-solid.
+* **FreeSpeech Opportunity**: Makes Windows desktop stability rock-solid.
 
 ### 5. Browser Connector (AI Relay to ChatGPT/Claude) & Screen Capture
 * **What AIVORelay built**:
@@ -473,7 +473,7 @@ When new commits are pushed to AIVORelay:
 cd C:\\Users\\Z\\Downloads\\PROJECTS\\STT_BRAIN_TTS\\AIVORelay
 git pull origin main
 
-# 2. In ZER0 directory, run the tracking script:
+# 2. In FreeSpeech directory, run the tracking script:
 cd C:\\Users\\Z\\Downloads\\PROJECTS\\Handy_V2
 bun run scripts/track-aivorelay.ts
 \`\`\`

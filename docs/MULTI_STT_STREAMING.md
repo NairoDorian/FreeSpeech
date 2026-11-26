@@ -236,7 +236,7 @@ was unreachable, so:
 
 ### The evidence
 
-From `zer0.log`, 2026-09-12, the user's own sessions — and the message refutes
+From `freespeech.log`, 2026-09-12, the user's own sessions — and the message refutes
 itself, because the figure it reports is healthy:
 
 ```

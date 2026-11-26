@@ -5,14 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-> This file tracks **ZER0**, a personal fork of
-> [cjpais/Handy](https://github.com/cjpais/Handy) maintained on the
-> `Handy_Multi_STT` branch of
-> [NairoDorian/S2B2S](https://github.com/NairoDorian/S2B2S). Handy is the
+> This file tracks **FreeSpeech**, which began as a personal fork of
+> [cjpais/Handy](https://github.com/cjpais/Handy), was called **ZER0** from
+> 0.9.7 to 0.10.0, and lives on `main` of
+> [NairoDorian/FreeSpeech](https://github.com/NairoDorian/FreeSpeech) (until
+> 2026-11-26, the `Handy_Multi_STT` branch of the now archived
+> [NairoDorian/S2B2S](https://github.com/NairoDorian/S2B2S)). Handy is the
 > upstream this project forked from — its releases, release notes and issue
 > tracker are not this project's.
 >
-> The fork's version tracked upstream's through 0.9.6. From **0.9.7** ZER0
+> The fork's version tracked upstream's through 0.9.6. From **0.9.7** the project
 > carries its own version and cuts its own releases, so entries move out of
 > `[Unreleased]` into a version heading at release time. Nothing has been
 > released under that version yet, so everything the fork has done since 0.9.6
@@ -22,6 +24,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > `src/content/release-notes/`.
 
 ## [Unreleased]
+
+### Changed
+
+- **ZER0 is now FreeSpeech (2026-11-26).** A new name, bundle identifier
+  (`com.nairodorian.freespeech`), binary (`freespeech`), environment prefix
+  (`FREESPEECH_`) and repository: github.com/NairoDorian/FreeSpeech, which
+  carries the full history; S2B2S is archived. The first start moves a ZER0
+  or Handy install's data into place: the newest former profile is moved and
+  older ones stay as backups, a local folder that holds only the new logs takes
+  the former entries (the webview profile with the UI preferences), and
+  settings that stored a path inside the old folder (a llama.cpp install, a
+  vault folder) follow it. `ZER0_…` and `HANDY_…` variables and both former
+  portable markers keep working, and the Recall vault format is unchanged.
+  The installer's portable-upgrade check now recognises every marker; it had
+  only ever recognised Handy's.
+- **Dependencies only move forward (2026-11-26).** The commit gate refuses a
+  `Cargo.lock` or `bun.lock` with anything older than at HEAD, dependency
+  edges included, and the engine's pin refresh moves only the pin.
 
 ### Added
 

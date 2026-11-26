@@ -12,7 +12,7 @@
 ;   - `!include "Win\RestartManager.nsh"`, which defines `RestartManager_StartSession`
 ;     and the two other macros the new `CheckIfAppIsRunning` inserts.
 ;   - the full path at both `CheckIfAppIsRunning` call sites: the macro hands its
-;     first argument to `RmRegisterResources`, which fails on a bare `ZER0.exe`,
+;     first argument to `RmRegisterResources`, which fails on a bare `FreeSpeech.exe`,
 ;     and a failed registration skips the running-app check altogether.
 
 Unicode true
@@ -617,9 +617,13 @@ Function .onInit
     FileOpen $1 "$INSTDIR\portable" r
     FileRead $1 $2
     FileClose $1
-    ${If} $2 == "Handy Portable Mode"
+    ; Every marker a release has written: the current one, then each former
+    ; name's, newest first (`app_identity::LEGACY_PORTABLE_MARKERS`).
+    ${If} $2 == "FreeSpeech Portable Mode"
+    ${OrIf} $2 == "ZER0 Portable Mode"
+    ${OrIf} $2 == "Handy Portable Mode"
       StrCpy $PortableMode 1
-    ${OrIf} $2 == ""
+    ${ElseIf} $2 == ""
     ${AndIf} ${FileExists} "$INSTDIR\Data"
       StrCpy $PortableMode 1
     ${EndIf}
@@ -788,7 +792,7 @@ Section Install
   ; --- PORTABLE MODE --- Create portable marker and Data directory
   ${If} $PortableMode = 1
     FileOpen $0 "$INSTDIR\portable" w
-    FileWrite $0 "ZER0 Portable Mode"
+    FileWrite $0 "FreeSpeech Portable Mode"
     FileClose $0
     CreateDirectory "$INSTDIR\Data"
     DetailPrint "Portable mode: created marker file and Data directory."

@@ -1,6 +1,6 @@
 # Performance and latency rules
 
-ZER0 is a real-time tool: a hotkey press must feel instant, the transcript must
+FreeSpeech is a real-time tool: a hotkey press must feel instant, the transcript must
 land before the user looks up, and nothing the settings window does may steal
 time from the audio thread. Every change in this project is judged against this
 file first. **Read it before adding a feature, a setting, a poll, an event, a
@@ -71,7 +71,7 @@ dependency or a thread.**
    unsubscribes on unmount and stops any backend activity it started (the
    live VAD test stops itself).
 10. **Measure before and after.** Use the Statistics page, the debug timing
-    logs and the opt-in probes (`ZER0_PROBE_WAV` — the prefix is
+    logs and the opt-in probes (`FREESPEECH_PROBE_WAV` — the prefix is
     `app_identity::ENV_PREFIX`, so read it rather than copy it if it ever
     changes). A change that adds a dependency, a thread or a poll states its
     cost in the commit message.

@@ -1,11 +1,11 @@
 [package]
-name = "zer0"
+name = "freespeech"
 version = "0.10.0"
-description = "ZER0 — real-time speech to text"
+description = "FreeSpeech — real-time speech to text"
 authors = ["NairoDorian"]
 edition = "2024"
 license = "MIT"
-default-run = "zer0"
+default-run = "freespeech"
 
 [profile.dev]
 incremental = true
@@ -144,7 +144,7 @@ specta = "2.0.0-rc.28"
 specta-typescript = "0.0.15"
 # No default features: upstream's default `v2` feature pins `tauri = "2"`, which a
 # Tauri 3 graph cannot resolve (both majors declare `links = "Tauri"`). The fork
-# has `default = []`; this keeps ZER0 correct on upstream too (docs/FORKS.md).
+# has `default = []`; this keeps the app correct on upstream too (docs/FORKS.md).
 tauri-specta = { version = "2.0.0-rc.29", default-features = false, features = ["derive", "typescript"] }
 tauri-plugin-macos-permissions = "2.3.0"
 tauri-plugin-dialog = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v3" }

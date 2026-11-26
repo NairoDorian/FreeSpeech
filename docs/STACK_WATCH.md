@@ -1,6 +1,6 @@
 # Stack Watch — keeping up with the technologies underneath the app
 
-ZER0 is built on tools that move: Solid 2 is a release candidate, Tauri (the
+FreeSpeech is built on tools that move: Solid 2 is a release candidate, Tauri (the
 app is on the 3.x alpha) and Bun cut releases weekly, Tailwind and Oxlint ship continuously, and the
 transcribe.cpp fork is pinned to a moving `main`. This project's own
 conventions (AGENTS.md) are authoritative for how we write code, but the
@@ -44,7 +44,7 @@ or a GitHub repo + path prefix whose `.md`/`.mdx` tree should be mirrored.
 2. **Read the deltas** — open the changed pages in `docs/vendor/`. This is
    the step that produces value: not the mirror, the reading.
 3. **Evaluate against the app** — for each notable change, ask the only
-   question that matters here: _does this improve ZER0, or does it break
+   question that matters here: _does this improve FreeSpeech, or does it break
    something we do?_ Concretely:
    - a new API that removes code we hand-rolled (a plugin, a helper, a shim),
    - a performance recommendation on a path we care about (see

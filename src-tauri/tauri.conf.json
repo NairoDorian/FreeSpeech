@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/3",
-  "productName": "ZER0",
+  "productName": "FreeSpeech",
   "version": "0.10.0",
-  "identifier": "com.nairodorian.zer0",
+  "identifier": "com.nairodorian.freespeech",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -46,7 +46,7 @@
       "deb": {
         "depends": ["libgtk-layer-shell0", "libssl3t64 | libssl3"],
         "files": {
-          "/usr/lib/ZER0": "transcribe-libs"
+          "/usr/lib/FreeSpeech": "transcribe-libs"
         }
       },
       "rpm": {
@@ -55,7 +55,7 @@
           "type": "none"
         },
         "files": {
-          "/usr/lib/ZER0": "transcribe-libs"
+          "/usr/lib/FreeSpeech": "transcribe-libs"
         }
       },
       "appimage": {
@@ -76,7 +76,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk3RDlERTVCRDg1Q0NBQkEKUldTNnlsellXOTdabHovVEt3cHRvSzVqM2dSYmpsYytSWE9VMEM1VEs3aG5UK0NpSVZTSEUwWmEK",
       "endpoints": [
-        "https://github.com/NairoDorian/S2B2S/releases/latest/download/latest.json"
+        "https://github.com/NairoDorian/FreeSpeech/releases/latest/download/latest.json"
       ]
     }
   }

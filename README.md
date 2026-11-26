@@ -1,30 +1,31 @@
-# ZER0
+# FreeSpeech
 
 **A free, open source, and extensible speech-to-text application that works completely offline.**
 
-ZER0 is a cross-platform desktop application that provides simple, privacy-focused speech transcription. Press a shortcut, speak, and have your words appear in any text field. This happens on your own computer without sending any information to the cloud.
+FreeSpeech is a cross-platform desktop application that provides simple, privacy-focused speech transcription. Press a shortcut, speak, and have your words appear in any text field. This happens on your own computer without sending any information to the cloud.
 
 It began as a personal fork of [Handy](https://github.com/cjpais/Handy) by CJ Pais — the
 MIT-licensed foundation this project is built on, credited in [License](#license) — and
 has since grown into its own project with its own name, its own identity and its own
-release line.
+release line. Until version 0.10.0 it was called **ZER0**; a ZER0 install's settings,
+history, recordings and notes move over the first time FreeSpeech starts.
 
-## Why ZER0?
+## Why FreeSpeech?
 
-ZER0 was created to fill the gap for a truly open source, extensible speech-to-text tool.
+FreeSpeech was created to fill the gap for a truly open source, extensible speech-to-text tool.
 
 - **Free**: Accessibility tooling belongs in everyone's hands, not behind a paywall
-- **Open Source**: Together we can build further. Extend ZER0 for yourself and contribute to something bigger
+- **Open Source**: Together we can build further. Extend FreeSpeech for yourself and contribute to something bigger
 - **Private**: Your voice stays on your computer. Get transcriptions without sending audio to the cloud
 - **Simple**: One tool, one job. Transcribe what you say and put it into a text box
 
-ZER0 isn't trying to be the best speech-to-text app—it's trying to be the most forkable one.
+FreeSpeech isn't trying to be the best speech-to-text app—it's trying to be the most forkable one.
 
 ## How It Works
 
 1. **Press** a configurable keyboard shortcut: hold it to record and release to stop, or tap it to toggle recording on and off (Hold-only and Toggle-only modes are also available)
 2. **Speak** your words while the shortcut is active
-3. **Release** and ZER0 transcribes your speech with the model you selected — no cloud, no API keys
+3. **Release** and FreeSpeech transcribes your speech with the model you selected — no cloud, no API keys
 4. **Get** your transcribed text pasted directly into whatever app you're using
 
 The process is entirely local:
@@ -52,7 +53,7 @@ This fork adds **Multi-STT** — run several speech-to-text models simultaneousl
 
 **To enable:** Open Settings → Multi-STT, toggle on, size the list with the page's **Number of extra models** dropdown (1 to 8 slots, 3 on a fresh install), fill the slots you want, set the Multi-STT hotkey on that same page, and optionally configure a merge prompt using the same post-processing LLM provider.
 
-> **Note:** this fork ships **without** default transcription hotkeys (both `transcribe` and `multi_stt_transcribe` are empty on a fresh install, so the performance-mode simulated keys can never retrigger ZER0). Set `transcribe` in Settings → General → Shortcuts and `multi_stt_transcribe` on the Multi-STT page.
+> **Note:** this fork ships **without** default transcription hotkeys (both `transcribe` and `multi_stt_transcribe` are empty on a fresh install, so the performance-mode simulated keys can never retrigger FreeSpeech). Set `transcribe` in Settings → General → Shortcuts and `multi_stt_transcribe` on the Multi-STT page.
 
 ### Other Fork Additions
 
@@ -77,21 +78,27 @@ This fork adds **Multi-STT** — run several speech-to-text models simultaneousl
 - **Status-bar model controls**: switch models, pick a quantization (with an in-place benchmark against your latest recording), and choose a native streaming latency preset
 - **History tools**: delete all recordings, vacuum the database, open the models folder
 - **Accent colour palette**, configurable microphone idle timeout, append-trailing-newline option
-- **Headless CLI**: `zer0 --transcribe-file recording.wav` (see below)
+- **Headless CLI**: `freespeech --transcribe-file recording.wav` (see below)
 
 ## Quick Start
 
 ### Installation
 
-1. Download the latest release from the [releases page](https://github.com/NairoDorian/S2B2S/releases)
+1. Download the latest release from the [releases page](https://github.com/NairoDorian/FreeSpeech/releases)
 2. Install the application
-3. Launch ZER0 and grant necessary system permissions (microphone, accessibility)
+3. Launch FreeSpeech and grant necessary system permissions (microphone, accessibility)
 4. Configure your preferred keyboard shortcuts in Settings
 5. Start transcribing!
 
-> **Note:** there is no Homebrew cask or winget package for ZER0, and no
+> **Note:** there is no Homebrew cask or winget package for FreeSpeech, and no
 > distribution channel we do not publish ourselves. Releases come from this
 > repository's release page only.
+
+> **First launch:** the builds are not code-signed yet. On Windows, SmartScreen
+> may say "Windows protected your PC": choose **More info → Run anyway**. On
+> macOS, if the app "cannot be opened", allow it under **System Settings →
+> Privacy & Security → Open Anyway**. Updates after that are verified against
+> the project's own update signature.
 
 ### Development Setup
 
@@ -99,7 +106,7 @@ For detailed build instructions including platform-specific requirements, see [B
 
 ## Architecture
 
-ZER0 is built as a Tauri application combining:
+FreeSpeech is built as a Tauri application combining:
 
 - **Frontend**: Solid 2 + TypeScript with Tailwind CSS for the settings UI (migrated from React on 2026-09-13)
 - **Backend**: Rust for system integration, audio processing, and ML inference
@@ -135,41 +142,41 @@ ZER0 is built as a Tauri application combining:
 
 ### Debug Mode
 
-ZER0 includes an advanced debug mode for development and troubleshooting. Access it by pressing:
+FreeSpeech includes an advanced debug mode for development and troubleshooting. Access it by pressing:
 
 - **macOS**: `Cmd+Shift+D`
 - **Windows/Linux**: `Ctrl+Shift+D`
 
 ### CLI Parameters
 
-ZER0 supports command-line flags for controlling a running instance and customizing startup behavior. These work on all platforms (macOS, Windows, Linux).
+FreeSpeech supports command-line flags for controlling a running instance and customizing startup behavior. These work on all platforms (macOS, Windows, Linux).
 
-**Remote control flags** (sent to an already-running instance via the single-instance plugin; if ZER0 isn't running, the toggle flags start it and begin recording):
+**Remote control flags** (sent to an already-running instance via the single-instance plugin; if FreeSpeech isn't running, the toggle flags start it and begin recording):
 
 ```bash
-zer0 --toggle-transcription    # Toggle recording on/off
-zer0 --toggle-post-process     # Toggle recording with post-processing on/off
-zer0 --cancel                  # Cancel the current operation
+freespeech --toggle-transcription    # Toggle recording on/off
+freespeech --toggle-post-process     # Toggle recording with post-processing on/off
+freespeech --cancel                  # Cancel the current operation
 ```
 
 **Startup flags:**
 
 ```bash
-zer0 --start-hidden            # Start without showing the main window
-zer0 --no-tray                 # Start without the system tray icon
-zer0 --debug                   # Accepted for compatibility (logging is always Trace, see docs/LOGGING.md)
-zer0 --help                    # Show all available flags
+freespeech --start-hidden            # Start without showing the main window
+freespeech --no-tray                 # Start without the system tray icon
+freespeech --debug                   # Accepted for compatibility (logging is always Trace, see docs/LOGGING.md)
+freespeech --help                    # Show all available flags
 ```
 
 **Headless transcription** (runs the batch path without a microphone and exits; the model must already be installed):
 
 ```bash
-zer0 --transcribe-file recording.wav          # mono WAV: 16/24-bit PCM or 32-bit float, any sample rate
-zer0 -f recording.wav --model <model-id>      # pick a model instead of the selected one
-zer0 -f recording.wav --device-index 0        # GPU device for GGUF models
-zer0 -f recording.wav --repeat 3 --json       # timing runs, machine-readable output
-zer0 --list-models                            # installed model ids
-zer0 --list-devices                           # compute devices (CPU and GPU) with their indices
+freespeech --transcribe-file recording.wav          # mono WAV: 16/24-bit PCM or 32-bit float, any sample rate
+freespeech -f recording.wav --model <model-id>      # pick a model instead of the selected one
+freespeech -f recording.wav --device-index 0        # GPU device for GGUF models
+freespeech -f recording.wav --repeat 3 --json       # timing runs, machine-readable output
+freespeech --list-models                            # installed model ids
+freespeech --list-devices                           # compute devices (CPU and GPU) with their indices
 ```
 
 `--stream-chunk-ms` replays the same WAV through a model's **native streaming**
@@ -177,27 +184,27 @@ path instead of the batch one, which is how the streaming latency presets are
 benchmarked headlessly:
 
 ```bash
-zer0 -f recording.wav --stream-chunk-ms 320          # feed the stream in 320 ms slices
-zer0 -f recording.wav --stream-chunk-ms 320 --stream-att-right 2   # Nemotron right context
-zer0 -f recording.wav --stream-chunk-ms 320 --stream-r2t2-chunk-ms 160  # R2T2 decode chunk
+freespeech -f recording.wav --stream-chunk-ms 320          # feed the stream in 320 ms slices
+freespeech -f recording.wav --stream-chunk-ms 320 --stream-att-right 2   # Nemotron right context
+freespeech -f recording.wav --stream-chunk-ms 320 --stream-r2t2-chunk-ms 160  # R2T2 decode chunk
 ```
 
 Flags can be combined for autostart scenarios:
 
 ```bash
-zer0 --start-hidden --no-tray
+freespeech --start-hidden --no-tray
 ```
 
-> **macOS tip:** When ZER0 is installed as an app bundle, invoke the binary directly:
+> **macOS tip:** When FreeSpeech is installed as an app bundle, invoke the binary directly:
 >
 > ```bash
-> /Applications/ZER0.app/Contents/MacOS/zer0 --toggle-transcription
+> /Applications/FreeSpeech.app/Contents/MacOS/freespeech --toggle-transcription
 > ```
 
 ### Transcription Hook
 
-Advanced users can rewrite the text right before ZER0 pastes it. Put an
-executable in a `hooks` folder inside ZER0's app data directory (About → App
+Advanced users can rewrite the text right before FreeSpeech pastes it. Put an
+executable in a `hooks` folder inside FreeSpeech's app data directory (About → App
 Data Directory; the usual paths are listed under
 [Manual Model Installation](#manual-model-installation-for-proxy-users-or-network-restrictions)):
 
@@ -207,7 +214,7 @@ Data Directory; the usual paths are listed under
   the text as its pipeline input. No console window opens.
 - **macOS / Linux**: `hooks/transcription`, made executable (`chmod +x`).
 
-ZER0 writes the text to the hook's stdin, after any post-processing or
+FreeSpeech writes the text to the hook's stdin, after any post-processing or
 Multi-STT merge, and pastes what it prints. One trailing line ending is
 removed, and empty output pastes nothing, so a hook can do its own pasting
 instead. If the hook fails, exits with an error or runs longer than 30 seconds,
@@ -216,14 +223,14 @@ always keeps the text as transcribed, and the hook is skipped for text that is
 already typed into the app (direct streaming, the Multi-STT streaming mode) and
 for dictation into the Recall editor.
 
-The hook does not get your shell's `PATH`: on macOS, ZER0 started from the
+The hook does not get your shell's `PATH`: on macOS, FreeSpeech started from the
 Dock or Finder only sees `/usr/bin:/bin:/usr/sbin:/sbin`. Use absolute paths
 for anything else, such as `/opt/homebrew/bin/opencc`.
 
 Windows example that turns a spoken "new line" into a line break:
 
 ```powershell
-# %APPDATA%\com.nairodorian.zer0\hooks\transcription.ps1
+# %APPDATA%\com.nairodorian.freespeech\hooks\transcription.ps1
 $text = -join $input
 $text -replace '\s*\bnew line\b\s*', "`n"
 ```
@@ -231,8 +238,8 @@ $text -replace '\s*\bnew line\b\s*', "`n"
 macOS example that prefixes `#` when Terminal is the frontmost app:
 
 ```bash
-mkdir -p ~/Library/Application\ Support/com.nairodorian.zer0/hooks
-cd ~/Library/Application\ Support/com.nairodorian.zer0/hooks
+mkdir -p ~/Library/Application\ Support/com.nairodorian.freespeech/hooks
+cd ~/Library/Application\ Support/com.nairodorian.freespeech/hooks
 cat > transcription << 'EOF'
 #!/bin/bash
 app=$(osascript -e 'tell application "System Events" to get name of first application process whose frontmost is true')
@@ -243,26 +250,26 @@ chmod +x transcription
 
 ## Known Issues & Current Limitations
 
-This project is actively being developed and has some [known issues](https://github.com/NairoDorian/S2B2S/issues). We believe in transparency about the current state:
+This project is actively being developed and has some [known issues](https://github.com/NairoDorian/FreeSpeech/issues). We believe in transparency about the current state:
 
 ### Bluetooth Headset Microphones (macOS)
 
-Using a Bluetooth headset microphone on macOS may temporarily reduce playback quality or volume while recording because Bluetooth switches to bidirectional audio. Keep your headphones as the output device and select your Mac's built-in or an external microphone in ZER0 to avoid this.
+Using a Bluetooth headset microphone on macOS may temporarily reduce playback quality or volume while recording because Bluetooth switches to bidirectional audio. Keep your headphones as the output device and select your Mac's built-in or an external microphone in FreeSpeech to avoid this.
 
 ### Administrator Apps (Windows)
 
-Windows does not let ZER0 paste or type into an app that runs as administrator. ZER0
+Windows does not let FreeSpeech paste or type into an app that runs as administrator. FreeSpeech
 checks the focused window before it reports a paste, so instead of a silent failure
 you get a notice (tray, footer), and the transcript is in History. With the native
 keyboard implementation the shortcut also does not fire while an administrator app is
-focused. This is how Windows works; to use ZER0 with such apps, run ZER0 as
+focused. This is how Windows works; to use FreeSpeech with such apps, run FreeSpeech as
 administrator too.
 
 ### fn and Globe Key Shortcuts (macOS)
 
 Shortcuts that include the `fn` (Globe) key **only work on Apple keyboards** — your Mac's built-in keyboard or an Apple external keyboard. They will never trigger on a third-party keyboard, even while it is connected to the same Mac.
 
-This is a hardware limitation rather than a ZER0 bug. `fn` is not part of the standard USB HID keyboard specification: Apple reports it through a vendor-specific usage that macOS honors only from Apple devices, while third-party keyboards handle their `Fn` key entirely in firmware and send nothing to the computer. There is no event for ZER0 to listen for.
+This is a hardware limitation rather than a FreeSpeech bug. `fn` is not part of the standard USB HID keyboard specification: Apple reports it through a vendor-specific usage that macOS honors only from Apple devices, while third-party keyboards handle their `Fn` key entirely in firmware and send nothing to the computer. There is no event for FreeSpeech to listen for.
 
 If you switch between a MacBook keyboard and an external one, pick a shortcut built from standard modifiers (`ctrl`, `option`, `shift`, `command`) or a regular key instead.
 
@@ -287,9 +294,9 @@ For reliable text input on Linux, install the appropriate tool for your display 
 - **Ubuntu 26.04**: Has Wayland display server by default. `wtype` does not work, you need to install `ydotool` and configure systemd as described [in the upstream project](https://github.com/cjpais/Handy/pull/557#issuecomment-3781249267).
 - **Wayland**: Install `wtype` (preferred) or `dotool` for text input to work correctly. `wtype` needs the `zwp_virtual_keyboard_manager_v1` protocol, which KDE Plasma and GNOME do not implement — on those, install `kwtype` (KDE's Fake Input protocol) instead
 - **dotool / ydotool setup**: Requires adding your user to the `input` group: `sudo usermod -aG input $USER` (then log out and back in)
-- **Picking one by hand**: Settings → Advanced → Typing Tool, shown when the paste method is **Direct**. Leave it on **Auto** and ZER0 probes the tools above in order for your session type
+- **Picking one by hand**: Settings → Advanced → Typing Tool, shown when the paste method is **Direct**. Leave it on **Auto** and FreeSpeech probes the tools above in order for your session type
 
-Without these tools, ZER0 falls back to enigo which may have limited compatibility, especially on Wayland.
+Without these tools, FreeSpeech falls back to enigo which may have limited compatibility, especially on Wayland.
 
 **Wayland Support (Linux):**
 
@@ -299,7 +306,7 @@ Without these tools, ZER0 falls back to enigo which may have limited compatibili
 **Other Notes:**
 
 - **Runtime library dependency (`libgtk-layer-shell.so.0`)**:
-  - ZER0 links `gtk-layer-shell` on Linux. If startup fails with `error while loading shared libraries: libgtk-layer-shell.so.0`, install the runtime package for your distro:
+  - FreeSpeech links `gtk-layer-shell` on Linux. If startup fails with `error while loading shared libraries: libgtk-layer-shell.so.0`, install the runtime package for your distro:
 
     | Distro        | Package to install    | Example command                        |
     | ------------- | --------------------- | -------------------------------------- |
@@ -309,30 +316,30 @@ Without these tools, ZER0 falls back to enigo which may have limited compatibili
 
   - For building from source on Ubuntu/Debian, you may also need `libgtk-layer-shell-dev`.
 
-- The recording overlay is disabled by default on Linux (**Settings > Overlay**, **"Overlay"** set to **"None"**) because certain compositors treat it as the active window. When the overlay is visible it can steal focus, which prevents ZER0 from pasting back into the application that triggered transcription. If you enable the overlay anyway, be aware that clipboard-based pasting might fail or end up in the wrong window.
-- ZER0 already sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` for itself on Linux before the webview is created, so that workaround is always on. If ZER0 fails to start reliably on Linux, see [Troubleshooting → Linux Startup Crashes or Instability](#linux-startup-crashes-or-instability).
+- The recording overlay is disabled by default on Linux (**Settings > Overlay**, **"Overlay"** set to **"None"**) because certain compositors treat it as the active window. When the overlay is visible it can steal focus, which prevents FreeSpeech from pasting back into the application that triggered transcription. If you enable the overlay anyway, be aware that clipboard-based pasting might fail or end up in the wrong window.
+- FreeSpeech already sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` for itself on Linux before the webview is created, so that workaround is always on. If FreeSpeech fails to start reliably on Linux, see [Troubleshooting → Linux Startup Crashes or Instability](#linux-startup-crashes-or-instability).
 - **Global keyboard shortcuts (Wayland):** On Wayland, system-level shortcuts must be configured through your desktop environment or window manager. Use the [CLI flags](#cli-parameters) as the command for your custom shortcut.
 
   **GNOME:**
   1. Open **Settings > Keyboard > Keyboard Shortcuts > Custom Shortcuts**
   2. Click the **+** button to add a new shortcut
-  3. Set the **Name** to `Toggle ZER0 Transcription`
-  4. Set the **Command** to `zer0 --toggle-transcription`
+  3. Set the **Name** to `Toggle FreeSpeech Transcription`
+  4. Set the **Command** to `freespeech --toggle-transcription`
   5. Click **Set Shortcut** and press your desired key combination (e.g., `Super+O`)
 
   **KDE Plasma:**
   1. Open **System Settings > Shortcuts > Custom Shortcuts**
   2. Click **Edit > New > Global Shortcut > Command/URL**
-  3. Name it `Toggle ZER0 Transcription`
+  3. Name it `Toggle FreeSpeech Transcription`
   4. In the **Trigger** tab, set your desired key combination
-  5. In the **Action** tab, set the command to `zer0 --toggle-transcription`
+  5. In the **Action** tab, set the command to `freespeech --toggle-transcription`
 
   **Sway / i3:**
 
   Add to your config file (`~/.config/sway/config` or `~/.config/i3/config`):
 
   ```ini
-  bindsym $mod+o exec zer0 --toggle-transcription
+  bindsym $mod+o exec freespeech --toggle-transcription
   ```
 
   **Hyprland:**
@@ -340,26 +347,26 @@ Without these tools, ZER0 falls back to enigo which may have limited compatibili
   Add to your config file (`~/.config/hypr/hyprland.conf`):
 
   ```ini
-  bind = $mainMod, O, exec, zer0 --toggle-transcription
+  bind = $mainMod, O, exec, freespeech --toggle-transcription
   ```
 
-- You can also trigger ZER0 externally via Unix signals or the CLI flags, which lets Wayland window managers or other hotkey daemons keep ownership of keybindings:
+- You can also trigger FreeSpeech externally via Unix signals or the CLI flags, which lets Wayland window managers or other hotkey daemons keep ownership of keybindings:
 
-  | Action                                    | Trigger                                                |
-  | ----------------------------------------- | ------------------------------------------------------ |
-  | Toggle transcription                      | `pkill -USR2 -n zer0` or `zer0 --toggle-transcription` |
-  | Toggle transcription with post-processing | `zer0 --toggle-post-process`                           |
+  | Action                                    | Trigger                                                            |
+  | ----------------------------------------- | ------------------------------------------------------------------ |
+  | Toggle transcription                      | `pkill -USR2 -n freespeech` or `freespeech --toggle-transcription` |
+  | Toggle transcription with post-processing | `freespeech --toggle-post-process`                                 |
 
   Example Sway config:
 
   ```ini
-  bindsym $mod+o exec pkill -USR2 -n zer0
-  bindsym $mod+p exec zer0 --toggle-post-process
+  bindsym $mod+o exec pkill -USR2 -n freespeech
+  bindsym $mod+p exec freespeech --toggle-post-process
   ```
 
   `pkill` here simply delivers the signal—it does not terminate the process.
 
-  > **Behavior change:** older releases also accepted `SIGUSR1` for toggling transcription with post-processing. WebKitGTK — the webview engine embedded in ZER0 on Linux — uses SIGUSR1 internally to coordinate JavaScript garbage collection, so listening for it caused phantom recordings and interrupted dictations every few minutes (upstream issue #1660). ZER0 no longer listens for SIGUSR1 on Linux; the post-processing toggle is still available via `zer0 --toggle-post-process`. **Remove any `pkill -USR1` bindings**: the signal is now delivered straight to WebKit's internal handler and can crash the app.
+  > **Behavior change:** older releases also accepted `SIGUSR1` for toggling transcription with post-processing. WebKitGTK — the webview engine embedded in FreeSpeech on Linux — uses SIGUSR1 internally to coordinate JavaScript garbage collection, so listening for it caused phantom recordings and interrupted dictations every few minutes (upstream issue #1660). FreeSpeech no longer listens for SIGUSR1 on Linux; the post-processing toggle is still available via `freespeech --toggle-post-process`. **Remove any `pkill -USR1` bindings**: the signal is now delivered straight to WebKit's internal handler and can crash the app.
 
 **Overlay & Pasting Issues (Linux):**
 
@@ -378,7 +385,7 @@ Windows on ARM is CPU-only — transcribe.cpp is linked without a GPU backend th
 
 ### System Requirements/Recommendations
 
-The following are recommendations for running ZER0 on your own machine. If you don't meet the system requirements, the performance of the application may be degraded. We are working on improving the performance across all kinds of computers and hardware.
+The following are recommendations for running FreeSpeech on your own machine. If you don't meet the system requirements, the performance of the application may be degraded. We are working on improving the performance across all kinds of computers and hardware.
 
 **For Whisper Models:**
 
@@ -413,7 +420,7 @@ Debug logging (durable per-session file logs, always captured at Trace — see [
 
 ## Release Integrity
 
-ZER0's updater artifacts are **signed**. `createUpdaterArtifacts` is on, and
+FreeSpeech's updater artifacts are **signed**. `createUpdaterArtifacts` is on, and
 every release bundle is signed with the project's own minisign key whose
 public half is `plugins.updater.pubkey` in
 [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json). The in-app updater
@@ -429,29 +436,29 @@ reads).
 
 ### Previous Clipboard Content Is Pasted Instead of the Transcription
 
-If the transcription is correct in **History** but ZER0 inserts text you copied earlier, see upstream issue #502. With the standard clipboard paste method, ZER0 restores your previous clipboard after a fixed delay. Under load, the receiving application may read the clipboard only after that restoration.
+If the transcription is correct in **History** but FreeSpeech inserts text you copied earlier, see upstream issue #502. With the standard clipboard paste method, FreeSpeech restores your previous clipboard after a fixed delay. Under load, the receiving application may read the clipboard only after that restoration.
 
-1. Open ZER0's settings window and press `Cmd+Shift+D` (macOS) or `Ctrl+Shift+D` (Windows/Linux) to reveal **Debug**.
+1. Open FreeSpeech's settings window and press `Cmd+Shift+D` (macOS) or `Ctrl+Shift+D` (Windows/Linux) to reveal **Debug**.
 2. On **macOS and Windows**, try **Reliable Paste (Beta)** in Debug with a clipboard paste method selected. It uses clipboard read notifications to delay restoration instead of relying on the standard fixed delay. Test it in the application where the problem occurs; it is still experimental.
 3. If Reliable Paste is disabled or unavailable, increase **Paste Delay (After)** in Debug and test again. This controls the wait before restoring your previous clipboard. **Paste Delay (Before)** controls the wait before sending the paste keystroke and addresses a different part of the operation. These delay settings apply to the standard paste path, not Reliable Paste.
 
-If the problem persists, add your ZER0 version, operating system, receiving application, paste method, Reliable Paste setting, and before/after delays to the existing issue. Redact private dictated text before sharing logs.
+If the problem persists, add your FreeSpeech version, operating system, receiving application, paste method, Reliable Paste setting, and before/after delays to the existing issue. Redact private dictated text before sharing logs.
 
 ### Manual Model Installation (For Proxy Users or Network Restrictions)
 
-If you're behind a proxy, firewall, or in a restricted network environment where ZER0 cannot download models automatically, you can manually download and install them. The URLs are publicly accessible from any browser.
+If you're behind a proxy, firewall, or in a restricted network environment where FreeSpeech cannot download models automatically, you can manually download and install them. The URLs are publicly accessible from any browser.
 
 #### Step 1: Find Your App Data Directory
 
-1. Open ZER0's settings window
+1. Open FreeSpeech's settings window
 2. Navigate to the **About** section
 3. Copy the "App Data Directory" path shown there, or open it straight from that row
 
 The typical paths are:
 
-- **macOS**: `~/Library/Application Support/com.nairodorian.zer0/`
-- **Windows**: `C:\Users\{username}\AppData\Roaming\com.nairodorian.zer0\`
-- **Linux**: `~/.local/share/com.nairodorian.zer0/` (under `$XDG_DATA_HOME` when it is set)
+- **macOS**: `~/Library/Application Support/com.nairodorian.freespeech/`
+- **Windows**: `C:\Users\{username}\AppData\Roaming\com.nairodorian.freespeech\`
+- **Linux**: `~/.local/share/com.nairodorian.freespeech/` (under `$XDG_DATA_HOME` when it is set)
 
 > A `portable` file next to the executable moves all of this into a `Data/`
 > directory beside the binary instead — on such an install the About page shows
@@ -463,13 +470,13 @@ Inside your app data directory, create a `models` folder if it doesn't already e
 
 ```bash
 # macOS
-mkdir -p ~/Library/Application\ Support/com.nairodorian.zer0/models
+mkdir -p ~/Library/Application\ Support/com.nairodorian.freespeech/models
 
 # Linux
-mkdir -p ~/.local/share/com.nairodorian.zer0/models
+mkdir -p ~/.local/share/com.nairodorian.freespeech/models
 
 # Windows (PowerShell)
-New-Item -ItemType Directory -Force -Path "$env:APPDATA\com.nairodorian.zer0\models"
+New-Item -ItemType Directory -Force -Path "$env:APPDATA\com.nairodorian.freespeech\models"
 ```
 
 #### Step 3: Download Model Files
@@ -493,9 +500,9 @@ Download the models you want from below
 - Q8_0: `https://huggingface.co/handy-computer/parakeet-tdt-0.6b-v3-gguf/resolve/main/parakeet-tdt-0.6b-v3-Q8_0.gguf`
 
 Every `.gguf` the in-app catalog offers is downloadable straight from its
-Hugging Face repository, and the model's id in ZER0 _is_ that repo slug plus the
+Hugging Face repository, and the model's id in FreeSpeech _is_ that repo slug plus the
 quant's filename — `handy-computer/parakeet-unified-en-0.6b-gguf/parakeet-unified-en-0.6b-Q8_0.gguf`.
-`zer0 --list-models` prints the ids, so any quant can be fetched by hand the
+`freespeech --list-models` prints the ids, so any quant can be fetched by hand the
 same way the catalog would.
 
 #### Step 4: Install Models
@@ -514,29 +521,29 @@ Simply place the `.bin` file directly into the `models` directory:
 
 **For GGUF Models (.gguf files):**
 
-Place the `.gguf` file directly into the `models` directory, exactly like the Whisper `.bin` files above. ZER0 also picks up models already present in the shared Hugging Face cache (`~/.cache/huggingface/hub`), so a copy downloaded by another tool works without being moved.
+Place the `.gguf` file directly into the `models` directory, exactly like the Whisper `.bin` files above. FreeSpeech also picks up models already present in the shared Hugging Face cache (`~/.cache/huggingface/hub`), so a copy downloaded by another tool works without being moved.
 
 **Important Notes:**
 
 - Do not rename the `.bin` or `.gguf` files—use the exact filenames from the download URLs
-- After placing the files, restart ZER0 to detect the new models
+- After placing the files, restart FreeSpeech to detect the new models
 
 #### Step 5: Verify Installation
 
-1. Restart ZER0
+1. Restart FreeSpeech
 2. Open Settings → Models
 3. Your manually installed models should now appear as "Downloaded"
 4. Select the model you want to use and test transcription
 
 ### Custom Whisper Models
 
-ZER0 can auto-discover custom Whisper GGML models placed in the `models` directory. This is useful for users who want to use fine-tuned or community models not included in the default model list.
+FreeSpeech can auto-discover custom Whisper GGML models placed in the `models` directory. This is useful for users who want to use fine-tuned or community models not included in the default model list.
 
 **How to use:**
 
 1. Obtain a Whisper model in GGML `.bin` format (e.g., from [Hugging Face](https://huggingface.co/models?search=whisper%20ggml))
 2. Place the `.bin` file in your `models` directory (see paths above)
-3. Restart ZER0 to discover the new model
+3. Restart FreeSpeech to discover the new model
 4. The model will appear in the "Custom Models" section of the Models settings page
 
 **Important:**
@@ -547,26 +554,26 @@ ZER0 can auto-discover custom Whisper GGML models placed in the `models` directo
 
 ### Linux Startup Crashes or Instability
 
-If ZER0 fails to start reliably on Linux — for example, it crashes shortly after launch, never shows its window, or reports a Wayland protocol error — try the steps below in order.
+If FreeSpeech fails to start reliably on Linux — for example, it crashes shortly after launch, never shows its window, or reports a Wayland protocol error — try the steps below in order.
 
 **1. Install (or reinstall) `gtk-layer-shell`**
 
-ZER0 uses `gtk-layer-shell` for its recording overlay and links against it at runtime. A missing or broken installation is the most common cause of startup failures and can manifest as a crash or a hang well before any window is shown. Make sure the runtime package named under **Other Notes** in [Linux Notes](#linux-notes) is installed for your distro (`libgtk-layer-shell0` on Ubuntu/Debian, `gtk-layer-shell` on Fedora/RHEL and Arch).
+FreeSpeech uses `gtk-layer-shell` for its recording overlay and links against it at runtime. A missing or broken installation is the most common cause of startup failures and can manifest as a crash or a hang well before any window is shown. Make sure the runtime package named under **Other Notes** in [Linux Notes](#linux-notes) is installed for your distro (`libgtk-layer-shell0` on Ubuntu/Debian, `gtk-layer-shell` on Fedora/RHEL and Arch).
 
 If it is already installed and you still see startup problems, try reinstalling it (e.g. `sudo pacman -S gtk-layer-shell` again) in case the library files were corrupted by a partial upgrade.
 
-**2. Disable the GTK layer shell overlay (`ZER0_NO_GTK_LAYER_SHELL`)**
+**2. Disable the GTK layer shell overlay (`FREESPEECH_NO_GTK_LAYER_SHELL`)**
 
 If installing the library does not help, you can skip `gtk-layer-shell` initialization entirely as a workaround. On some compositors (notably KDE Plasma under Wayland) it has been reported to interact poorly with the recording overlay. With this variable set, the overlay falls back to a regular always-on-top window:
 
 ```bash
-ZER0_NO_GTK_LAYER_SHELL=1 zer0
+FREESPEECH_NO_GTK_LAYER_SHELL=1 freespeech
 ```
 
 **3. `WEBKIT_DISABLE_DMABUF_RENDERER` is already set for you**
 
 On some GPU/driver combinations the WebKitGTK DMA-BUF renderer can crash the
-window or fail to render, so ZER0 exports `WEBKIT_DISABLE_DMABUF_RENDERER=1`
+window or fail to render, so FreeSpeech exports `WEBKIT_DISABLE_DMABUF_RENDERER=1`
 itself on Linux before the webview is created. There is nothing to set by hand:
 if startup still fails with it already on, the cause is one of the two steps
 above.
@@ -576,66 +583,66 @@ above.
 Once you've found a flag that helps, export it from your shell profile (`~/.bashrc`, `~/.zshenv`, …) or from the desktop autostart entry that launches the app. If you launch it from a `.desktop` file, you can prefix the `Exec=` line, e.g.:
 
 ```ini
-Exec=env ZER0_NO_GTK_LAYER_SHELL=1 zer0
+Exec=env FREESPEECH_NO_GTK_LAYER_SHELL=1 freespeech
 ```
 
-If a workaround helps you, please [open an issue](https://github.com/NairoDorian/S2B2S/issues) describing your distro, desktop environment, and session type — that information helps us narrow down the underlying bug.
+If a workaround helps you, please [open an issue](https://github.com/NairoDorian/FreeSpeech/issues) describing your distro, desktop environment, and session type — that information helps us narrow down the underlying bug.
 
 ### Empty recording overlay on Hyprland / Omarchy
 
-If the recording overlay is empty or bordered, fully quit ZER0 and launch a
+If the recording overlay is empty or bordered, fully quit FreeSpeech and launch a
 [native installation](BUILD.md#linux-install-from-source) with Wayland enabled:
 
 ```bash
-env -u ZER0_NO_GTK_LAYER_SHELL GDK_BACKEND=wayland zer0
+env -u FREESPEECH_NO_GTK_LAYER_SHELL GDK_BACKEND=wayland freespeech
 ```
 
-If this works, apply `GDK_BACKEND=wayland` only to ZER0's launcher.
+If this works, apply `GDK_BACKEND=wayland` only to FreeSpeech's launcher.
 
 The AppImage forces `GDK_BACKEND=x11` in its launch script, after your
-environment, so `GDK_BACKEND=wayland ./ZER0.AppImage` has no effect. Use
-`ZER0_GDK_BACKEND` instead; ZER0 copies it into `GDK_BACKEND` before GTK
+environment, so `GDK_BACKEND=wayland ./FreeSpeech.AppImage` has no effect. Use
+`FREESPEECH_GDK_BACKEND` instead; FreeSpeech copies it into `GDK_BACKEND` before GTK
 starts:
 
 ```bash
-ZER0_GDK_BACKEND=wayland ./ZER0_x.y.z_amd64.AppImage
+FREESPEECH_GDK_BACKEND=wayland ./FREESPEECH_x.y.z_amd64.AppImage
 ```
 
 For a launcher, put the variable in the `.desktop` entry, for example
-`Exec=env ZER0_GDK_BACKEND=wayland /path/to/ZER0_x.y.z_amd64.AppImage`. Try
+`Exec=env FREESPEECH_GDK_BACKEND=wayland /path/to/FREESPEECH_x.y.z_amd64.AppImage`. Try
 native Wayland if the AppImage shows a frozen Language dropdown, a black window
 after closing to the tray and relaunching, or exits with `Failed to initialize
 gtk backend` on a Wayland-only compositor (Niri without XWayland). It stays
 opt-in because of [tauri#8541](https://github.com/tauri-apps/tauri/issues/8541).
 
-On SteamOS and other Gamescope sessions, ZER0 sets `DISABLE_GAMESCOPE_WSI=1`
+On SteamOS and other Gamescope sessions, FreeSpeech sets `DISABLE_GAMESCOPE_WSI=1`
 for itself unless you set it: the Gamescope WSI layer aborts during Vulkan
-device creation, and ZER0 only uses Vulkan for compute.
+device creation, and FreeSpeech only uses Vulkan for compute.
 
-### Vulkan Overlays and Capture Tools on Windows (`ZER0_KEEP_VULKAN_IMPLICIT_LAYERS`)
+### Vulkan Overlays and Capture Tools on Windows (`FREESPEECH_KEEP_VULKAN_IMPLICIT_LAYERS`)
 
 On Windows, the app asks the Vulkan loader to skip implicit layers to avoid crashes caused by overlay and capture hooks (upstream issue #2049). GPU acceleration remains enabled; this does not change system-wide settings.
 
 To opt out for GPU selection or debugging tools, fully quit the app (including the tray icon), then run both commands in the same PowerShell window:
 
 ```powershell
-$env:ZER0_KEEP_VULKAN_IMPLICIT_LAYERS = "1"
-& "$env:ProgramFiles\ZER0\zer0.exe"
+$env:FREESPEECH_KEEP_VULKAN_IMPLICIT_LAYERS = "1"
+& "$env:ProgramFiles\FreeSpeech\freespeech.exe"
 ```
 
 Adjust the executable path if needed. This override only applies to apps launched from that PowerShell session, not the Start menu. The app also preserves any existing `VK_LOADER_LAYERS_DISABLE` value.
 
 The setting matters whenever the **Vulkan** backend is the one serving a model — an AMD or Intel iGPU with no NVIDIA GPU, or a model pinned to Vulkan / Vulkan (NVIDIA) / Vulkan (Intel) in the status-bar backend picker. A CUDA-only run never loads the Vulkan loader at all, which is why the flag can appear to do nothing on an NVIDIA machine.
 
-### ZER0 Starts or Stops Recording on Its Own (Linux)
+### FreeSpeech Starts or Stops Recording on Its Own (Linux)
 
 Handy 0.9.4 and earlier — the upstream releases this fork inherited the behaviour from — listened for `SIGUSR1` as a remote-control trigger. WebKitGTK, the webview engine embedded in the app on Linux, uses that same signal internally to coordinate JavaScript garbage collection, so GC cycles were misread as hotkey presses: recordings started on their own, or real dictations were cut off mid-sentence (typically ~2 minutes in). See upstream issue #1660.
 
-ZER0 registers only `SIGUSR2` (toggle transcription) on Linux and leaves `SIGUSR1` to WebKitGTK. Update to a newer release if you are on an old build, and replace any `pkill -USR1 -n zer0` keybindings with `zer0 --toggle-post-process`.
+FreeSpeech registers only `SIGUSR2` (toggle transcription) on Linux and leaves `SIGUSR1` to WebKitGTK. Update to a newer release if you are on an old build, and replace any `pkill -USR1 -n freespeech` keybindings with `freespeech --toggle-post-process`.
 
 ### How to Contribute
 
-1. **Check existing issues** at [github.com/NairoDorian/S2B2S/issues](https://github.com/NairoDorian/S2B2S/issues)
+1. **Check existing issues** at [github.com/NairoDorian/FreeSpeech/issues](https://github.com/NairoDorian/FreeSpeech/issues)
 2. **Fork the repository** and create a feature branch
 3. **Test thoroughly** on your target platform — and run `bun run precommit`
 4. **Submit a pull request** with clear description of changes
@@ -647,11 +654,11 @@ The goal is to create both a useful tool and a foundation for others to build up
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-ZER0 is open-source software, but the ZER0 name, logo, icon, and brand assets are not open-source. Unofficial forks, rewrites, and redistributions must use their own branding and must not imply endorsement or affiliation.
+FreeSpeech is open-source software, but the FreeSpeech name, logo, icon, and brand assets are not open-source. Unofficial forks, rewrites, and redistributions must use their own branding and must not imply endorsement or affiliation.
 
 The upstream **[Handy](https://github.com/cjpais/Handy)** project by CJ Pais is MIT
 licensed, and its copyright notice is preserved in [LICENSE](LICENSE) as the licence
-requires. All of ZER0's own branding, naming and assets are original to this project.
+requires. All of FreeSpeech's own branding, naming and assets are original to this project.
 The Handy name, logo, icon and brand assets belong to their authors and are also not
 open-source: its mention here is attribution, not affiliation.
 
@@ -664,4 +671,4 @@ open-source: its mention here is attribution, not affiliation.
 - **RNNoise** (Xiph) and **nnnoiseless** for noise suppression, ported into transcribe.cpp
   (their license texts ship with the app under `resources/licenses/transcribe/`)
 - **Tauri** team for the excellent Rust-based app framework
-- **Community contributors** helping make ZER0 better
+- **Community contributors** helping make FreeSpeech better

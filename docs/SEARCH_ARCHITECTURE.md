@@ -1,6 +1,6 @@
-# ZER0 Search Architecture: Hybrid Retrieval over History, Audio and Recall
+# FreeSpeech Search Architecture: Hybrid Retrieval over History, Audio and Recall
 
-> **Status:** proposal, revision 4 (2026-11-19). Nothing in ZER0 is implemented. The model
+> **Status:** proposal, revision 4 (2026-11-19). Nothing in FreeSpeech is implemented. The model
 > is downloaded, and it has been run on this machine.
 >
 > **Start here (next agent).** The phase-2 spike is **done** and its gate is met. The model
@@ -16,7 +16,7 @@
 > 1. **The code.** Every write site, the paste ordering, the Multi-STT history format
 >    and the llama-server supervisor were traced. §13 is a file-by-file implementation
 >    guide with `file:line` anchors.
-> 2. **A measurement harness.** The proposed SQL was run against the exact SQLite ZER0
+> 2. **A measurement harness.** The proposed SQL was run against the exact SQLite FreeSpeech
 >    bundles (rusqlite 0.40.2, SQLite 3.53.2), and the vector-shelf budgets were timed on
 >    this machine. Two revision-2 SQL statements were wrong, and one latency target did
 >    not hold. Appendix A has the numbers.
@@ -140,7 +140,7 @@ unless marked. §16 reproduces the ones that matter on our data.
 Selective loading (sentence-transformers `config_kwargs`): text only `{"vision_config": None,
 "audio_config": None}` → 270M; text and audio `{"vision_config": None}` → 570M (576,613,664
 printed). llama.cpp has no such switch for its combined `mmproj`. Loading the projector
-loads both towers, and ZER0 pays for vision it never uses (§6.2).
+loads both towers, and FreeSpeech pays for vision it never uses (§6.2).
 
 ### 2.2 Quality, and what Matryoshka truncation costs
 
@@ -182,7 +182,7 @@ query's own score distribution.
 
 ### 2.4 Prompt formats (text only; media takes none)
 
-The model's prompt table has 20 names. The ones ZER0 uses:
+The model's prompt table has 20 names. The ones FreeSpeech uses:
 
 | Use                                  | Prompt name          | String                                                                           |
 | ------------------------------------ | -------------------- | -------------------------------------------------------------------------------- |
@@ -195,7 +195,7 @@ The model's prompt table has 20 names. The ones ZER0 uses:
 | Sound-scene labels                   | `Classification`     | `task: classification \| query: {label}`                                         |
 
 `prompt_name="Document"` hard-codes `title: none`, so a titled document is formatted by hand.
-llama.cpp never adds prefixes: ZER0 builds the strings. A dictation's title is a formatted
+llama.cpp never adds prefixes: FreeSpeech builds the strings. A dictation's title is a formatted
 timestamp, so it maps to `none`. Only Transcribe Files rows (`mode = 'file'`), titled with the
 file name, pass a title. Nothing in the code edits titles otherwise (no `UPDATE … SET title`
 exists). The prompt revision is part of the index identity (§5.2).
@@ -539,15 +539,15 @@ length(post_processed_text))` from `history.db` (a 50k-row scan of integers take
 
 ### 6.1 Runtime: a second llama-server, supervised like the first
 
-| Option                                        | Verdict                                                                                                                                                                                                                                                                                                                                                                               |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Out-of-process llama-server** (recommended) | The build ZER0 already installs for the chat server serves `gemma-embedding2`, both text and media. Crash isolation, no new dependency, and the supervisor already exists. Costs one process, a supervisor thread and two pipe readers while it runs                                                                                                                                  |
-| Reuse the chat server                         | Not possible. `--embeddings` restricts a server to embeddings ("use only with dedicated embedding models"), and the chat model is a different GGUF                                                                                                                                                                                                                                    |
-| In-process llama.cpp (`llama-cpp-2`, libmtmd) | No. transcribe.cpp statically links its own ggml with dynamic backends, and a second ggml in the process risks symbol clashes and a second CUDA context beside the ASR. qvac's in-process path matched the server to cosine ≥ 0.99982, so nothing is gained in quality either                                                                                                         |
-| `embeddinggemma.c` (QuixiAI)                  | Not needed: llama.cpp passed parity (§0.0). It was the fallback if llama.cpp's audio path failed. MIT, the same GGUFs, an OpenAI-compatible `/v1/embeddings`, and an optimized CPU audio path. But: Windows is a MinGW CPU build from fork CI only, it binds `0.0.0.0` by default (ZER0 would pass `--bind 127.0.0.1`), and its default semantics follow llama.cpp, not the reference |
-| ONNX Runtime                                  | No. `ort` was removed on 2026-09-10, and the runtime would come back                                                                                                                                                                                                                                                                                                                  |
-| LiteRT-LM / MediaPipe                         | Google's QAT int4/8 bundles on CPU/GPU/NPU. A second fallback, at the cost of a C++ runtime in the build                                                                                                                                                                                                                                                                              |
-| Host it in transcribe.cpp                     | Later, if ever. The engine has ggml, a Mel front end and conformer work in reach. Engine work on the paired project, justified only if the server proves to be the bottleneck                                                                                                                                                                                                         |
+| Option                                        | Verdict                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Out-of-process llama-server** (recommended) | The build FreeSpeech already installs for the chat server serves `gemma-embedding2`, both text and media. Crash isolation, no new dependency, and the supervisor already exists. Costs one process, a supervisor thread and two pipe readers while it runs                                                                                                                                  |
+| Reuse the chat server                         | Not possible. `--embeddings` restricts a server to embeddings ("use only with dedicated embedding models"), and the chat model is a different GGUF                                                                                                                                                                                                                                          |
+| In-process llama.cpp (`llama-cpp-2`, libmtmd) | No. transcribe.cpp statically links its own ggml with dynamic backends, and a second ggml in the process risks symbol clashes and a second CUDA context beside the ASR. qvac's in-process path matched the server to cosine ≥ 0.99982, so nothing is gained in quality either                                                                                                               |
+| `embeddinggemma.c` (QuixiAI)                  | Not needed: llama.cpp passed parity (§0.0). It was the fallback if llama.cpp's audio path failed. MIT, the same GGUFs, an OpenAI-compatible `/v1/embeddings`, and an optimized CPU audio path. But: Windows is a MinGW CPU build from fork CI only, it binds `0.0.0.0` by default (FreeSpeech would pass `--bind 127.0.0.1`), and its default semantics follow llama.cpp, not the reference |
+| ONNX Runtime                                  | No. `ort` was removed on 2026-09-10, and the runtime would come back                                                                                                                                                                                                                                                                                                                        |
+| LiteRT-LM / MediaPipe                         | Google's QAT int4/8 bundles on CPU/GPU/NPU. A second fallback, at the cost of a C++ runtime in the build                                                                                                                                                                                                                                                                                    |
+| Host it in transcribe.cpp                     | Later, if ever. The engine has ggml, a Mel front end and conformer work in reach. Engine work on the paired project, justified only if the server proves to be the bottleneck                                                                                                                                                                                                               |
 
 ### 6.2 The embedding server
 
@@ -568,19 +568,19 @@ llama-server -m <embeddinggemma-2-Q8_0.gguf>
 The GPU variant replaces `--device none --no-op-offload` with `--device CUDA0 -ngl 99`
 (§17.1).
 
-| Flag                            | Why                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-c = -b = -ub = 2048`, `-np 1` | A pooled embedding must be computed in one physical batch. qvac: "a memory-less model only embeds a mixed input correctly in one decode". ZER0's largest input is a 30 s window (754 tokens) or a passage of about 300 words, so 2048 is enough. On the GPU, 2048 instead of 8192 saves about 860 MB of VRAM (measured). A longer input fails fast with HTTP 500 "input (N tokens) is too large to process" (measured), and the indexer splits it |
-| `--device none`                 | Keeps weights off the GPU in the CUDA build, so VRAM stays with the ASR and the chat model. The projector "follows `--device`". Measured: no CUDA context at all (the process never appears in `nvidia-smi`)                                                                                                                                                                                                                                      |
-| `--no-op-offload`               | Without it, b12521 offloads host tensor operations to the GPU (default true), which `-ngl 0` alone does not stop                                                                                                                                                                                                                                                                                                                                  |
-| `--fit off`                     | `--fit` (default on) rewrites unset arguments to fit device memory. The context must stay as set                                                                                                                                                                                                                                                                                                                                                  |
-| `-t 4 -tb 4`                    | Embedding is prompt processing, so `--threads-batch` is the flag that counts. Four leaves the rest of the CPU to live work. A setting                                                                                                                                                                                                                                                                                                             |
-| `--sleep-idle-seconds 300`      | After 5 idle minutes the server unloads the model and its memory, and reloads on the next task. `/health` and `/props` neither wake it nor reset the timer, so supervision does not keep it awake. Measured: RSS 1,012 → 222 MB asleep; the first request after it takes 1.05 s                                                                                                                                                                   |
-| `--cache-ram 0`                 | The prompt cache (default 8192 MiB) holds chat slot states. Embeddings never reuse them                                                                                                                                                                                                                                                                                                                                                           |
-| `--embd-normalize 2`            | L2. It is the default; passing it pins it                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Flag                            | Why                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c = -b = -ub = 2048`, `-np 1` | A pooled embedding must be computed in one physical batch. qvac: "a memory-less model only embeds a mixed input correctly in one decode". FreeSpeech's largest input is a 30 s window (754 tokens) or a passage of about 300 words, so 2048 is enough. On the GPU, 2048 instead of 8192 saves about 860 MB of VRAM (measured). A longer input fails fast with HTTP 500 "input (N tokens) is too large to process" (measured), and the indexer splits it |
+| `--device none`                 | Keeps weights off the GPU in the CUDA build, so VRAM stays with the ASR and the chat model. The projector "follows `--device`". Measured: no CUDA context at all (the process never appears in `nvidia-smi`)                                                                                                                                                                                                                                            |
+| `--no-op-offload`               | Without it, b12521 offloads host tensor operations to the GPU (default true), which `-ngl 0` alone does not stop                                                                                                                                                                                                                                                                                                                                        |
+| `--fit off`                     | `--fit` (default on) rewrites unset arguments to fit device memory. The context must stay as set                                                                                                                                                                                                                                                                                                                                                        |
+| `-t 4 -tb 4`                    | Embedding is prompt processing, so `--threads-batch` is the flag that counts. Four leaves the rest of the CPU to live work. A setting                                                                                                                                                                                                                                                                                                                   |
+| `--sleep-idle-seconds 300`      | After 5 idle minutes the server unloads the model and its memory, and reloads on the next task. `/health` and `/props` neither wake it nor reset the timer, so supervision does not keep it awake. Measured: RSS 1,012 → 222 MB asleep; the first request after it takes 1.05 s                                                                                                                                                                         |
+| `--cache-ram 0`                 | The prompt cache (default 8192 MiB) holds chat slot states. Embeddings never reuse them                                                                                                                                                                                                                                                                                                                                                                 |
+| `--embd-normalize 2`            | L2. It is the default; passing it pins it                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 Never use `--embd-gemma-default`. It downloads a default EmbeddingGemma from the internet;
-ZER0 downloads pinned files itself (§13.2).
+FreeSpeech downloads pinned files itself (§13.2).
 
 **Process policy**, which differs from the chat server on purpose:
 
@@ -749,7 +749,7 @@ or about 16 s of GPU. A typical 6 s dictation takes about 1 s on CPU. Hence:
 
 ### 7.4 A shared audio tower
 
-The tower is bit-identical to Gemma 4 E2B's, ZER0's default local LLM. So the merge LLM can
+The tower is bit-identical to Gemma 4 E2B's, FreeSpeech's default local LLM. So the merge LLM can
 hear audio through the same encoder, which does not depend on EmbeddingGemma at all (§10.3).
 In theory, one tower pass could feed both models. No runtime exposes that split, so this is
 noted, not planned.
@@ -925,7 +925,7 @@ What is now verified:
 - **This machine's projector has the tower.** The local
   `Llama.cpp/model/gemma-4-E2B-it-qat-GGUF/mmproj-F16.gguf` reports
   `clip.has_audio_encoder = True`, `clip.audio.projector_type = gemma4a`, 12 blocks and 128
-  mel bins. Some early Unsloth projectors were reported vision-only, so ZER0 must check this
+  mel bins. Some early Unsloth projectors were reported vision-only, so FreeSpeech must check this
   key before offering the feature.
 - **The request.** `/v1/chat/completions` with a `{"type": "input_audio", "input_audio":
 {"data": "<base64 WAV>"}}` part beside the N transcripts, and an instruction such as
@@ -1347,7 +1347,7 @@ queries per size. bf16 storage against f32: max |Δcos| 0.00029–0.00031, top-1
 **Setup.**
 
 - **Machine:** Intel i9-13900H, NVIDIA RTX 4070 Laptop (8 GB, driver 621.24), Windows 11.
-- **Server:** `llama-server` b12521 (`b12521-6f311d7ad`, the CUDA 13.5 build ZER0 installed),
+- **Server:** `llama-server` b12521 (`b12521-6f311d7ad`, the CUDA 13.5 build FreeSpeech installed),
   started by `tests\probe.py` with `--embeddings --pooling mean -np 1 --fit off --cache-ram 0`
   plus the configuration below.
 - **Reference:** `google/embeddinggemma-2` @ `f9972ac2` in float32 on CPU, through
@@ -1514,5 +1514,5 @@ repo. `trust_remote_code` is never needed.
   the RRF weights and the `z_min` floors still need real or FLEURS-based data.
 - Vulkan parity. The installed build has no Vulkan backend.
 - The audio-aware merge A/B (§10.3) with the local Gemma 4 E2B projector.
-- `gguf_kind` / `pick_default_models` must learn to skip embedding GGUFs before ZER0 ships
+- `gguf_kind` / `pick_default_models` must learn to skip embedding GGUFs before FreeSpeech ships
   a model picker that could see them (above).

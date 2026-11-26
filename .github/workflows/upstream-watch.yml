@@ -1,0 +1,56 @@
+name: Upstream watch
+
+# Weekly: what Handy and AIVORelay landed that FreeSpeech has not reviewed yet,
+# and the upstream changes the tauri-specta fork waits for
+# (scripts/upstream-status.ts, configured in docs/upstream-watch.json). One open
+# issue labelled `upstream-watch` holds the latest report. The issue gets a
+# comment only when the summary line changes, so GitHub notifies on news and
+# stays quiet otherwise. Cost: one short Linux job a week.
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: upstream-watch
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # HEAD..upstream/main needs this repository's whole history.
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - name: Build the report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/upstream-status.ts --markdown > "$RUNNER_TEMP/upstream-watch.md"
+      - name: Update the upstream-watch issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          report="$RUNNER_TEMP/upstream-watch.md"
+          summary=$(head -n 1 "$report")
+          gh label create upstream-watch --color 0e8a16 \
+            --description "Weekly report of upstream changes" 2>/dev/null || true
+          number=$(gh issue list --label upstream-watch --state open --limit 1 \
+            --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            gh issue create --title "Upstream watch" --label upstream-watch \
+              --body-file "$report"
+            exit 0
+          fi
+          previous=$(gh issue view "$number" --json body --jq '.body' | head -n 1)
+          gh issue edit "$number" --body-file "$report"
+          if [ "$previous" != "$summary" ]; then
+            news=${summary#<!-- upstream-watch: }
+            gh issue comment "$number" --body "Upstream moved: ${news% -->}"
+          fi

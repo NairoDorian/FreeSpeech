@@ -4,7 +4,7 @@
 
 ## 1. Decisions (the user, 2026-11-25)
 
-- **ZER0 becomes FreeSpeech.** There is no separate FreeSpeech app: ZER0 evolves, gains a voice (text-to-speech), and is renamed FreeSpeech later. The rename goes through `scripts/app-meta.ts` + `bun run meta:sync`, never by hand-editing names.
+- **ZER0 becomes FreeSpeech.** There is no separate FreeSpeech app: ZER0 evolves, gains a voice (text-to-speech), and is renamed FreeSpeech later. The rename goes through `scripts/app-meta.ts` + `bun run meta:sync`, never by hand-editing names. **Done 2026-11-26, ahead of text-to-speech:** the user asked for the first public release to carry the new name; the app moved to NairoDorian/FreeSpeech the same day.
 - **speech.cpp is retired.** It tried to merge transcribe.cpp and audio.cpp into one C++ engine (a fork of audio.cpp absorbing the transcribe.cpp fork). The checkpoint measured why that could not work for one person:
   - in two months audio.cpp moved 593 commits and the fork 132, while speech.cpp moved none;
   - both engines already embed cleanly through their own C APIs.

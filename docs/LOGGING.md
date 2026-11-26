@@ -11,7 +11,7 @@ silence the durable console. Hide records with the viewer chips.
 - Interactive runtime: stdout (visible under `bun run tauri dev`).
 - Headless commands: stderr, keeping JSON stdout parseable.
 - File: the same records, one file per app session
-  (`zer0-YYYYMMDD-HHMMSS-mmm.log`), with a 10 MB rotation cap per file
+  (`freespeech-YYYYMMDD-HHMMSS-mmm.log`), with a 10 MB rotation cap per file
   (`RotationStrategy::KeepOne`: a rotated file is replaced, not kept as a
   numbered sibling — but only ever inside the session that wrote it, so every
   earlier session's file stays where it is). `portable::app_log_dir` resolves

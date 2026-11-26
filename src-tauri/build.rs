@@ -84,15 +84,8 @@ fn identity() -> &'static std::collections::BTreeMap<String, String> {
 
     static CACHE: OnceLock<BTreeMap<String, String>> = OnceLock::new();
     CACHE.get_or_init(|| {
-        let path = std::path::Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap())
-            .join("src")
-            .join("app_identity.rs");
-        println!("cargo:rerun-if-changed={}", path.display());
-        let text = std::fs::read_to_string(&path)
-            .unwrap_or_else(|e| panic!("read {}: {e}", path.display()));
-
         let mut out = BTreeMap::new();
-        for line in text.lines() {
+        for line in identity_source().lines() {
             // Exactly the shape the generator writes: `pub const NAME: &str = "value";`
             let Some(rest) = line.strip_prefix("pub const ") else {
                 continue;
@@ -109,6 +102,20 @@ fn identity() -> &'static std::collections::BTreeMap<String, String> {
     })
 }
 
+/// The generated identity module's source, read once.
+fn identity_source() -> &'static str {
+    use std::sync::OnceLock;
+
+    static SOURCE: OnceLock<String> = OnceLock::new();
+    SOURCE.get_or_init(|| {
+        let path = std::path::Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap())
+            .join("src")
+            .join("app_identity.rs");
+        println!("cargo:rerun-if-changed={}", path.display());
+        std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("read {}: {e}", path.display()))
+    })
+}
+
 /// One constant from [`identity`].
 ///
 /// Panics rather than defaulting: a `NAME` that silently fell back to a literal
@@ -120,6 +127,27 @@ fn ident(name: &str) -> &'static str {
     })
 }
 
+/// One string-slice constant of the generated module, such as
+/// `LEGACY_ENV_PREFIXES`. The generator writes it on one line, or one element
+/// per line when rustfmt would wrap it; both read the same: every quoted
+/// string between `&[` and `];`. Panics on a missing constant, like [`ident`].
+fn ident_list(name: &str) -> Vec<&'static str> {
+    let source = identity_source();
+    let start = format!("pub const {name}: &[&str] = &[");
+    let Some(at) = source.find(&start) else {
+        missing_ident_list(name)
+    };
+    let body = &source[at + start.len()..];
+    let Some(end) = body.find("];") else {
+        missing_ident_list(name)
+    };
+    body[..end].split('"').skip(1).step_by(2).collect()
+}
+
+fn missing_ident_list(name: &str) -> ! {
+    panic!("src/app_identity.rs has no `{name}` list; run `bun run meta:sync` to regenerate it")
+}
+
 /// The current spelling of an environment flag, without the value.
 ///
 /// For messages that name the flag the user must set. [`env_flag`] uses it too,
@@ -128,31 +156,39 @@ fn flag_name(suffix: &str) -> String {
     format!("{}{suffix}", ident("ENV_PREFIX"))
 }
 
-/// Read an environment flag under the current prefix, falling back to the
-/// pre-rename one.
+/// Read an environment flag under the current prefix, falling back to each
+/// former one, newest first.
 ///
 /// Mirrors `utils::app_env_flag`, which the crate itself uses for every other
-/// flag, so a shell profile, CI job or Nix wrapper written before the rename
-/// keeps working. Both spellings are registered with cargo, so exporting either
-/// one re-runs this script.
+/// flag, so a shell profile, CI job or Nix wrapper written under a former name
+/// keeps working. Every spelling is registered with cargo, so exporting any of
+/// them re-runs this script.
 ///
 /// Returns an [`OsString`](std::ffi::OsString) because the value can be a path
 /// list, which is not required to be UTF-8.
 fn env_flag(suffix: &str) -> Option<std::ffi::OsString> {
     let current = flag_name(suffix);
-    let legacy = format!("{}{suffix}", ident("LEGACY_ENV_PREFIX"));
+    let former: Vec<String> = ident_list("LEGACY_ENV_PREFIXES")
+        .iter()
+        .map(|prefix| format!("{prefix}{suffix}"))
+        .collect();
     println!("cargo:rerun-if-env-changed={current}");
-    println!("cargo:rerun-if-env-changed={legacy}");
+    for name in &former {
+        println!("cargo:rerun-if-env-changed={name}");
+    }
 
     if let Some(value) = std::env::var_os(&current) {
         return Some(value);
     }
-    let value = std::env::var_os(&legacy)?;
-    println!(
-        "cargo:warning={legacy} is the pre-rename spelling of {current}; \
-         set {current} instead"
-    );
-    Some(value)
+    for name in &former {
+        if let Some(value) = std::env::var_os(name) {
+            println!(
+                "cargo:warning={name} is a former spelling of {current}; set {current} instead"
+            );
+            return Some(value);
+        }
+    }
+    None
 }
 
 /// Stage the MSVC runtime DLLs into `transcribe-libs/` for app-local deployment.

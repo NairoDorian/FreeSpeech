@@ -6,53 +6,59 @@
 // storage prefix anywhere else under `src/`. Import from here instead.
 
 /** Product name, for anything the user sees. */
-export const APP_NAME = "ZER0";
+export const APP_NAME = "FreeSpeech";
 
 /** Machine slug. Never shown to the user. */
-export const APP_SLUG = "zer0";
+export const APP_SLUG = "freespeech";
 
 /** `localStorage` key prefix for view-only UI preferences. */
-export const STORAGE_PREFIX = "zer0.";
+export const STORAGE_PREFIX = "freespeech.";
 
-/** Machine slug of the pre-rename identity: the basename 0.9.x wrote. */
-export const LEGACY_SLUG = "handy";
+/** Former identities' machine slugs, newest first: basenames they wrote. */
+export const LEGACY_SLUGS = ["zer0", "handy"] as const;
 
 /** Bundle identifier — the OS-level application identity. */
-export const APP_IDENTIFIER = "com.nairodorian.zer0";
+export const APP_IDENTIFIER = "com.nairodorian.freespeech";
 
 /** Repository URL, for links out of the app. */
-export const REPO_URL = "https://github.com/NairoDorian/S2B2S";
+export const REPO_URL = "https://github.com/NairoDorian/FreeSpeech";
 
 /** Releases page — where an update or a portable installer link points. */
 export const RELEASES_URL =
-  "https://github.com/NairoDorian/S2B2S/releases/latest";
+  "https://github.com/NairoDorian/FreeSpeech/releases/latest";
 
 /**
  * The product-name folder leaf a platform may use (kept for the migration's
  * symmetry); the app-data folder itself is named after the identifier.
  */
-export const DATA_DIR_NAME = "ZER0";
+export const DATA_DIR_NAME = "FreeSpeech";
 
-/** The folder name a pre-rename install used; read by the migration only. */
-export const LEGACY_DATA_DIR_NAME = "Handy";
+/** Folder names former installs used, newest first; read by the migration. */
+export const LEGACY_DATA_DIR_NAMES = ["ZER0", "Handy"] as const;
 
-/** The bundle identifier a pre-rename install used. */
-export const LEGACY_IDENTIFIER = "com.pais.handy";
+/** Bundle identifiers former releases used, newest first. */
+export const LEGACY_IDENTIFIERS = [
+  "com.nairodorian.zer0",
+  "com.pais.handy",
+] as const;
 
 /** Prefix of every environment flag the backend reads. Shown in Settings. */
-export const ENV_PREFIX = "ZER0_";
+export const ENV_PREFIX = "FREESPEECH_";
 
-/** The previous environment-flag prefix, still honoured by the backend. */
-export const LEGACY_ENV_PREFIX = "HANDY_";
+/** Former environment-flag prefixes, still honoured by the backend. */
+export const LEGACY_ENV_PREFIXES = ["ZER0_", "HANDY_"] as const;
 
 /** Magic string in the `portable` marker beside the executable. */
-export const PORTABLE_MARKER = "ZER0 Portable Mode";
+export const PORTABLE_MARKER = "FreeSpeech Portable Mode";
 
-/** The marker a pre-rename release wrote. */
-export const LEGACY_PORTABLE_MARKER = "Handy Portable Mode";
+/** The markers former releases wrote, newest first. */
+export const LEGACY_PORTABLE_MARKERS = [
+  "ZER0 Portable Mode",
+  "Handy Portable Mode",
+] as const;
 
-/** The previous `localStorage` prefix, migrated on first read. */
-export const LEGACY_STORAGE_PREFIX = "handy.";
+/** Former `localStorage` prefixes, newest first, migrated on first read. */
+export const LEGACY_STORAGE_PREFIXES = ["zer0.", "handy."] as const;
 
 /**
  * File-name infix that marks a recording as a Multi-STT one.
@@ -66,23 +72,22 @@ export const MULTI_RECORDING_INFIX = "-multi-";
 /**
  * Whether a history row's WAV belongs to a Multi-STT recording.
  *
- * Both basenames are accepted. History is a database of recordings the user
- * still has on disk, and rows written before the rename point at
- * `${LEGACY_SLUG}-multi-…` files that were never moved — judging them by the
- * current basename alone would silently reclassify every one of them as a
- * plain transcription.
+ * Every basename the app has written is accepted. History is a database of
+ * recordings the user still has on disk, and rows written under a former name
+ * point at `<former slug>-multi-…` files that were never moved — judging them
+ * by the current basename alone would silently reclassify every one of them as
+ * a plain transcription.
  */
 export function isMultiRecordingFileName(fileName: string): boolean {
-  return (
-    fileName.startsWith(APP_SLUG + MULTI_RECORDING_INFIX) ||
-    fileName.startsWith(LEGACY_SLUG + MULTI_RECORDING_INFIX)
+  return [APP_SLUG, ...LEGACY_SLUGS].some((slug) =>
+    fileName.startsWith(slug + MULTI_RECORDING_INFIX),
   );
 }
 
 /**
- * Read a UI preference, falling back to the key a pre-rename release wrote.
+ * Read a UI preference, falling back to the keys former releases wrote.
  *
- * The legacy value is re-written under the current prefix and the old key
+ * A former value is re-written under the current prefix and every former key
  * removed, so the migration happens once per key per browser profile and never
  * runs again. Both the read and every write are guarded: `localStorage` throws
  * outright in a locked-down webview, and a preference is never worth a crash.
@@ -93,11 +98,16 @@ export function readPref(key: string): string | null {
   try {
     const current = localStorage.getItem(STORAGE_PREFIX + key);
     if (current !== null) return current;
-    const legacy = localStorage.getItem(LEGACY_STORAGE_PREFIX + key);
-    if (legacy === null) return null;
-    localStorage.setItem(STORAGE_PREFIX + key, legacy);
-    localStorage.removeItem(LEGACY_STORAGE_PREFIX + key);
-    return legacy;
+    for (const prefix of LEGACY_STORAGE_PREFIXES) {
+      const former = localStorage.getItem(prefix + key);
+      if (former === null) continue;
+      localStorage.setItem(STORAGE_PREFIX + key, former);
+      for (const old of LEGACY_STORAGE_PREFIXES) {
+        localStorage.removeItem(old + key);
+      }
+      return former;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -112,11 +122,13 @@ export function writePref(key: string, value: string): void {
   }
 }
 
-/** Remove a UI preference, under both the current and the legacy prefix. */
+/** Remove a UI preference, under the current and every former prefix. */
 export function removePref(key: string): void {
   try {
     localStorage.removeItem(STORAGE_PREFIX + key);
-    localStorage.removeItem(LEGACY_STORAGE_PREFIX + key);
+    for (const prefix of LEGACY_STORAGE_PREFIXES) {
+      localStorage.removeItem(prefix + key);
+    }
   } catch {
     // See writePref.
   }

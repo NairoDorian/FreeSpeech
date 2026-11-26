@@ -1093,7 +1093,7 @@ const settingsState = createSolidStore<SettingsStore>((set, get) => ({
   },
 
   // Check whether update checks are locked by system configuration: the
-  // updater-disable environment flag `ZER0_DISABLE_UPDATER` (`ENV_PREFIX` plus
+  // updater-disable environment flag `<ENV_PREFIX>DISABLE_UPDATER` (`ENV_PREFIX` plus
   // the `DISABLE_UPDATER` suffix), which the Nix package sets.
   loadUpdateChecksLocked: async () => {
     try {

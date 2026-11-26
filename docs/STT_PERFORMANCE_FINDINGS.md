@@ -11,7 +11,7 @@ rows. The capture-level selector was removed. Native build provenance and
 capture/queue/feed/finalize/stage metrics were added. DLL staging now refreshes
 development binaries when the prebuilt native install changes.
 
-Use `bun run bench:stt -- --exe src-tauri/target/debug/zer0.exe --wav
+Use `bun run bench:stt -- --exe src-tauri/target/debug/freespeech.exe --wav
 ../transcribe-fork/samples/jfk.wav --output build/bench/current` on one line.
 Every model/backend/mode runs exactly three times with one loaded model; run 1
 is excluded and runs 2 and 3 are averaged. CPU and CUDA are both required.

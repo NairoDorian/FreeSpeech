@@ -1,7 +1,7 @@
 # Development Commands
 
-> **NOTE:** This is the `Handy_Multi_STT` fork. See [AGENTS.md](AGENTS.md) for
-> full architecture details including the Multi-STT branch additions.
+> **NOTE:** See [AGENTS.md](AGENTS.md) for
+> full architecture details including the Multi-STT additions.
 
 **Environment Setup:**
 

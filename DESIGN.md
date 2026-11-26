@@ -1,5 +1,5 @@
 ---
-name: ZER0
+name: FreeSpeech
 description: Precision real-time speech interface and tactile acoustic terminal
 colors:
   dark-background: "#0b0e11"
@@ -66,13 +66,13 @@ components:
     padding: "5px 16px"
 ---
 
-# Design System: ZER0
+# Design System: FreeSpeech
 
 ## Overview
 
 ### Creative North Star: The Precision Terminal
 
-ZER0 is an acoustic instrument and real-time transcription engine built with the aesthetic discipline of high-end laboratory equipment and retro-futuristic terminal interfaces.
+FreeSpeech is an acoustic instrument and real-time transcription engine built with the aesthetic discipline of high-end laboratory equipment and retro-futuristic terminal interfaces.
 
 It rejects contemporary decorative SaaS fluff—bubbly cards, oversized corner radii, diffuse box shadows, and gratuitous gradient text. Instead, it commits to:
 
@@ -146,7 +146,7 @@ Typographic hierarchy enforces the separation between natural human speech and m
 
 ## Elevation & Depth
 
-- **Strictly Flat & Layered**: ZER0 does not use blurred drop shadows (`box-shadow: 0 4px 20px ...` is prohibited).
+- **Strictly Flat & Layered**: FreeSpeech does not use blurred drop shadows (`box-shadow: 0 4px 20px ...` is prohibited).
 - **Hairline Separation**: All elevation tokens resolve to a 1px boundary:
   ```css
   --shadow-sm: 0 0 0 1px var(--color-hairline);

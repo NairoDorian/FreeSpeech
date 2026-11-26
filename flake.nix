@@ -1,5 +1,5 @@
 {
-  description = "ZER0 — real-time speech to text";
+  description = "FreeSpeech — real-time speech to text";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -83,8 +83,8 @@
           };
         in
         {
-          zer0 = pkgs.rustPlatform.buildRustPackage {
-            pname = "zer0";
+          freespeech = pkgs.rustPlatform.buildRustPackage {
+            pname = "freespeech";
             inherit version;
             src = self;
 
@@ -169,20 +169,20 @@
                 # Self-update can't work against an immutable /nix/store install
                 # (downloadAndInstall would try to overwrite the store path), so
                 # the Nix-built package always disables the updater.
-                --set ZER0_DISABLE_UPDATER 1
+                --set FREESPEECH_DISABLE_UPDATER 1
               )
             '';
 
             meta = {
               description = "A free, open source, and extensible speech-to-text application that works completely offline";
-              homepage = "https://github.com/NairoDorian/S2B2S";
+              homepage = "https://github.com/NairoDorian/FreeSpeech";
               license = lib.licenses.mit;
-              mainProgram = "zer0";
+              mainProgram = "freespeech";
               platforms = supportedSystems;
             };
           };
 
-          default = self.packages.${system}.zer0;
+          default = self.packages.${system}.freespeech;
         }
       );
 
@@ -191,7 +191,7 @@
         { lib, pkgs, ... }:
         {
           imports = [ ./nix/module.nix ];
-          programs.zer0.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.zer0;
+          programs.freespeech.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.freespeech;
         };
 
       # Home-manager module for per-user service
@@ -199,7 +199,7 @@
         { lib, pkgs, ... }:
         {
           imports = [ ./nix/hm-module.nix ];
-          services.zer0.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.zer0;
+          services.freespeech.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.freespeech;
         };
 
       # Development shell for building from source
@@ -237,7 +237,7 @@
             XDG_DATA_DIRS = "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:${pkgs.hicolor-icon-theme}/share";
 
             shellHook = ''
-              echo "ZER0 development environment"
+              echo "FreeSpeech development environment"
               bun install
               echo "Run 'bun run tauri dev' to start"
             '';

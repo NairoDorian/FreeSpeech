@@ -1,25 +1,25 @@
-# Overlay implementations compared — ZER0 and four sibling projects
+# Overlay implementations compared — FreeSpeech and four sibling projects
 
 **Date:** 2026-09-14 · **Scope:** how each codebase builds its transparent,
 always-on-top overlay window; the cross-OS story; the backend that drives it;
-and what ZER0 (`Handy_Multi_STT`) should learn from each. Every claim below was
+and what FreeSpeech should learn from each. Every claim below was
 verified against the named files in the named repos — the five projects:
 
 > **What kind of document this is: a cross-repo survey plus a (now partly spent)
 > recommendation list.** The five projects are described as they stood on
-> 2026-09-14 and are not re-audited here — only ZER0's own column is kept
+> 2026-09-14 and are not re-audited here — only FreeSpeech's own column is kept
 > current, because that is the half a reader in this repo acts on. Two of the ten
-> "what ZER0 should take" items have since been adopted; they are marked
+> "what FreeSpeech should take" items have since been adopted; they are marked
 > inline. Line numbers are given for orientation only: search the symbol, not
 > the line.
 
-| #   | Project                                 | Path                                           | Purpose of its overlay                                                                            |
-| --- | --------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 1   | **ZER0** (this repo, `Handy_Multi_STT`) | `PROJECTS\Handy_V2`                            | Live dictation card: status, streaming text, speech stats, spectrum                               |
-| 2   | **S2B2S**                               | `PROJECTS\STT_BRAIN_TTS\S2B2S`                 | Same lineage, further evolved: recording overlay + a second "brain overlay" (LLM bubble)          |
-| 3   | **CopySpeak**                           | `PROJECTS\STT_BRAIN_TTS\copyspeak`             | TTS "HUD": spoken-text marquee + waveform, permanently click-through                              |
-| 4   | **AIVORelay**                           | `PROJECTS\STT_BRAIN_TTS\AIVORelay`             | Five overlays: recording card, live-text preview, TTS window, command confirm, voice button       |
-| 5   | **CursorFX**                            | `PROJECTS\Cross_Platform_Rust_WebGPU_CursorFX` | GPU-drawn cursor effects on a full-virtual-desktop transparent surface (wgpu, not a text webview) |
+| #   | Project                    | Path                                           | Purpose of its overlay                                                                            |
+| --- | -------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | **FreeSpeech** (this repo) | `PROJECTS\Handy_V2`                            | Live dictation card: status, streaming text, speech stats, spectrum                               |
+| 2   | **S2B2S**                  | `PROJECTS\STT_BRAIN_TTS\S2B2S`                 | Same lineage, further evolved: recording overlay + a second "brain overlay" (LLM bubble)          |
+| 3   | **CopySpeak**              | `PROJECTS\STT_BRAIN_TTS\copyspeak`             | TTS "HUD": spoken-text marquee + waveform, permanently click-through                              |
+| 4   | **AIVORelay**              | `PROJECTS\STT_BRAIN_TTS\AIVORelay`             | Five overlays: recording card, live-text preview, TTS window, command confirm, voice button       |
+| 5   | **CursorFX**               | `PROJECTS\Cross_Platform_Rust_WebGPU_CursorFX` | GPU-drawn cursor effects on a full-virtual-desktop transparent surface (wgpu, not a text webview) |
 
 > `overlay_fx/window.rs`, and every Win32 / wgpu / Wayland symbol in this
 > document (`DwmSetWindowAttribute`, `SurfaceTargetUnsafe`, `WH_MOUSE_LL`,
@@ -32,7 +32,7 @@ verified against the named files in the named repos — the five projects:
 
 ## 1. The five implementations, in brief
 
-### ZER0 (`Handy_Multi_STT`)
+### FreeSpeech
 
 Tauri webview window (the app is on Tauri 3 alpha now), built
 programmatically at startup and kept hidden (`create_recording_overlay` in
@@ -49,7 +49,7 @@ to an NSPanel via `tauri-nspanel` (`PanelLevel::Status`,
 `nonactivating_panel`, `can_become_key_window: false`); **Linux** attaches GTK
 Layer Shell (`Layer::Overlay`, `KeyboardMode::None`, anchors + margins instead
 of coordinates, `set_size_request` + `resize(1,1)` sizing quirk) with the
-`ZER0_NO_GTK_LAYER_SHELL` kill-switch, falling back to a plain always-on-top
+`FREESPEECH_NO_GTK_LAYER_SHELL` kill-switch, falling back to a plain always-on-top
 window. Data: typed Tauri events (`StreamTextEvent`, `SpeechActivityEvent` —
 both gated on cached atomics and suppressed while hidden), plus one raw-byte
 polled IPC (`overlay_scope_frame`) for the analyser so per-frame data never
@@ -70,7 +70,7 @@ placement.
 
 ### S2B2S
 
-The same architecture, several steps further along. Notables beyond ZER0:
+The same architecture, several steps further along. Notables beyond FreeSpeech:
 a user-selectable `OverlayMode` (Tauri vs OS-native, default native);
 macOS frontmost-window detection via CoreGraphics `copy_window_info`;
 `work_area()` from a Tauri git branch so the overlay tracks the Dock;
@@ -162,7 +162,7 @@ styles live: `WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP`
 
 ## 2. Side-by-side
 
-| Concern             | ZER0                                                                                                                             | S2B2S                                                        | CopySpeak                                                       | AIVORelay                                                                                                       | CursorFX                                                                                          |
+| Concern             | FreeSpeech                                                                                                                       | S2B2S                                                        | CopySpeak                                                       | AIVORelay                                                                                                       | CursorFX                                                                                          |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Toolkit             | Tauri webview (3 alpha)                                                                                                          | Tauri 2 webview                                              | Tauri 2 webview                                                 | Tauri 2 webview                                                                                                 | Tauri 2 shell + **wgpu surface on the native window**                                             |
 | Window creation     | Programmatic, startup, hidden, reused                                                                                            | Programmatic, startup, hidden, reused                        | **Declarative** in tauri.conf.json, parked off-screen           | Pre-created hidden (card) + lazy (others)                                                                       | Programmatic, startup, one per virtual desktop                                                    |
@@ -194,11 +194,11 @@ systems, SDF ribbons) and the only one where the drawing cost can go to
 zero when idle. Its price: screen-capture tools cannot see it, and you own
 the whole render loop.
 
-**2. "Hidden" is not one thing.** ZER0/S2B2S/AIVORelay hide the persistent
+**2. "Hidden" is not one thing.** FreeSpeech/S2B2S/AIVORelay hide the persistent
 window; CopySpeak parks it off-screen because WebView2 mis-repaints
 transparent windows on the hidden→visible transition and flashes a white
 frame at first paint. CursorFX inverts the trade-off: the window never
-changes visibility; the _work_ parks instead. If ZER0 ever sees the
+changes visibility; the _work_ parks instead. If FreeSpeech ever sees the
 WebView2 flash on Windows, the fix is already written down in
 `copyspeak/src-tauri/src/hud.rs:159` — park, don't hide, and let the page
 show itself after its transparent CSS is in place.
@@ -209,7 +209,7 @@ that Tauri's `always_on_top` alone loses on Windows, and re-assert
 atomic `SetWindowPos` doing move+size+topmost with `SWP_NOACTIVATE |
 SWP_NOOWNERZORDER`, eliminating the one-frame stale-geometry flash that the
 two-step move/then-topmost sequence can show, plus a deferred re-assert for
-the DPI reflow. **ZER0 has since adopted the single-call form** for
+the DPI reflow. **FreeSpeech has since adopted the single-call form** for
 move+size (`place_windows_overlay`, which cites AIVORelay by name), keeping
 `force_overlay_topmost` as a separate z-order pass because `SWP_NOZORDER` is
 what makes the move land at the right DPI in the first place — so the shape is
@@ -218,22 +218,22 @@ AIVORelay's with the topmost deliberately split out.
 **4. Click-through is a product decision, not a technique gap.** Only the
 two display-only overlays (CopySpeak HUD, CursorFX) use
 `set_ignore_cursor_events`; every STT card keeps interactive elements
-(cancel, drag, scrolling) and only refuses _keyboard_ focus. If ZER0 ever
+(cancel, drag, scrolling) and only refuses _keyboard_ focus. If FreeSpeech ever
 adds a minimal passive HUD mode, click-through is one portable call — no
 `WS_EX_*` surgery needed (and CursorFX's changelog is the cautionary tale:
 they removed WndProc subclassing in favor of the portable API).
 
-**5. Linux is the differentiator.** ZER0 and S2B2S implement GTK layer shell
+**5. Linux is the differentiator.** FreeSpeech and S2B2S implement GTK layer shell
 (anchors + margins, not coordinates — which sidesteps Wayland monitor
 queries entirely, plus the `set_size_request` sizing quirk); AIVORelay does
 not and ships its live-text window as Windows-only; CopySpeak ignores Linux.
-ZER0's layer-shell work is already the best of the four — the env-var
+FreeSpeech's layer-shell work is already the best of the four — the env-var
 kill-switch for broken compositors is the one piece worth keeping forever.
 
 **6. IPC hygiene converges on the same rules everywhere:** throttle
 high-rate emissions (33–150 ms), cache settings in atomics on the audio
 callback path, suppress everything while hidden, and take high-rate binary
-data out of JSON entirely (ZER0's `overlay_scope_frame` raw-byte polling is
+data out of JSON entirely (FreeSpeech's `overlay_scope_frame` raw-byte polling is
 the most advanced form of this in the family; AIVORelay settles for a 120 ms
 polled mirror as a correctness net).
 
@@ -241,17 +241,17 @@ polled mirror as a correctness net).
 non-activating NSPanel at `PanelLevel::Status` with `can_join_all_spaces` +
 `full_screen_auxiliary` is what makes the overlay behave over full-screen
 apps and all Spaces; the PanelBuilder trick (create a Tauri window, convert
-it, keep using `get_webview_window`) keeps the event plumbing intact. ZER0
+it, keep using `get_webview_window`) keeps the event plumbing intact. FreeSpeech
 already has all of this.
 
 **8. Documentation rot is real.** S2B2S's `overlay_fx/window.rs` claims
 click-through that does not exist; both S2B2S and CopySpeak carry parsed-but-
-never-consumed `opacity` settings. Any new ZER0 overlay setting must be
+never-consumed `opacity` settings. Any new FreeSpeech overlay setting must be
 wired in the same pass it is added.
 
 ---
 
-## 4. What ZER0 should take from each
+## 4. What FreeSpeech should take from each
 
 Items 1 and 4 have since been adopted; both are kept in the list with their
 outcome, because a recommendation with its result attached is more useful than a
@@ -273,19 +273,19 @@ From **AIVORelay** (highest value, lowest risk):
    CSS and the window's `corner_radius` setting, not from DWM.
 3. The lazy-vs-precreated rule: pre-create only the window every recording
    needs; lazily create anything else so an idle renderer process never
-   lingers. **Still open** — ZER0 has the one recording window and
+   lingers. **Still open** — FreeSpeech has the one recording window and
    pre-creates it.
 
 From **S2B2S**: 4. ~~Windows accessibility text scaling~~ **Taken.**
 `windows_text_scale_factor()` reads `HKCU\...\Accessibility\TextScaleFactor`
 and `place_windows_overlay` multiplies the logical size by it, clamped, and
 scales with the monitor it lands on. 5. The worked examples of main-thread discipline for monitor queries
-(issue #227) — ZER0 already follows it; keep the rationale documented.
+(issue #227) — FreeSpeech already follows it; keep the rationale documented.
 
 From **CopySpeak**: 6. The off-screen parking pattern as the ready-made fix for any WebView2
 transparent repaint/white-flash symptom on Windows. 7. The "show once, from the frontend, after transparent CSS" startup order.
 
-From **CursorFX** (the path to a GPU overlay): 8. If ZER0's overlay ever outgrows HTML (GPU waveform, particles), the
+From **CursorFX** (the path to a GPU overlay): 8. If FreeSpeech's overlay ever outgrows HTML (GPU waveform, particles), the
 recipe is here: empty transparent page + wgpu surface via
 `SurfaceTargetUnsafe` on the webview window's native handle +
 premultiplied alpha negotiation + idle parking with settle frames. Note
@@ -293,7 +293,7 @@ the cost: invisible to screen capture, and we own frame pacing. 9. Its research-
 `WS_EX_NOREDIRECTIONBITMAP`) remains unproven in any shipped code here —
 treat as future work, not as a fix.
 
-From **all four**: 10. Keep ZER0's overlay interactive and focus-free rather than
+From **all four**: 10. Keep FreeSpeech's overlay interactive and focus-free rather than
 click-through; keep the layer-shell kill-switch; and wire every new
 overlay setting the day it is added — the sibling repos are the
 evidence of what dead settings cost.
