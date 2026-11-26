@@ -408,9 +408,14 @@ jobs:
           fi
           # The install manifest sits next to libtranscribe in <crate-out>/lib.
           # Pick the newest match in case a stale build dir lingers in the cache.
-          LIBDIR="$(find "src-tauri/target/$PROFILE/build" \
-            -type f -name transcribe-link.json -path '*transcribe-cpp-sys*/out/lib/*' \
-            -printf '%T@ %h\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
+          # The CPU lane installs the engine into its private cache root
+          # (scripts/lib/cpu-lane.ts `cpuCacheRoot`), not under target/, so
+          # both are searched; a root that does not exist must not abort the
+          # step under `set -e`.
+          CACHE_ROOT="$(bun -e 'import { cpuCacheRoot } from "./scripts/lib/cpu-lane"; console.log(cpuCacheRoot())')"
+          LIBDIR="$( { find "src-tauri/target/$PROFILE/build" "$CACHE_ROOT" \
+            -type f -name transcribe-link.json -path '*/lib/*' \
+            -printf '%T@ %h\n' 2>/dev/null || true; } | sort -rn | head -1 | cut -d' ' -f2-)"
           if [ -z "${LIBDIR:-}" ] || [ ! -d "$LIBDIR" ]; then
             echo "ERROR: could not locate transcribe-cpp-sys install lib dir" >&2
             find src-tauri/target \( -name 'libtranscribe*' -o -name 'libggml*' \) 2>/dev/null >&2 || true
