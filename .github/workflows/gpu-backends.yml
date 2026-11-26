@@ -85,7 +85,11 @@ jobs:
       fail-fast: false
       matrix:
         arch: ${{ fromJSON(needs.plan.outputs.matrix) }}
-    runs-on: windows-latest
+    # Visual Studio 2022, not windows-latest's 2026 (VS 18, MSVC 19.52): CUDA
+    # 13.3's cudafe++ dies with an access violation on that toolset's headers
+    # even past the version check (seen on the first release, 2026-11-26).
+    # Move on once a CUDA release supports it.
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v5
 
