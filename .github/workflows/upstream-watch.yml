@@ -16,6 +16,10 @@ permissions:
   contents: read
   issues: write
 
+# `gh` prefers a remote named `upstream` as its default repository, and the
+# report adds one (cjpais/Handy) to the checkout: without GH_REPO every issue
+# command below would aim at Handy. It must only ever write here.
+
 concurrency:
   group: upstream-watch
   cancel-in-progress: false
@@ -32,10 +36,12 @@ jobs:
       - name: Build the report
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: bun scripts/upstream-status.ts --markdown > "$RUNNER_TEMP/upstream-watch.md"
       - name: Update the upstream-watch issue
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           report="$RUNNER_TEMP/upstream-watch.md"
           summary=$(head -n 1 "$report")

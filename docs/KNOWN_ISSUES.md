@@ -58,6 +58,13 @@ items live here, self-contained.
   compile before (see "No Linux/macOS build here" in the maintainer notes).
   `build.yml` (`workflow_call` plus dispatch), `build-test.yml`,
   `pr-test-build.yml` and `release.yml` still run only when dispatched.
+- **The Nix check cannot parse `bun.lock` (found 2026-11-26).** `nix-check.yml`
+  regenerates `.nix/bun.nix` with `bunx bun2nix`, and bun2nix 2.1.2 stops with
+  "Missing @ for package name and version declaration" on the lockfile the
+  current Bun writes; the lockfile from before the rename to FreeSpeech fails
+  the same way, so it is a format gap, not the rename. The workflow first ran
+  when the project moved to `main`. Until bun2nix reads this format the Nix
+  check stays red; the app's own builds do not use it.
 - **Windows binaries are not code-signed.** `signCommand` (Azure Trusted
   Signing, Authenticode) was removed from `tauri.conf.json`, and the CI steps
   and `AZURE_*` secrets that fed it are gone with it. The updater signing
