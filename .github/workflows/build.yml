@@ -396,10 +396,16 @@ jobs:
           PROFILE="${{ steps.build-profile.outputs.profile }}"
           # Frontend must exist for the app crate to compile (generate_context!).
           bun run build
-          (
-            cd src-tauri
-            if [ "$PROFILE" = "release" ]; then cargo build --release; else cargo build; fi
-          )
+          # The Tauri build below runs on the `--cpu` lane; this pre-build uses
+          # the same environment (scripts/lib/cpu-lane.ts), so the engine is
+          # configured once and the libraries located here are the ones the
+          # bundle links. Plain cargo would ask for CUDA, and these runners
+          # have no toolkit ("CUDA Toolkit not found", 2026-11-26).
+          if [ "$PROFILE" = "release" ]; then
+            bun scripts/cargo-cpu.ts build --release
+          else
+            bun scripts/cargo-cpu.ts build
+          fi
           # The install manifest sits next to libtranscribe in <crate-out>/lib.
           # Pick the newest match in case a stale build dir lingers in the cache.
           LIBDIR="$(find "src-tauri/target/$PROFILE/build" \

@@ -17,8 +17,10 @@
 // `lib/cpu-lane.ts` for the environment, shared with `tauri-runner.ts --cpu`
 // and the dependency updater's `cargo check`.
 //
-// CI calls cargo directly with its own environment and is unaffected. To lint
-// or test the CUDA posture on purpose, run cargo by hand from `src-tauri/`.
+// CI's AppImage pre-build (`build.yml`) runs through it too, so the libraries
+// it locates are the ones the `--cpu` Tauri build links; the test workflow
+// sets the same posture through its environment. To lint or test the CUDA
+// posture on purpose, run cargo by hand from `src-tauri/`.
 
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
