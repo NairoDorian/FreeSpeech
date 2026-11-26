@@ -554,15 +554,20 @@ jobs:
           echo "=== Binary linked libs ==="
           otool -L "$APP/Contents/MacOS/freespeech" || true
           echo "=== Checking all @rpath deps are satisfied ==="
-          # Extract every @rpath lib the binary needs
-          otool -L "$APP/Contents/MacOS/freespeech" | grep '@rpath/' | awk '{print $1}' | while read dep; do
+          # Every @rpath lib the binary needs. awk, not grep: a binary with none
+          # (the Intel Mac's static engine) made grep exit 1, which failed the
+          # step under the pipefail bash runs with although nothing was missing.
+          deps=$(otool -L "$APP/Contents/MacOS/freespeech" | awk '/@rpath\// {print $1}')
+          if [ -z "$deps" ]; then
+            echo "no @rpath dependencies"
+          fi
+          for dep in $deps; do
             libname=$(basename "$dep")
             if [ ! -f "$APP/Contents/Frameworks/$libname" ]; then
               echo "MISSING: $libname not found in Frameworks/"
               exit 1
-            else
-              echo "OK: $libname"
             fi
+            echo "OK: $libname"
           done
 
       - name: Upload artifacts (macOS)
