@@ -89,6 +89,9 @@ const CAUSES = [
   /CMake Error.*/,
   /CUDA Toolkit not found/,
   /Could NOT find \w+.*/,
+  // A C/C++ compiler's own diagnostic (`file:line:col: error: …`) names the
+  // cause; the cmake crate's panic after it only says the build failed.
+  /:\d+:\d+: (fatal )?error: .*/,
   /ERROR: .*/,
   /panicked at .*/,
   /test result: FAILED.*/,
