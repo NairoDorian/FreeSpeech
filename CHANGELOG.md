@@ -962,9 +962,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The Ubuntu 22.04 `.deb` builds (2026-11-26).** The engine is C++23 and
   includes `<expected>`, which 22.04's default GCC 11 lacks; that job now
   builds with GCC 12 from 22.04's own archive, whose libstdc++ is the one 22.04
-  already ships, so the package still installs on a stock system. BUILD.md
-  names the requirement, and its clone and Nix instructions point at
-  FreeSpeech instead of the archived S2B2S repository.
+  already ships, so the package still installs on a stock system. GCC 12 then
+  stopped in the engine's Earshot kernels: it does not apply
+  `#pragma GCC target` to a friend function defined inside a class, so their
+  AVX intrinsics failed to inline. The engine now defines those operators at
+  namespace scope (transcribe.cpp `9294084e`, pinned here). BUILD.md names the
+  requirement, and its clone and Nix instructions point at FreeSpeech instead
+  of the archived S2B2S repository.
 - **macOS compiles again (2026-11-26).** The recording overlay was an
   `NSPanel` from `tauri-nspanel`, which has no Tauri 3 release. It is now the
   same window the other platforms use, built `focusable(false)` so showing it
