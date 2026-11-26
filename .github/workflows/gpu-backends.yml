@@ -128,6 +128,11 @@ jobs:
         env:
           TRANSCRIBE_CUDA_ARCHITECTURES: ${{ matrix.arch }}
           TRANSCRIBE_MODEL_SET: full
+          # The runner image's MSVC can be newer than this CUDA release lists
+          # as supported, and nvcc then refuses to run at all. The engine's
+          # build script sets up MSVC itself and uses Ninja, so no Visual
+          # Studio CUDA integration is involved.
+          TRANSCRIBE_CMAKE_ARGS: -DCMAKE_CUDA_FLAGS=-allow-unsupported-compiler
         run: cargo build --release
 
       - name: Package ggml-cuda
