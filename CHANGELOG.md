@@ -16,14 +16,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > The fork's version tracked upstream's through 0.9.6. From **0.9.7** the project
 > carries its own version and cuts its own releases, so entries move out of
-> `[Unreleased]` into a version heading at release time. Nothing has been
-> released under that version yet, so everything the fork has done since 0.9.6
-> is still collected below. (The `v0.9.7` git tag in this history is
-> _upstream's_ release, merged from `upstream/main`, not a ZER0 release.) The
+> `[Unreleased]` into a version heading at release time. The first release,
+> **0.10.0** (2026-11-26), collects everything the fork did since 0.9.6. (The
+> `v0.9.7` git tag in this history is _upstream's_ release, merged from
+> `upstream/main`, not a ZER0 release.) The
 > notes shown in the app's What's New dialog live in
 > `src/content/release-notes/`.
 
 ## [Unreleased]
+
+### Fixed
+
+- **CI builds the committed engine pin (2026-11-27).** The tauri runner moved
+  the transcribe.cpp pin to the remote's newest `main` before every build,
+  CI included, so the 0.10.0 installers shipped engine `17a02066` while the
+  lock named `9294084e`, and the CUDA add-on modules (built from the lock)
+  were refused by the app as another build's. The lock now pins what shipped,
+  the modules were rebuilt for it, and on CI the runner leaves the pins as
+  committed.
+
+## [0.10.0] - 2026-11-26
 
 ### Added
 

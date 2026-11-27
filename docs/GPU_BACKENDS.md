@@ -100,6 +100,24 @@ commit, runtime version), so a new version installs beside the one this
 process has loaded; installing a module removes the other modules that are not
 loaded.
 
+## Verified
+
+On 2026-11-27, with the published v0.10.0 Windows x64 build in portable mode
+on an RTX 4070 Laptop GPU (compute capability 8.9, driver 621.24): the
+release's index, archives and every file passed the app's checks, the next
+start logged `CUDA add-on registered … (sm_89)` and `ggml_cuda_init: found 1
+CUDA devices`, `--list-devices` gained a `kind=cuda` device beside the two
+Vulkan ones, and an 11 s clip (Nemotron 3.5 streaming, Q8_0) transcribed in
+74 ms on CUDA against 1,186 ms on the CPU, word for word the same text. The
+files were placed by a script doing what `install_package` does; clicking
+through the page was not automated, because the release build's WebView2
+ignores `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`.
+
+Two things the first release taught, both fixed: the module jobs need Visual
+Studio 2022 (CUDA 13.3's `cudafe++` crashes on the 2026 toolset) and the
+SPIRV-Headers package `build.yml` installs; and CI must build the committed
+engine pin, or the installers and the modules disagree on the engine.
+
 ## What is not done
 
 - **Linux packages.** Same recipe on `ubuntu-22.04` (GCC 12, see `build.yml`)
